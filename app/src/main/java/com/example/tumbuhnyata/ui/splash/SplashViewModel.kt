@@ -8,13 +8,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SplashViewModel : ViewModel() {
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading = _isLoading.asStateFlow()
+    private val _splashState = MutableStateFlow(0) // 0: Background, 1: Logo, 2: Glow Effect
+    val splashState = _splashState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            delay(3000) // Simulasi waktu loading
-            _isLoading.value = false
+            delay(1000) // Tahap 1: Background
+            _splashState.value = 1
+            delay(1000) // Tahap 2: Logo muncul
+            _splashState.value = 2
+            delay(1000) // Tahap 3: Glow effect
+            _splashState.value = 3
         }
     }
 }

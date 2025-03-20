@@ -1,25 +1,42 @@
 package com.example.tumbuhnyata.ui.splash
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.*
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import kotlinx.coroutines.delay
-import androidx.compose.ui.tooling.preview.Preview
-
-
 
 @Composable
 fun SplashScreen(navController: NavController) {
+    var isVisible by remember { mutableStateOf(false) }
+
+    // Animasi scale in dari kecil ke besar
+    val scale by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0.5f,
+        animationSpec = tween(durationMillis = 1200, easing = EaseOutCubic)
+    )
+
+    // Animasi fade in bersamaan dengan scale
+    val alpha by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 1000, easing = EaseInOutQuad)
+    )
+
+    // Menjalankan animasi saat pertama kali muncul
     LaunchedEffect(Unit) {
-        delay(3000) // Delay 3 detik sebelum pindah ke Home
+        isVisible = true
+        delay(3000)
         navController.navigate("home")
     }
 
@@ -27,9 +44,23 @@ fun SplashScreen(navController: NavController) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        // Background
+        Image(
+            painter = painterResource(id = R.drawable.background_sc),
+            contentDescription = "Background",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // Logo dengan animasi dari dalam keluar
         Image(
             painter = painterResource(id = R.drawable.logo_splash),
-            contentDescription = "Logo"
+            contentDescription = "Logo",
+            modifier = Modifier
+                .size(254.7184.dp, 79.dp)
+                .scale(scale) // Efek dari dalam keluar
+                .alpha(alpha), // Efek fade in
+            contentScale = ContentScale.Fit
         )
     }
 }
@@ -37,5 +68,5 @@ fun SplashScreen(navController: NavController) {
 @Preview
 @Composable
 fun PreviewSplashScreen() {
-    SplashScreen(navController = rememberNavController()) // Gunakan fake NavController untuk preview
+    SplashScreen(navController = rememberNavController())
 }

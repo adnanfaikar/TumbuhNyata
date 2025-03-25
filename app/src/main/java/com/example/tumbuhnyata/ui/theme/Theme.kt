@@ -3,13 +3,14 @@ package com.example.tumbuhnyata.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = androidx.compose.ui.graphics.Color(0xFF6200EA)
+    primary = Color(0xFF6200EA)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = androidx.compose.ui.graphics.Color(0xFF6200EA)
+    primary = Color(0xFF6200EA)
 )
 
 @Composable

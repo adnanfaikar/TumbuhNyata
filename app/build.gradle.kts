@@ -49,6 +49,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.1")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.0")
+    implementation ("androidx.compose.ui:ui-text-google-fonts:1.7.8")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

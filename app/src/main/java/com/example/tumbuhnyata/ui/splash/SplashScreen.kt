@@ -37,7 +37,7 @@ fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         isVisible = true
         delay(3000)
-        navController.navigate("home")
+        navController.navigate("onboarding")
     }
 
     Box(
@@ -58,8 +58,8 @@ fun SplashScreen(navController: NavController) {
             contentDescription = "Logo",
             modifier = Modifier
                 .size(254.7184.dp, 79.dp)
-                .scale(scale) // Efek dari dalam keluar
-                .alpha(alpha), // Efek fade in
+                .scale(scale)
+                .alpha(alpha),
             contentScale = ContentScale.Fit
         )
     }

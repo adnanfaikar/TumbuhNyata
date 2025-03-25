@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SplashViewModel : ViewModel() {
-    private val _splashState = MutableStateFlow(0) // 0: Background, 1: Logo, 2: Glow Effect
+    private val _splashState = MutableStateFlow(0)
     val splashState = _splashState.asStateFlow()
 
     init {

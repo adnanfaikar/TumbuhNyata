@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.splash.SplashScreen
+import com.example.tumbuhnyata.ui.login.LoginScreen
+import com.example.tumbuhnyata.ui.register.RegisterScreen
 
 @Composable
 fun AppNavigation() {
@@ -21,6 +23,12 @@ fun AppNavigation() {
         }
         composable("home") {
             HomeScreen(navController)
+        }
+        composable("login") {
+            LoginScreen(navController)
+        }
+        composable("register") {
+            RegisterScreen(navController)
         }
     }
 }

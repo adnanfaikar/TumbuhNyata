@@ -1,7 +1,6 @@
-package com.example.tumbuhnyata.ui.option
+package com.example.tumbuhnyata.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -54,7 +53,8 @@ fun OptionScreen(navController: NavController) {
             text = "Selamat Datang di Tumbuh Nyata!",
             fontSize = 30.sp,
             textAlign = TextAlign.Left,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF1E1E1E)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -69,7 +69,7 @@ fun OptionScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { /* Navigate to login */ },
+            onClick = { navController.navigate("login") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -87,7 +87,7 @@ fun OptionScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedButton(
-            onClick = { /* Navigate to register */ },
+            onClick = { navController.navigate("register") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -114,16 +114,14 @@ fun OptionScreen(navController: NavController) {
                 text = "Syarat & Ketentuan",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.clickable { /* Navigate to terms */ }
+                color = Color(0xFF4B4B4B)
             )
             Text(text = " serta ", fontSize = 12.sp, color = Color(0xFF4B4B4B))
             Text(
                 text = "Kebijakan Privasi",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.clickable { /* Navigate to privacy */ }
+                color = Color(0xFF4B4B4B)
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.onboarding
+package com.example.tumbuhnyata.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

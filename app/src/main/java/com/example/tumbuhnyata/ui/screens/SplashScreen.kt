@@ -1,9 +1,8 @@
-package com.example.tumbuhnyata.ui.splash
+package com.example.tumbuhnyata.ui.screens
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.alpha

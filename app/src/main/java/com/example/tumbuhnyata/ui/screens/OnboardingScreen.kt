@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.onboarding
+package com.example.tumbuhnyata.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,7 +21,7 @@ import androidx.navigation.NavController
 import com.example.tumbuhnyata.R
 
 @Composable
-fun OnboardingScreen3(navController: NavController) {
+fun OnboardingScreen1(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -46,9 +46,9 @@ fun OnboardingScreen3(navController: NavController) {
                 contentAlignment = Alignment.TopCenter
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.onboarding_3),
-                    contentDescription = "Onboarding Image 3",
-                    modifier = Modifier.size(254.67.dp, 230.94.dp)
+                    painter = painterResource(id = R.drawable.onboarding_1),
+                    contentDescription = "Onboarding Image 1",
+                    modifier = Modifier.size(198.54.dp, 294.93.dp)
                 )
             }
 
@@ -57,14 +57,14 @@ fun OnboardingScreen3(navController: NavController) {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Bangun Dampak yang Berkelanjutan",
+                    text = "Kelola Program CSR dengan Mudah",
                     fontSize = 25.sp,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center,
                     color = Color.White
                 )
                 Text(
-                    text = "Hubungkan perusahaan Anda dengan komunitas yang tepat dan wujudkan perubahan positif yang nyata",
+                    text = "Rancang, kelola, dan pantau inisiatif CSR perusahaan Anda dalam satu platform terpadu",
                     fontSize = 14.sp,
                     color = Color.White,
                     textAlign = TextAlign.Center,
@@ -80,39 +80,42 @@ fun OnboardingScreen3(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.arrow_left),
-                    contentDescription = "Back",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(33.61.dp, 21.dp)
-                        .clickable { navController.navigate("onboarding2") }
+                Text(
+                    text = "Lewati",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.clickable { navController.navigate("option") }
                 )
 
                 Row {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(Color.White, shape = CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(Color.White, shape = CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
                     Box(
                         modifier = Modifier
                             .width(29.dp)
                             .height(8.dp)
                             .background(Color(0xFFE6FD4B), shape = CircleShape)
                     )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(Color.White, shape = CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(Color.White, shape = CircleShape)
+                    )
                 }
 
-                Text(
-                    text = "     ",
-                    fontSize = 17.sp
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_right),
+                    contentDescription = "Next",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(33.61.dp, 21.dp)
+                        .clickable { navController.navigate("onboarding2") }
                 )
             }
         }

@@ -1,6 +1,9 @@
+
 package com.example.tumbuhnyata.ui.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,16 +32,22 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.tumbuhnyata.ui.components.InputField
 
 
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
+    var isEmailValid by remember { mutableStateOf(true) }
     var password by remember { mutableStateOf("") }
+    var isPasswordValid by remember { mutableStateOf(true) }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(131.dp))
@@ -65,7 +74,10 @@ fun LoginScreen(navController: NavController) {
         // Email TextField
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                isEmailValid = it.contains("@")
+            },
             label = {
                 Text(
                     "Email Perusahaan",
@@ -87,15 +99,30 @@ fun LoginScreen(navController: NavController) {
                 .height(60.dp),
             shape = RoundedCornerShape(15.dp),
             singleLine = true,
-
         )
+
+        // Menampilkan warning jika email tidak valid
+        if (!isEmailValid) {
+            Text(
+                text = "Email harus mengandung '@'",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
 
         Spacer(modifier = Modifier.height(13.dp))
 
         // Password TextField
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                isPasswordValid = it.length >= 8
+            },
             label = {
                 Text(
                     "Kata Sandi",
@@ -125,8 +152,22 @@ fun LoginScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp),
-            shape = RoundedCornerShape(15.dp)
+            shape = RoundedCornerShape(15.dp),
+            singleLine = true
         )
+
+        // Menampilkan warning jika password kurang dari 8 karakter
+        if (!isPasswordValid) {
+            Text(
+                text = "Minimal 8 karakter",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
 
         Spacer(modifier = Modifier.height(13.dp))
 
@@ -151,7 +192,7 @@ fun LoginScreen(navController: NavController) {
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 if (email.isNotBlank() && password.isNotBlank()) Color.Black else Color.Gray)
-            ) {
+        ) {
             Text(
                 "Masuk",
                 color = Color.White,
@@ -189,6 +230,7 @@ fun LoginScreen(navController: NavController) {
             onClick = { /* Handle Google Sign-In */ },
             modifier = Modifier
                 .fillMaxWidth()
+                .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
                 .height(50.dp),
             shape = RoundedCornerShape(50.dp),
             colors = ButtonDefaults.buttonColors(Color.White)

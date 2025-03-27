@@ -23,8 +23,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -69,7 +67,7 @@ fun RegisterScreen(navController: NavController) {
             when (currentStep) {
                 1 -> StepOne { step++ }
                 2 -> StepTwo { step++ }
-                3 -> StepThree {}
+                3 -> StepThree(onRegister = { step++ }, navController = navController)
             }
         }
 
@@ -160,7 +158,7 @@ fun StepIndicator(currentStep: Int) {
                     color = if (indicatorColor == inactiveColor) inactiveColor else Color.Black,
                     fontFamily = PoppinsFontFamily,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
                 )
             }
         }
@@ -175,6 +173,7 @@ fun StepIndicator(currentStep: Int) {
 fun StepOne(onNext: () -> Unit) {
     var companyName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var isEmailValid by remember { mutableStateOf(true) }
     var phoneNumber by remember { mutableStateOf("") }
     var nib by remember { mutableStateOf("") }
 
@@ -184,6 +183,7 @@ fun StepOne(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
+        //nama perusahaan
         OutlinedTextField(
             value = companyName,
             onValueChange = { companyName = it },
@@ -211,34 +211,52 @@ fun StepOne(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(13.dp))
 
+        // email perusahaan
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                isEmailValid = it.contains("@")
+            },
             label = {
                 Text(
                     "Email Perusahaan",
                     color = Color(0xFF686868),
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                ) },
+                )
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_email),
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(20.dp),
                     contentDescription = "Email Icon"
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(55.dp),
+                .height(60.dp),
             shape = RoundedCornerShape(15.dp),
-            singleLine = true
+            singleLine = true,
         )
+
+        // Menampilkan warning jika email tidak valid
+        if (!isEmailValid) {
+            Text(
+                text = "Email harus mengandung '@'",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // no telp perusahaan
         OutlinedTextField(
             value = phoneNumber,
             onValueChange = { newValue ->
@@ -271,6 +289,7 @@ fun StepOne(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        //nib perusahaan
         OutlinedTextField(
             value = nib,
             onValueChange = { newValue ->
@@ -520,10 +539,12 @@ fun StepTwo(onNext: () -> Unit) {
 
 
 @Composable
-fun StepThree(onRegister: () -> Unit) {
+fun StepThree(onRegister: () -> Unit, navController: NavController) {
     var picName by remember { mutableStateOf("") }
     var picEmail by remember { mutableStateOf("") }
+    var isPicEmailValid by remember { mutableStateOf(true) }
     var password by remember { mutableStateOf("") }
+    var isPasswordValid by remember { mutableStateOf(true) }
     var passwordVisible by remember { mutableStateOf(false)}
     var isChecked by remember { mutableStateOf(false) }
     val annotatedString = buildAnnotatedString {
@@ -554,6 +575,7 @@ fun StepThree(onRegister: () -> Unit) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
+        //nama pic
         OutlinedTextField(
             value = picName,
             onValueChange = { picName = it },
@@ -582,46 +604,66 @@ fun StepThree(onRegister: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        //email pic
         OutlinedTextField(
             value = picEmail,
-            onValueChange = { picEmail = it },
+            onValueChange = {
+                picEmail = it
+                isPicEmailValid = it.contains("@")
+            },
             label = {
                 Text(
-                "Email PIC",
+                    "Email Perusahaan",
                     color = Color(0xFF686868),
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                ) },
+                )
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_email),
                     modifier = Modifier.size(20.dp),
-                    contentDescription = "PIC Email Icon"
+                    contentDescription = "Email Icon"
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(55.dp),
+                .height(60.dp),
             shape = RoundedCornerShape(15.dp),
             singleLine = true,
         )
 
+        // Menampilkan warning jika email tidak valid
+        if (!isPicEmailValid) {
+            Text(
+                text = "Email harus mengandung '@'",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
+        //password pic
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                isPasswordValid = it.length >= 8
+            },
             label = {
                 Text(
-                    "Password",
+                    "Kata Sandi",
                     color = Color(0xFF686868),
                     fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                ) },
+                    fontWeight = FontWeight.Normal
+                )
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             leadingIcon = {
@@ -642,10 +684,23 @@ fun StepThree(onRegister: () -> Unit) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(55.dp),
+                .height(60.dp),
             shape = RoundedCornerShape(15.dp),
             singleLine = true
         )
+
+        // Menampilkan warning jika password kurang dari 8 karakter
+        if (!isPasswordValid) {
+            Text(
+                text = "Minimal 8 karakter",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -666,7 +721,7 @@ fun StepThree(onRegister: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = onRegister,
+            onClick = { navController.navigate("verifikasi") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -681,7 +736,8 @@ fun StepThree(onRegister: () -> Unit) {
                 fontFamily = PoppinsFontFamily,
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp,
-                color = Color.White)
+                color = Color.White,
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))

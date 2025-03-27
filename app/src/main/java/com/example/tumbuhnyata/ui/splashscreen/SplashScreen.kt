@@ -1,9 +1,8 @@
-package com.example.tumbuhnyata.ui.splash
+package com.example.tumbuhnyata.ui.splashscreen
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.alpha
@@ -37,7 +36,7 @@ fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         isVisible = true
         delay(3000)
-        navController.navigate("home")
+        navController.navigate("onboarding")
     }
 
     Box(

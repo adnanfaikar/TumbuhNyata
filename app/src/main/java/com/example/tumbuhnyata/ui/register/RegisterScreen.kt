@@ -19,12 +19,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,61 +42,104 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun RegisterScreen(navController: NavController) {
-    var step by remember { mutableStateOf(1) }
+fun RegisterScreen(
+    navController: NavController,
+    viewModel: RegisterViewModel = viewModel()
+) {
+    val currentStep by viewModel.currentStep.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val registerSuccess by viewModel.registerSuccess.collectAsState()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            scope.launch {
+                snackbarHostState.showSnackbar(it)
+                viewModel.clearError()
+            }
+        }
+    }
+    
+    LaunchedEffect(registerSuccess) {
+        if (registerSuccess) {
+            navController.navigate("verifikasi")
+        }
+    }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        HeaderSection()
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            HeaderSection()
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        StepIndicator(currentStep = step)
+            StepIndicator(currentStep = currentStep)
 
+            AnimatedContent(targetState = currentStep, label = "Register Steps") { step ->
+                when (step) {
+                    1 -> StepOne(viewModel = viewModel, onNext = { viewModel.nextStep() })
+                    2 -> StepTwo(viewModel = viewModel, onNext = { viewModel.nextStep() })
+                    3 -> StepThree(viewModel = viewModel, navController = navController)
+                }
+            }
 
+            Spacer(modifier = Modifier.height(16.dp))
 
-        AnimatedContent(targetState = step, label = "Register Steps") { currentStep ->
-            when (currentStep) {
-                1 -> StepOne { step++ }
-                2 -> StepTwo { step++ }
-                3 -> StepThree(onRegister = { step++ }, navController = navController)
+            // Sign Up Text
+            Row {
+                Text(
+                    "Sudah mempunyai akun? ",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Normal
+                )
+                Text(
+                    "Masuk",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable {
+                        navController.navigate("login")
+                    }
+                )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Sign Up Text
-        Row {
-            Text(
-                "Sudah mempunyai akun? ",
-                color = Color.Black,
-                fontSize = 14.sp,
-                fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.Normal
-            )
-            Text(
-                "Masuk",
-                color = Color.Black,
-                fontSize = 14.sp,
-                fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.Bold,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable {
-                    navController.navigate("login")
-                }
-            )
+        
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+        
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFFA5C295))
+            }
         }
     }
 }
@@ -108,7 +155,6 @@ fun HeaderSection() {
         contentScale = ContentScale.Crop
     )
 }
-
 
 @Composable
 fun StepIndicator(currentStep: Int) {
@@ -165,28 +211,30 @@ fun StepIndicator(currentStep: Int) {
     }
 }
 
-
-
-
-
 @Composable
-fun StepOne(onNext: () -> Unit) {
-    var companyName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
+    val companyName by viewModel.companyName.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val phoneNumber by viewModel.phoneNumber.collectAsState()
+    val nib by viewModel.nib.collectAsState()
+    val address by viewModel.address.collectAsState()
+    
     var isEmailValid by remember { mutableStateOf(true) }
-    var phoneNumber by remember { mutableStateOf("") }
-    var nib by remember { mutableStateOf("") }
-
-    val isNextAvailable = companyName.isNotBlank() && email.isNotBlank() && phoneNumber.isNotBlank() && nib.isNotBlank()
+    
+    val isNextAvailable = companyName.isNotBlank() && 
+                           email.isNotBlank() && isEmailValid && 
+                           phoneNumber.isNotBlank() && 
+                           nib.isNotBlank() &&
+                           address.isNotBlank()
 
     Column(modifier = Modifier.padding(16.dp)) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        //nama perusahaan
+        // nama perusahaan
         OutlinedTextField(
             value = companyName,
-            onValueChange = { companyName = it },
+            onValueChange = { viewModel.updateCompanyName(it) },
             label = {
                 Text(
                     "Nama Perusahaan",
@@ -215,7 +263,7 @@ fun StepOne(onNext: () -> Unit) {
         OutlinedTextField(
             value = email,
             onValueChange = {
-                email = it
+                viewModel.updateEmail(it)
                 isEmailValid = it.contains("@")
             },
             label = {
@@ -261,7 +309,7 @@ fun StepOne(onNext: () -> Unit) {
             value = phoneNumber,
             onValueChange = { newValue ->
                 if (newValue.all { it.isDigit() } && newValue.length <= 12) {
-                    phoneNumber = newValue
+                    viewModel.updatePhoneNumber(newValue)
                 }
             },
             label = {
@@ -289,12 +337,12 @@ fun StepOne(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        //nib perusahaan
+        // nib perusahaan
         OutlinedTextField(
             value = nib,
             onValueChange = { newValue ->
                 if (newValue.all { it.isDigit() } && newValue.length <= 13) {
-                    nib = newValue
+                    viewModel.updateNIB(newValue)
                 }
             },
             label = {
@@ -322,14 +370,10 @@ fun StepOne(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        //alamat perusahaan
+        // alamat perusahaan
         OutlinedTextField(
-            value = nib,
-            onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() } && newValue.length <= 13) {
-                    nib = newValue
-                }
-            },
+            value = address,
+            onValueChange = { viewModel.updateAddress(it) },
             label = {
                 Text(
                     "Alamat Perusahaan" ,
@@ -338,7 +382,6 @@ fun StepOne(onNext: () -> Unit) {
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                 ) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_office),
@@ -364,7 +407,7 @@ fun StepOne(onNext: () -> Unit) {
             colors = ButtonDefaults.buttonColors(
                 if (isNextAvailable) Color(0xFF27361F) else Color(0xFF989898)
             ),
-            enabled = isNextAvailable // Button hanya aktif jika valid
+            enabled = isNextAvailable
         ) {
             Text(
                 text = "Selanjutnya",
@@ -399,14 +442,13 @@ fun StepOne(onNext: () -> Unit) {
                 fontWeight = FontWeight.Bold
             )
         }
-
-
     }
 }
 
-
 @Composable
-fun StepTwo(onNext: () -> Unit) {
+fun StepTwo(viewModel: RegisterViewModel, onNext: () -> Unit) {
+    val address by viewModel.address.collectAsState()
+    
     Column(
         modifier = Modifier.padding(16.dp)
     ){
@@ -433,8 +475,8 @@ fun StepTwo(onNext: () -> Unit) {
             Column() {
                 // TextField untuk "Cari Alamat"
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = address,
+                    onValueChange = { viewModel.updateAddress(it) },
                     label = {
                         Text(
                             "Cari Alamat",
@@ -464,6 +506,10 @@ fun StepTwo(onNext: () -> Unit) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable {
+                            // Replace with actual current location
+                            viewModel.updateAddress("Jl. Joyo Raharjo No.185, Merjosari, Kec. Lowokwaru. Kota Malang, Jawa Timur 65144, Indonesia")
+                        }
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -498,6 +544,9 @@ fun StepTwo(onNext: () -> Unit) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable {
+                            // Handle map selection
+                        }
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -517,8 +566,6 @@ fun StepTwo(onNext: () -> Unit) {
                         fontWeight = FontWeight.Bold
                     )
                 }
-
-
             }
         }
 
@@ -566,20 +613,24 @@ fun StepTwo(onNext: () -> Unit) {
             )
         }
     }
-
-
 }
 
-
 @Composable
-fun StepThree(onRegister: () -> Unit, navController: NavController) {
+fun StepThree(viewModel: RegisterViewModel, navController: NavController) {
+    val companyEmail by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    
     var picName by remember { mutableStateOf("") }
     var picEmail by remember { mutableStateOf("") }
     var isPicEmailValid by remember { mutableStateOf(true) }
-    var password by remember { mutableStateOf("") }
     var isPasswordValid by remember { mutableStateOf(true) }
-    var passwordVisible by remember { mutableStateOf(false)}
+    var passwordVisible by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(password) {
+        isPasswordValid = password.length >= 8
+    }
+    
     val annotatedString = buildAnnotatedString {
         append("Dengan melakukan login atau registrasi, Anda menyetujui ")
 
@@ -593,7 +644,7 @@ fun StepThree(onRegister: () -> Unit, navController: NavController) {
             append("Kebijakan Privasi")
         }
     }
-    val isFormValid = picName.isNotBlank() && picEmail.isNotBlank() && password.isNotBlank() && isChecked
+    val isFormValid = picName.isNotBlank() && password.isNotBlank() && isPasswordValid && isChecked
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
@@ -608,7 +659,7 @@ fun StepThree(onRegister: () -> Unit, navController: NavController) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        //nama pic
+        // nama pic
         OutlinedTextField(
             value = picName,
             onValueChange = { picName = it },
@@ -634,16 +685,15 @@ fun StepThree(onRegister: () -> Unit, navController: NavController) {
             singleLine = true
         )
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        //email pic
+        // email pic (using same as company email)
         OutlinedTextField(
-            value = picEmail,
+            value = companyEmail,
             onValueChange = {
-                picEmail = it
-                isPicEmailValid = it.contains("@")
+                // Using company email, so not editable here
             },
+            enabled = false,
             label = {
                 Text(
                     "Email Perusahaan",
@@ -667,27 +717,13 @@ fun StepThree(onRegister: () -> Unit, navController: NavController) {
             singleLine = true,
         )
 
-        // Menampilkan warning jika email tidak valid
-        if (!isPicEmailValid) {
-            Text(
-                text = "Email harus mengandung '@'",
-                color = Color.Red,
-                fontSize = 14.sp,
-                fontFamily = PoppinsFontFamily,
-                modifier = Modifier
-                    .padding(top = 4.dp)
-                    .align(Alignment.Start)
-            )
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        //password pic
+        // password pic
         OutlinedTextField(
             value = password,
             onValueChange = {
-                password = it
-                isPasswordValid = it.length >= 8
+                viewModel.updatePassword(it)
             },
             label = {
                 Text(
@@ -754,7 +790,7 @@ fun StepThree(onRegister: () -> Unit, navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { navController.navigate("verifikasi") },
+            onClick = { viewModel.register() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

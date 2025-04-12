@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.register
+package com.example.tumbuhnyata.ui.workshop
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,7 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
-fun AkunBerhasil(navController: NavController) {
+fun WorkshopBerhasil(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -46,41 +46,43 @@ fun AkunBerhasil(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(300.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Image(
-                painter = painterResource(id = R.drawable.ic_check),
+                painter = painterResource(id = R.drawable.lg_check),
                 contentDescription = "Berhasil Buat Akun",
-                modifier = Modifier.size(117.dp)
+                modifier = Modifier.size(100.dp)
             )
 
-            Spacer(modifier = Modifier.height(29.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Berhasil",
-                fontSize = 30.sp,
+                text = "Pendaftaran Workshop Berhasil",
+                fontSize = 24.sp,
                 fontFamily = PoppinsFontFamily,
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.ExtraBold
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text(
-                text = "Membuat Akun",
-                fontSize = 30.sp,
+                text = "Informasi mengenai pembayaran dan event workshop akan dikirim melalui email",
+                fontSize = 14.sp,
                 fontFamily = PoppinsFontFamily,
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Medium
             )
 
-            Spacer(modifier = Modifier.height(226.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { navController.navigate("home") },
+                onClick = { navController.navigate("workshop") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -88,19 +90,20 @@ fun AkunBerhasil(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF151E11))
             ) {
                 Text(
-                    text = "Mulai",
+                    text = "Kembali ke Beranda",
+                    fontFamily = PoppinsFontFamily,
                     color = Color.White,
                     fontSize = 17.sp,
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold
                 )
             }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
 
 @Preview
 @Composable
-fun PreviewAkunBerhasil() {
-    AkunBerhasil(navController = rememberNavController())
+fun PreviewWorkshopBerhasil() {
+    WorkshopBerhasil(navController = rememberNavController())
 }

@@ -320,6 +320,39 @@ fun StepOne(onNext: () -> Unit) {
             singleLine = true
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        //alamat perusahaan
+        OutlinedTextField(
+            value = nib,
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() } && newValue.length <= 13) {
+                    nib = newValue
+                }
+            },
+            label = {
+                Text(
+                    "Alamat Perusahaan" ,
+                    color = Color(0xFF686868),
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                ) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_office),
+                    modifier = Modifier.size(18.dp),
+                    contentDescription = "Office Icon"
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            shape = RoundedCornerShape(15.dp),
+            singleLine = true
+        )
+
         Spacer(modifier = Modifier.height(33.dp))
 
         Button(

@@ -110,9 +110,13 @@ fun OnboardingScreen3(navController: NavController) {
                     )
                 }
 
-                Text(
-                    text = "     ",
-                    fontSize = 17.sp
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_right),
+                    contentDescription = "Next",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(33.61.dp, 21.dp)
+                        .clickable { navController.navigate("option") }
                 )
             }
         }

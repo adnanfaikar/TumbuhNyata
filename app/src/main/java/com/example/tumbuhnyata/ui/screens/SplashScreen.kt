@@ -36,7 +36,7 @@ fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         isVisible = true
         delay(3000)
-        navController.navigate("onboarding")
+        navController.navigate("workshop")
     }
 
     Box(

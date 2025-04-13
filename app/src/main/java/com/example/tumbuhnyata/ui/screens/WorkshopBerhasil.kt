@@ -29,7 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 
 @Composable
-fun AkunBerhasil(navController: NavController) {
+fun WorkshopBerhasil(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -48,7 +48,7 @@ fun AkunBerhasil(navController: NavController) {
                 .padding(horizontal = 16.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.weight(1f)) // Spacer fleksibel bagian atas
+            Spacer(modifier = Modifier.weight(1f))
 
             Image(
                 painter = painterResource(id = R.drawable.lg_check),
@@ -56,28 +56,30 @@ fun AkunBerhasil(navController: NavController) {
                 modifier = Modifier.size(100.dp)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Berhasil",
-                fontSize = 26.sp,
+                text = "Pendaftaran Workshop Berhasil",
+                fontSize = 24.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.ExtraBold
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text(
-                text = "Membuat Akun",
-                fontSize = 26.sp,
+                text = "Informasi mengenai pembayaran dan event workshop akan dikirim melalui email",
+                fontSize = 14.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Medium
             )
 
-            Spacer(modifier = Modifier.weight(1f)) // Spacer fleksibel bagian bawah
+            Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { navController.navigate("home") }, // Pastikan tujuannya benar
+                onClick = { navController.navigate("home") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -85,7 +87,7 @@ fun AkunBerhasil(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF151E11))
             ) {
                 Text(
-                    text = "Mulai",
+                    text = "Kembali ke Beranda",
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.ExtraBold
@@ -98,6 +100,6 @@ fun AkunBerhasil(navController: NavController) {
 
 @Preview
 @Composable
-fun PreviewAkunBerhasil() {
-    AkunBerhasil(navController = rememberNavController())
+fun PreviewWorkshopBerhasil() {
+    WorkshopBerhasil(navController = rememberNavController())
 }

@@ -35,7 +35,7 @@ fun VerifikasiScreen(navController: NavController) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Box(
             modifier = Modifier
@@ -47,7 +47,7 @@ fun VerifikasiScreen(navController: NavController) {
                 painter = painterResource(id = R.drawable.btn_back),
                 contentDescription = "Kembali",
                 modifier = Modifier
-                    .size(32.dp) // Ukuran tombol back
+                    .size(32.dp)
                     .clickable { navController.navigate("login") } // Navigasi kembali ke halaman option
             )
         }

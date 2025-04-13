@@ -13,9 +13,15 @@ import com.example.tumbuhnyata.ui.screens.OptionScreen
 import com.example.tumbuhnyata.ui.screens.OtpScreen
 import com.example.tumbuhnyata.ui.screens.VerifikasiScreen
 import com.example.tumbuhnyata.ui.screens.AkunBerhasil
+import com.example.tumbuhnyata.ui.screens.DaftarWorkshop
+import com.example.tumbuhnyata.ui.screens.DeskripsiWorkshopScreen
+import com.example.tumbuhnyata.ui.screens.NewWorkshop
 import com.example.tumbuhnyata.ui.screens.RegisterScreen1
 import com.example.tumbuhnyata.ui.screens.RegisterScreen3
+import com.example.tumbuhnyata.ui.screens.RekomWorkshop
 import com.example.tumbuhnyata.ui.screens.SplashScreen
+import com.example.tumbuhnyata.ui.screens.WorkshopBerhasil
+import com.example.tumbuhnyata.ui.screens.WorkshopScreen
 
 @Composable
 fun AppNavigation() {
@@ -61,5 +67,26 @@ fun AppNavigation() {
         composable("akunberhasil") {
             AkunBerhasil (navController)
         }
+        composable("workshop") {
+            WorkshopScreen (navController)
+        }
+        composable("rekomendasiworkshop") {
+            RekomWorkshop (navController)
+        }
+        composable("workshopterbaru") {
+            NewWorkshop (navController)
+        }
+        composable("deskripsiworkshop/{workshopId}") { backStackEntry ->
+            val workshopId = backStackEntry.arguments?.getString("workshopId") ?: ""
+            DeskripsiWorkshopScreen(navController, workshopId)
+        }
+
+        composable("daftarworkshop") {
+            DaftarWorkshop (navController)
+        }
+        composable("workshopberhasil") {
+            WorkshopBerhasil (navController)
+        }
     }
 }
+

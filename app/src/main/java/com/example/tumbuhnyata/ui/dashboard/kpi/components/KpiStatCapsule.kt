@@ -1,0 +1,95 @@
+package com.example.tumbuhnyata.ui.dashboard.kpi // Package based on your structure
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info // Placeholder Icon
+import androidx.compose.material.icons.filled.TrendingUp // Placeholder Icon
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+@Composable
+fun KpiStatCapsule(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    value: String,
+    unit: String,
+    label: String,
+    containerColor: Color = Color(0xFFF8F8F8), // Background color
+    contentColor: Color = Color(0xFF27361F)// Text/icon color
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp), // Rounded corners
+        colors = CardDefaults.cardColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp) // Slight elevation
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally, // Center content horizontally
+            verticalArrangement = Arrangement.spacedBy(4.dp) // Space between rows
+        ) {
+            // Top Row: Icon + Value + Unit
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null, // Label describes it
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = value,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp // Adjust size
+                )
+                Text(
+                    text = unit,
+                    fontSize = 10.sp, // Smaller unit text
+                    modifier = Modifier.padding(top = 4.dp) // Align baseline slightly
+                )
+            }
+            // Bottom Row: Label
+            Text(
+                text = label,
+                fontSize = 12.sp // Adjust size
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun KpiStatCapsulePreview() {
+    Row(
+        modifier = Modifier.padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        KpiStatCapsule(
+            modifier = Modifier.weight(1f),
+            icon = Icons.Filled.TrendingUp,
+            value = "139",
+            unit = "kg CO₂e",
+            label = "Rata-rata"
+        )
+        KpiStatCapsule(
+            modifier = Modifier.weight(1f),
+            icon = Icons.Filled.Info, // Replace with actual CO2 icon if available
+            value = "68",
+            unit = "kg CO₂e",
+            label = "Terkecil"
+        )
+    }
+}

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -110,14 +111,20 @@ fun UploadDataScreen(navController: NavController) {
                     .padding(horizontal = 16.dp, vertical = 12.dp) // Padding around button
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
-                    // Green color when enabled, default disabled color otherwise
-                    containerColor = if (isUploadEnabled) Color(0xFF4CAF50) else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (isUploadEnabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), // Custom disabled look
-                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                )
+                    // Updated colors based on requirements
+                    containerColor = Color(0xFF27361F), // Enabled color - dark green
+                    contentColor = Color(0xFFFAFAFA), // Enabled text color - light gray/white
+                    disabledContainerColor = Color(0xFF989898), // Disabled color - gray
+                    disabledContentColor = Color(0xFFFAFAFA) // Disabled text color - light gray/white
+                ),
+                shape = RoundedCornerShape(10.dp) // Updated corner radius to 10dp
             ) {
-                Text("Unggah Data")
+                Text(
+                    text = "Unggah Data",
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp
+                    )
             }
         }
     ) { paddingValues ->
@@ -142,6 +149,7 @@ fun UploadDataScreen(navController: NavController) {
             // Instruction Text
             Text(
                 text = "* Pastikan semua dokumen yang anda unggah merupakan dokumen yang belum pernah tercatat pada Tumbuh Nyata agar tidak terjadi tumpang tindih data",
+                fontFamily = PoppinsFontFamily,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, // Slightly dimmer text
                 modifier = Modifier.padding(bottom = 24.dp)

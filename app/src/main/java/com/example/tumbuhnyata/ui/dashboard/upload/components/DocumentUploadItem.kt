@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
 fun DocumentUploadItem(
@@ -36,6 +37,7 @@ fun DocumentUploadItem(
         // Label Text (e.g., "Laporan CSR")
         Text(
             text = label,
+            fontFamily = PoppinsFontFamily,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(bottom = 6.dp)
@@ -81,6 +83,7 @@ fun DocumentUploadItem(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = selectedFileName ?: "", // Should not be null here, but safe call
+                            fontFamily = PoppinsFontFamily,
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -109,6 +112,7 @@ fun DocumentUploadItem(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = placeholderText,
+                            fontFamily = PoppinsFontFamily,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant // Dimmed placeholder color
                         )

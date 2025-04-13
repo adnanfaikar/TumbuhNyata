@@ -7,6 +7,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.login.LoginScreen
+import com.example.tumbuhnyata.ui.profile.AboutScreen
+import com.example.tumbuhnyata.ui.profile.ProfileScreen
+import com.example.tumbuhnyata.ui.profile.VerificationOne
+import com.example.tumbuhnyata.ui.profile.VerificationSuccess
+import com.example.tumbuhnyata.ui.profile.VerificationTwo
 import com.example.tumbuhnyata.ui.register.AkunBerhasil
 import com.example.tumbuhnyata.ui.register.OtpScreen
 import com.example.tumbuhnyata.ui.register.RegisterScreen
@@ -57,5 +62,22 @@ fun AppNavigation() {
         composable("akunberhasil") {
             AkunBerhasil (navController)
         }
+        composable("profile") {
+            ProfileScreen(navController)
+        }
+        composable("about") {
+            AboutScreen(navController)
+        }
+        composable("verification_one") {
+            VerificationOne(navController)
+        }
+        composable("verification_two") {
+            VerificationTwo(navController)
+        }
+        composable("verification_success") {
+            VerificationSuccess(navController)
+        }
     }
 }
+
+

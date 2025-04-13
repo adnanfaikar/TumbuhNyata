@@ -39,33 +39,105 @@ import androidx.compose.ui.res.painterResource
 import kotlin.math.roundToInt
 
 
-// Placeholder data class for KPI details
+// Enhanced data class for KPI details with all related data
 data class KpiDetails(
     val id: String,
     val title: String,
-    // Add fields for chart data, stats, analysis etc.
+    val unit: String,
+    val yearlyChartData: List<Float>, // Monthly data points for yearly view
+    val fiveYearChartData: List<Float>, // Yearly data points for 5-year view
+    val averageValue: String,
+    val minValue: String,
+    val analysis: String
 )
 
 // Function to get placeholder data based on ID
 fun getKpiDetails(kpiId: String): KpiDetails {
-    // In a real app, fetch this from a ViewModel/Repository
+    // PLACEHOLDER DATA - Replace with real data from API/database in the future
     return when (kpiId) {
-        "carbon_footprint" -> KpiDetails(id = kpiId, title = "Carbon Footprint")
-        "energy_consumption" -> KpiDetails(id = kpiId, title = "Konsumsi Energi")
-        "water_usage" -> KpiDetails(id = kpiId, title = "Penggunaan Air")
-        "trees_planted" -> KpiDetails(id = kpiId, title = "Pohon Tertanam")
-        "waste_management" -> KpiDetails(id = kpiId, title = "Pengelolaan Sampah")
-        "benefit receivers"-> KpiDetails(id = kpiId, title = "Penerima Manfaat")
-        else -> KpiDetails(id = kpiId, title = "Detail KPI") // Default title
+        "carbon_footprint" -> KpiDetails(
+            id = kpiId, 
+            title = "Carbon Footprint",
+            unit = "kg CO₂e",
+            yearlyChartData = listOf(65f, 75f, 85f, 72f, 93f, 80f, 100f, 110f, 105f, 115f, 110f, 130f),
+            fiveYearChartData = listOf(850f, 920f, 1050f, 980f, 1230f),
+            averageValue = "139",
+            minValue = "68",
+            analysis = "Jejak karbon meningkat 8% minggu ini, seiring distribusi logistik program bantuan sosial. Pertimbangkan opsi pengiriman ramah lingkungan agar dampak sosial tetap tinggi tanpa menambah emisi."
+        )
+        "energy_usage" -> KpiDetails(
+            id = kpiId, 
+            title = "Konsumsi Energi",
+            unit = "kWh",
+            yearlyChartData = listOf(245f, 275f, 305f, 290f, 320f, 330f, 290f, 310f, 340f, 320f, 350f, 365f),
+            fiveYearChartData = listOf(3200f, 3450f, 3600f, 3750f, 3890f),
+            averageValue = "321",
+            minValue = "245",
+            analysis = "Konsumsi energi meningkat 5% dari bulan lalu, sebagian besar terjadi pada jam operasional tinggi. Pertimbangkan pengaturan suhu AC dan penggunaan peralatan hemat energi."
+        )
+        "water_usage" -> KpiDetails(
+            id = kpiId, 
+            title = "Penggunaan Air",
+            unit = "m³",
+            yearlyChartData = listOf(42f, 48f, 53f, 45f, 50f, 55f, 47f, 49f, 52f, 50f, 54f, 57f),
+            fiveYearChartData = listOf(520f, 550f, 590f, 570f, 610f),
+            averageValue = "50.2",
+            minValue = "42",
+            analysis = "Penggunaan air relatif stabil dengan peningkatan kecil 3% dalam tiga bulan terakhir. Implementasi sistem pengolahan air daur ulang akan membantu mengurangi konsumsi keseluruhan."
+        )
+        "biodiversity" -> KpiDetails(
+            id = kpiId, 
+            title = "Pohon Tertanam",
+            unit = "pohon",
+            yearlyChartData = listOf(15f, 20f, 30f, 25f, 35f, 50f, 45f, 40f, 60f, 55f, 65f, 70f),
+            fiveYearChartData = listOf(350f, 420f, 510f, 580f, 630f),
+            averageValue = "42.5",
+            minValue = "15",
+            analysis = "Program penanaman pohon menunjukkan peningkatan signifikan sebesar 25% dibandingkan tahun lalu. Fokus pada jenis pohon lokal telah meningkatkan keberhasilan pertumbuhan."
+        )
+        "waste" -> KpiDetails(
+            id = kpiId, 
+            title = "Pengelolaan Sampah",
+            unit = "kg",
+            yearlyChartData = listOf(320f, 310f, 290f, 300f, 270f, 260f, 240f, 230f, 210f, 220f, 200f, 190f),
+            fiveYearChartData = listOf(3800f, 3500f, 3200f, 2800f, 2450f),
+            averageValue = "253",
+            minValue = "190",
+            analysis = "Volume sampah terus menurun berkat program pemilahan dan daur ulang. Pengurangan 12% dalam tiga bulan terakhir menunjukkan efektivitas program."
+        )
+        "sustainability" -> KpiDetails(
+            id = kpiId, 
+            title = "Penerima Manfaat",
+            unit = "orang",
+            yearlyChartData = listOf(120f, 150f, 180f, 210f, 250f, 280f, 310f, 340f, 370f, 400f, 430f, 450f),
+            fiveYearChartData = listOf(1500f, 2200f, 2900f, 3600f, 4300f),
+            averageValue = "290",
+            minValue = "120",
+            analysis = "Jumlah penerima manfaat meningkat secara konsisten dengan pertumbuhan 15% per bulan. Program pemberdayaan masyarakat menunjukkan dampak positif berkelanjutan."
+        )
+        // Keep compatibility with old IDs
+        "energy_consumption" -> getKpiDetails("energy_usage")
+        "trees_planted" -> getKpiDetails("biodiversity")
+        "waste_management" -> getKpiDetails("waste")
+        "benefit_receivers" -> getKpiDetails("sustainability")
+        else -> KpiDetails(
+            id = kpiId, 
+            title = "Detail KPI",
+            unit = "unit",
+            yearlyChartData = List(12) { 50f + (it * 5f) }, // Generic increasing data
+            fiveYearChartData = List(5) { 500f + (it * 100f) },
+            averageValue = "100",
+            minValue = "50",
+            analysis = "Data KPI belum tersedia secara lengkap. Silakan pilih KPI spesifik untuk melihat analisis detailnya."
+        )
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class) // Opt-in for TextMeasurer
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable
 fun KpiDetailScreen(
     navController: NavController,
-    kpiId: String // Accept the KPI ID from navigation
+    kpiId: String
 ) {
     // --- State ---
     val kpiDetails = remember(kpiId) { getKpiDetails(kpiId) }
@@ -73,11 +145,27 @@ fun KpiDetailScreen(
     val filterOptions = listOf("Tahunan", "5 Tahun")
     var selectedYear by remember { mutableStateOf(2025) }
 
-    // Sample data for the chart (replace with actual data)
-    // Represents values for 12 months (Jan-Dec)
-    val chartData = remember(selectedFilter, selectedYear) {
-        // TODO: Fetch real data based on filter/year
-        listOf(60f, 70f, 85f, 75f, 90f, 80f, 100f, 110f, 105f, 120f, 115f, 130f)
+    // Get chart data based on selected filter
+    val chartData = remember(selectedFilter, selectedYear, kpiDetails) {
+        if (selectedFilter == "Tahunan") {
+            kpiDetails.yearlyChartData
+        } else {
+            kpiDetails.fiveYearChartData
+        }
+    }
+
+    // Determine highlight data - different for yearly vs 5-year
+    val highlightIndex = remember(selectedFilter) {
+        if (selectedFilter == "Tahunan") 6 else 3 // Highlight July for monthly, 4th year for 5-year
+    }
+    
+    val highlightValueText = remember(selectedFilter, kpiDetails, highlightIndex) {
+        val value = if (selectedFilter == "Tahunan") {
+            kpiDetails.yearlyChartData.getOrNull(highlightIndex) ?: 0f
+        } else {
+            kpiDetails.fiveYearChartData.getOrNull(highlightIndex) ?: 0f
+        }
+        "${value.roundToInt()} ${kpiDetails.unit}"
     }
 
     // Needed for drawing text on Canvas
@@ -175,15 +263,48 @@ fun KpiDetailScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // --- Canvas Chart ---
-            SimpleLineChart(
+            // --- Canvas Chart (Different chart types based on filter) ---
+            if (selectedFilter == "Tahunan") {
+                // Monthly line chart for yearly view
+                SimpleLineChart(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    data = chartData,
+                    highlightIndex = highlightIndex,
+                    highlightValueText = highlightValueText,
+                    // Customize colors based on KPI type
+                    lineColor = when (kpiId) {
+                        "carbon_footprint" -> Color(0xFF4CAF50)
+                        "energy_usage", "energy_consumption" -> Color(0xFFFF9800)
+                        "water_usage" -> Color(0xFF2196F3)
+                        "biodiversity", "trees_planted" -> Color(0xFF8BC34A)
+                        "waste", "waste_management" -> Color(0xFFE91E63)
+                        "sustainability", "benefit_receivers" -> Color(0xFF9C27B0)
+                        else -> Color(0xFF607D8B)
+                    }
+                )
+            } else {
+                // Bar chart for 5-year view
+                SimpleBarChart(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp),
-                data = chartData,
-                highlightIndex = 6, // Highlight July (index 6)
-                highlightValueText = "80 kg CO₂e" // Text for highlight
-            )
+                        .height(200.dp),
+                    data = chartData,
+                    barColor = when (kpiId) {
+                        "carbon_footprint" -> Color(0xFF4CAF50)
+                        "energy_usage", "energy_consumption" -> Color(0xFFFF9800)
+                        "water_usage" -> Color(0xFF2196F3)
+                        "biodiversity", "trees_planted" -> Color(0xFF8BC34A)
+                        "waste", "waste_management" -> Color(0xFFE91E63)
+                        "sustainability", "benefit_receivers" -> Color(0xFF9C27B0)
+                        else -> Color(0xFF607D8B)
+                    },
+                    highlightIndex = highlightIndex,
+                    highlightValueText = highlightValueText,
+                    years = List(5) { (selectedYear - 4 + it).toString() } // Last 5 years
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -218,7 +339,6 @@ fun KpiDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-
             // --- Statistics Capsules ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -227,15 +347,15 @@ fun KpiDetailScreen(
                 KpiStatCapsule(
                     modifier = Modifier.weight(1f),
                     icon = Icons.Filled.TrendingUp,
-                    value = "139",
-                    unit = "kg CO₂e",
+                    value = kpiDetails.averageValue,
+                    unit = kpiDetails.unit,
                     label = "Rata-rata"
                 )
                 KpiStatCapsule(
                     modifier = Modifier.weight(1f),
                     icon = Icons.Filled.Info,
-                    value = "68",
-                    unit = "kg CO₂e",
+                    value = kpiDetails.minValue,
+                    unit = kpiDetails.unit,
                     label = "Terkecil"
                 )
             }
@@ -249,14 +369,13 @@ fun KpiDetailScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
-                text = "Jejak karbon meningkat 8% minggu ini, seiring distribusi logistik program bantuan sosial. Pertimbangkan opsi pengiriman ramah lingkungan agar dampak sosial tetap tinggi tanpa menambah emisi.",
+                text = kpiDetails.analysis,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
     }
 }
-
 
 // --- Simple Canvas Line Chart Composable ---
 @OptIn(ExperimentalTextApi::class)
@@ -265,7 +384,7 @@ fun SimpleLineChart(
     modifier: Modifier = Modifier,
     data: List<Float>,
     lineColor: Color = Color(0xFF4CAF50), // Green line
-    fillColor: Color = Color(0xFF4CAF50).copy(alpha = 0.3f), // Lighter green fill
+    fillColor: Color = lineColor.copy(alpha = 0.3f), // Lighter fill based on line color
     axisColor: Color = Color.Gray,
     highlightColor: Color = Color.Black,
     textColor: Color = Color.Black,
@@ -278,7 +397,7 @@ fun SimpleLineChart(
 
     // Find min and max values for scaling Y axis
     val minValue = data.minOrNull() ?: 0f
-    val maxValue = data.maxOrNull() ?: 1f // Avoid division by zero if empty
+    val maxValue = data.maxOrNull() ?: 1f
 
     // Add some padding to min/max for visual appeal
     val paddedMinValue = (minValue * 0.9f).roundToInt().toFloat()
@@ -420,6 +539,129 @@ fun SimpleLineChart(
     }
 }
 
+// --- Simple Canvas Bar Chart Composable ---
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun SimpleBarChart(
+    modifier: Modifier = Modifier,
+    data: List<Float>,
+    barColor: Color = Color(0xFF4CAF50),
+    axisColor: Color = Color.Gray,
+    highlightColor: Color = Color.Black,
+    textColor: Color = Color.Black,
+    highlightIndex: Int? = null,
+    highlightValueText: String? = null,
+    years: List<String> = listOf("2021", "2022", "2023", "2024", "2025") // Default years
+) {
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val labelFontSize = 10.sp
+
+    // Find min and max values for scaling Y axis
+    val minValue = data.minOrNull() ?: 0f
+    val maxValue = data.maxOrNull() ?: 1f
+
+    // Add some padding to min/max for visual appeal
+    val paddedMinValue = (minValue * 0.9f).roundToInt().toFloat()
+    val paddedMaxValue = (maxValue * 1.1f).roundToInt().toFloat()
+    val valueRange = (paddedMaxValue - paddedMinValue).coerceAtLeast(1f)
+
+    Canvas(modifier = modifier) {
+        val paddingStart = 60f // Space for Y labels
+        val paddingEnd = 20f
+        val paddingTop = 20f
+        val paddingBottom = 40f // Space for X labels
+
+        val chartWidth = size.width - paddingStart - paddingEnd
+        val chartHeight = size.height - paddingTop - paddingBottom
+
+        // Calculate bar width and spacing
+        val numBars = data.size
+        val barMaxWidth = chartWidth / (numBars * 2f) // Make bars take up half the available space
+        val barWidth = barMaxWidth.coerceAtMost(50f) // Cap maximum bar width
+        val spacing = (chartWidth - (barWidth * numBars)) / (numBars + 1)
+
+        // --- Draw Axes ---
+        // Y Axis Line
+        drawLine(
+            color = axisColor,
+            start = Offset(paddingStart, paddingTop),
+            end = Offset(paddingStart, paddingTop + chartHeight),
+            strokeWidth = 1.dp.toPx()
+        )
+        // X Axis Line
+        drawLine(
+            color = axisColor,
+            start = Offset(paddingStart, paddingTop + chartHeight),
+            end = Offset(paddingStart + chartWidth, paddingTop + chartHeight),
+            strokeWidth = 1.dp.toPx()
+        )
+
+        // --- Draw Axis Labels ---
+        val maxLabelLayout = textMeasurer.measure(
+            text = AnnotatedString(paddedMaxValue.roundToInt().toString()),
+            style = TextStyle(fontSize = labelFontSize, color = textColor)
+        )
+        drawText(
+            textLayoutResult = maxLabelLayout,
+            topLeft = Offset(paddingStart - maxLabelLayout.size.width - 4.dp.toPx(), paddingTop - maxLabelLayout.size.height / 2)
+        )
+
+        val minLabelLayout = textMeasurer.measure(
+            text = AnnotatedString(paddedMinValue.roundToInt().toString()),
+            style = TextStyle(fontSize = labelFontSize, color = textColor)
+        )
+        drawText(
+            textLayoutResult = minLabelLayout,
+            topLeft = Offset(paddingStart - minLabelLayout.size.width - 4.dp.toPx(), paddingTop + chartHeight - minLabelLayout.size.height / 2)
+        )
+
+        // --- Draw Bars and Year Labels ---
+        data.forEachIndexed { index, value ->
+            val normalized = (value - paddedMinValue) / valueRange
+            val barHeight = normalized * chartHeight
+            val x = paddingStart + spacing + index * (barWidth + spacing)
+            val y = paddingTop + chartHeight - barHeight
+
+            // Draw bar
+            val barColor = if (index == highlightIndex) highlightColor else barColor
+            drawRect(
+                color = barColor,
+                topLeft = Offset(x, y),
+                size = androidx.compose.ui.geometry.Size(barWidth, barHeight)
+            )
+
+            // Draw year label
+            val yearLabel = years.getOrElse(index) { index.toString() }
+            val yearLabelLayout = textMeasurer.measure(
+                text = AnnotatedString(yearLabel),
+                style = TextStyle(fontSize = labelFontSize, color = textColor)
+            )
+            drawText(
+                textLayoutResult = yearLabelLayout,
+                topLeft = Offset(
+                    x + (barWidth - yearLabelLayout.size.width) / 2,
+                    paddingTop + chartHeight + 4.dp.toPx()
+                )
+            )
+
+            // Draw highlight text if this is the highlighted bar
+            if (index == highlightIndex && highlightValueText != null) {
+                val highlightTextLayout = textMeasurer.measure(
+                    text = AnnotatedString(highlightValueText),
+                    style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = highlightColor)
+                )
+                drawText(
+                    textLayoutResult = highlightTextLayout,
+                    topLeft = Offset(
+                        x + (barWidth - highlightTextLayout.size.width) / 2,
+                        y - highlightTextLayout.size.height - 4.dp.toPx()
+                    )
+                )
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable

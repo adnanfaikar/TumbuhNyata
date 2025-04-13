@@ -129,7 +129,7 @@ fun DashboardScreen(navController: NavController) {
                 // Water Usage KPI
                 item {
                     KPIItem(
-                        title = "Water Usage",
+                        title = "Penggunaan Air",
                         topIcon = R.drawable.ic_penggunaanair,
                         statusText = "85% target",
                         statusPercentage = "▼ 3%",
@@ -144,7 +144,7 @@ fun DashboardScreen(navController: NavController) {
                 // Energy Consumption KPI
                 item {
                     KPIItem(
-                        title = "Energy Usage",
+                        title = "Konsumsi Energi",
                         topIcon = R.drawable.ic_konsumsienergi,
                         statusText = "92% target",
                         statusPercentage = "▲ 2%",
@@ -159,7 +159,7 @@ fun DashboardScreen(navController: NavController) {
                 // Waste Management KPI
                 item {
                     KPIItem(
-                        title = "Waste",
+                        title = "Pengelolaan Sampah",
                         topIcon = R.drawable.ic_pengelolaansampah,
                         statusText = "78% target",
                         statusPercentage = "▼ 7%",
@@ -174,7 +174,7 @@ fun DashboardScreen(navController: NavController) {
                 // Biodiversity Score KPI
                 item {
                     KPIItem(
-                        title = "Biodiversity",
+                        title = "Pohon Tertanam",
                         topIcon = R.drawable.ic_pohontertanam,
                         statusText = "95% target",
                         statusPercentage = "▲ 8%",
@@ -189,7 +189,7 @@ fun DashboardScreen(navController: NavController) {
                 // Sustainability Index KPI
                 item {
                     KPIItem(
-                        title = "Sustainability",
+                        title = "Penerima Manfaat",
                         topIcon = R.drawable.ic_penerimamanfaat,
                         statusText = "90% target",
                         statusPercentage = "▲ 4%",

@@ -109,7 +109,7 @@ fun ProfileScreen(navController: NavController) {
             ProfileOption("Verifikasi Akun", R.drawable.ic_verification_account, R.drawable.arrow_option, onClick = { navController.navigate("verification_one") })
             ProfileOption("Ganti Password", R.drawable.ic_change_password, R.drawable.arrow_option, onClick = {})
             ProfileOption("Bantuan dan Dukungan", R.drawable.ic_help_support, R.drawable.arrow_option, onClick ={})
-            ProfileOption("Bahasa", R.drawable.ic_langauge, R.drawable.arrow_option, onClick = {})
+            ProfileOption("Bahasa", R.drawable.ic_language, R.drawable.arrow_option, onClick = {})
             ProfileOption("Tentang Aplikasi", R.drawable.ic_about, R.drawable.arrow_option, onClick = { navController.navigate("about") })
 
             Spacer(modifier = Modifier.height(20.dp))

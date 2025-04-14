@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.dashboard.upload // Adjust package if needed
+package com.example.tumbuhnyata.ui.dashboard.upload
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,8 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,12 +22,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
-import com.example.tumbuhnyata.ui.dashboard.upload.components.DocumentUploadItem // Import reusable item
-import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily // Assuming you have this font defined
+import com.example.tumbuhnyata.ui.dashboard.upload.components.DocumentUploadItem
+import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
-// Data class to represent an upload item configuration
+
 data class UploadConfig(
-    val id: String, // Unique ID for state management
+    val id: String,
     val label: String,
     val placeholder: String
 )
@@ -38,7 +36,7 @@ data class UploadConfig(
 @Composable
 fun UploadDataScreen(navController: NavController) {
 
-    // Define the list of documents to upload
+
     val uploadItemsConfig = remember {
         listOf(
             UploadConfig(id = "laporan_csr", label = "Laporan CSR", placeholder = "Laporan"),
@@ -48,10 +46,8 @@ fun UploadDataScreen(navController: NavController) {
         )
     }
 
-    // State to hold the selected file names, using a map for scalability
     val selectedFiles = remember { mutableStateMapOf<String, String?>() }
 
-    // Derived state to check if all items have a selected file
     val isUploadEnabled by remember {
         derivedStateOf {
             uploadItemsConfig.all { config -> selectedFiles[config.id] != null }
@@ -61,7 +57,6 @@ fun UploadDataScreen(navController: NavController) {
     Scaffold(
         containerColor = Color.White,
         topBar = {
-            // Top App Bar
             TopAppBar(
                 title = {
                     Text(
@@ -94,7 +89,6 @@ fun UploadDataScreen(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    // Make TopAppBar background transparent to show Scaffold surface color
                     containerColor = Color.Transparent,
                     titleContentColor = Color.Black,
                     navigationIconContentColor = Color.White
@@ -102,22 +96,20 @@ fun UploadDataScreen(navController: NavController) {
             )
         },
         bottomBar = {
-            // Button placed in bottomBar for fixed position
             Button(
-                onClick = { navController.navigate("upload_success") }, // Navigate on click
-                enabled = isUploadEnabled, // Enable based on state
+                onClick = { navController.navigate("upload_success") },
+                enabled = isUploadEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp) // Padding around button
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
-                    // Updated colors based on requirements
-                    containerColor = Color(0xFF27361F), // Enabled color - dark green
-                    contentColor = Color(0xFFFAFAFA), // Enabled text color - light gray/white
-                    disabledContainerColor = Color(0xFF989898), // Disabled color - gray
-                    disabledContentColor = Color(0xFFFAFAFA) // Disabled text color - light gray/white
+                    containerColor = Color(0xFF27361F),
+                    contentColor = Color(0xFFFAFAFA),
+                    disabledContainerColor = Color(0xFF989898),
+                    disabledContentColor = Color(0xFFFAFAFA)
                 ),
-                shape = RoundedCornerShape(10.dp) // Updated corner radius to 10dp
+                shape = RoundedCornerShape(10.dp)
             ) {
                 Text(
                     text = "Unggah Data",
@@ -130,10 +122,10 @@ fun UploadDataScreen(navController: NavController) {
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues) // Apply padding from Scaffold (excluding bottomBar)
-                .padding(horizontal = 16.dp) // Horizontal padding for content
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()) // Make content scrollable
+                .verticalScroll(rememberScrollState()) 
         ) {
 
             Text(
@@ -146,33 +138,30 @@ fun UploadDataScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Instruction Text
             Text(
                 text = "* Pastikan semua dokumen yang anda unggah merupakan dokumen yang belum pernah tercatat pada Tumbuh Nyata agar tidak terjadi tumpang tindih data",
                 fontFamily = PoppinsFontFamily,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant, // Slightly dimmer text
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Generate Upload Items dynamically
             uploadItemsConfig.forEach { config ->
                 DocumentUploadItem(
                     label = config.label,
                     placeholderText = config.placeholder,
                     selectedFileName = selectedFiles[config.id],
                     onSelectClick = {
-                        // Simulate file selection - replace with actual file picker logic
                         selectedFiles[config.id] = "${config.label.replace(" ", "_")}_${System.currentTimeMillis()}.pdf"
                     },
                     onRemoveClick = {
                         selectedFiles[config.id] = null
                     },
-                    modifier = Modifier.padding(bottom = 16.dp) // Space between upload items
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp)) // Add space at the bottom before button area
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -180,6 +169,5 @@ fun UploadDataScreen(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 private fun UploadDataScreenPreview() {
-    // Wrap in a theme if needed, e.g., YourAppTheme { ... }
     UploadDataScreen(navController = rememberNavController())
 }

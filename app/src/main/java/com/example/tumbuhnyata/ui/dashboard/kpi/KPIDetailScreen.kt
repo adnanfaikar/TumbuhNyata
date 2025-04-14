@@ -35,42 +35,27 @@ import androidx.compose.ui.res.painterResource
 import kotlin.math.roundToInt
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
-import kotlinx.coroutines.runBlocking
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer // Use wildcard import for cartesian functions
-import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.compose.common.shape.markerCorneredShape
-import com.patrykandpatrick.vico.core.cartesian.marker.CartesianMarker
-import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 import com.example.tumbuhnyata.ui.dashboard.kpi.components.VicoLineChart
+import com.example.tumbuhnyata.ui.dashboard.kpi.components.VicoBarChart
+import kotlinx.coroutines.runBlocking
 
 
-// Enhanced data class for KPI details with all related data
+
 data class KpiDetails(
     val id: String,
     val title: String,
     val unit: String,
-    val yearlyChartData: List<Float>, // Monthly data points for yearly view
-    val fiveYearChartData: List<Float>, // Yearly data points for 5-year view
+    val yearlyChartData: List<Float>,
+    val fiveYearChartData: List<Float>,
     val averageValue: String,
     val minValue: String,
     val analysis: String
 )
 
-// Function to get placeholder data based on ID
 fun getKpiDetails(kpiId: String): KpiDetails {
-    // PLACEHOLDER DATA - Replace with real data from API/database in the future
     return when (kpiId) {
         "carbon_footprint" -> KpiDetails(
             id = kpiId,
@@ -132,7 +117,6 @@ fun getKpiDetails(kpiId: String): KpiDetails {
             minValue = "120",
             analysis = "Jumlah penerima manfaat meningkat secara konsisten dengan pertumbuhan 15% per bulan. Program pemberdayaan masyarakat menunjukkan dampak positif berkelanjutan."
         )
-        // Keep compatibility with old IDs
         "energy_consumption" -> getKpiDetails("energy_usage")
         "trees_planted" -> getKpiDetails("biodiversity")
         "waste_management" -> getKpiDetails("waste")
@@ -141,7 +125,7 @@ fun getKpiDetails(kpiId: String): KpiDetails {
             id = kpiId,
             title = "Detail KPI",
             unit = "unit",
-            yearlyChartData = List(12) { 50f + (it * 5f) }, // Generic increasing data
+            yearlyChartData = List(12) { 50f + (it * 5f) },
             fiveYearChartData = List(5) { 500f + (it * 100f) },
             averageValue = "100",
             minValue = "50",
@@ -156,40 +140,38 @@ fun KpiDetailScreen(
     navController: NavController,
     kpiId: String
 ) {
-    // --- State ---
+
     val kpiDetails = remember(kpiId) { getKpiDetails(kpiId) }
     var selectedFilter by remember { mutableStateOf("Tahunan") }
     val filterOptions = listOf("Tahunan", "5 Tahun")
     var selectedYear by remember { mutableStateOf(2025) }
 
-    // Get chart data based on selected filter
-    val chartData = remember(selectedFilter, selectedYear, kpiDetails) {
+
+    val lineModelProducer = remember { CartesianChartModelProducer() }
+    val columnModelProducer = remember { CartesianChartModelProducer() }
+
+    LaunchedEffect(kpiDetails.yearlyChartData, selectedFilter) {
         if (selectedFilter == "Tahunan") {
-            kpiDetails.yearlyChartData
-        } else {
-            kpiDetails.fiveYearChartData
+            println("Updating Line Chart data: ${kpiDetails.yearlyChartData}")
+            lineModelProducer.runTransaction {
+                lineSeries {
+                    series(kpiDetails.yearlyChartData.map { it.toDouble() })
+                }
+            }
         }
     }
 
-    // Determine highlight data - different for yearly vs 5-year
-    val highlightIndex = remember(selectedFilter) {
-        if (selectedFilter == "Tahunan") 6 else 3 // Highlight July for monthly, 4th year for 5-year
-    }
-
-    val highlightValueText = remember(selectedFilter, kpiDetails, highlightIndex) {
-        val value = if (selectedFilter == "Tahunan") {
-            kpiDetails.yearlyChartData.getOrNull(highlightIndex) ?: 0f
-        } else {
-            kpiDetails.fiveYearChartData.getOrNull(highlightIndex) ?: 0f
+    LaunchedEffect(kpiDetails.fiveYearChartData, selectedFilter) {
+        if (selectedFilter == "5 Tahun") {
+            println("Updating Column Chart data: ${kpiDetails.fiveYearChartData}")
+            columnModelProducer.runTransaction {
+                columnSeries {
+                    series(kpiDetails.fiveYearChartData.map { it.toDouble() })
+                }
+            }
         }
-        "${value.roundToInt()} ${kpiDetails.unit}"
     }
 
-    // Needed for drawing text on Canvas
-    val textMeasurer = rememberTextMeasurer()
-    val density = LocalDensity.current
-
-    // --- UI ---
     Scaffold(
         containerColor = Color.White,
         topBar = {
@@ -239,7 +221,6 @@ fun KpiDetailScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Filter Switch ---
             KpiFilterSwitch(
                 options = filterOptions,
                 selectedOption = selectedFilter,
@@ -251,7 +232,6 @@ fun KpiDetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Year Selector ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -261,76 +241,45 @@ fun KpiDetailScreen(
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous Year")
                 }
                 Text(
-                    text = selectedYear.toString(),
+                    text = if (selectedFilter == "Tahunan") selectedYear.toString() else "5 Tahun Terakhir",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                IconButton(onClick = { selectedYear++ }) {
+                IconButton(onClick = { selectedYear++ }, enabled = selectedFilter == "Tahunan") {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next Year")
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Chart Section ---
             Text(
-                text = kpiDetails.title,
+                text = if (selectedFilter == "Tahunan") "Tren ${kpiDetails.title} Tahunan" else "Tren ${kpiDetails.title} 5 Tahun",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // --- Chart ---
-            if (selectedFilter == "Tahunan") {
-                // Create a model producer for the line chart
-                val lineModelProducer = remember { CartesianChartModelProducer() }
-
-                // Update chart data when needed
-                LaunchedEffect(kpiDetails.yearlyChartData) {
-                    println("Line Chart data: ${kpiDetails.yearlyChartData}") // Debug print
-                    lineModelProducer.runTransaction {
-                        lineSeries {
-                            series(kpiDetails.yearlyChartData.map { it.toDouble() })
-                        }
-                    }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                if (selectedFilter == "Tahunan") {
+                    VicoLineChart(
+                        modelProducer = lineModelProducer,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    VicoBarChart(
+                        modelProducer = columnModelProducer,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
-
-                // Display the decoupled line chart component
-                VicoLineChart(
-                    modelProducer = lineModelProducer,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-//                        .border(1.dp, Color.Red) // Optional: Keep border for debugging layout
-                )
-
-            } else { // 5 Tahun filter
-                // Create a model producer for the column chart
-                val columnModelProducer = remember { CartesianChartModelProducer() }
-
-                // Update chart data when needed
-                LaunchedEffect(kpiDetails.fiveYearChartData) {
-                    println("Column Chart data: ${kpiDetails.fiveYearChartData}") // Debug print
-                    columnModelProducer.runTransaction {
-                        columnSeries { // Use columnSeries for bar chart
-                            series(kpiDetails.fiveYearChartData.map { it.toDouble() })
-                        }
-                    }
-                }
-
-                // Display the basic column chart (still defined in this file)
-                JetpackComposeBasicColumnChart(
-                    modelProducer = columnModelProducer,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .border(1.dp, Color.Blue) // Changed border color for distinction
-                )
             }
+
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- Tambah Data Button ---
             Button(
                 onClick = { navController.navigate("upload_data") },
                 modifier = Modifier
@@ -345,13 +294,11 @@ fun KpiDetailScreen(
                 ),
                 shape = RoundedCornerShape(50)
             ) {
-                // Use Box to create an Icon that ignores the Button's contentColor
                 Box {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_tambahdata),
                         contentDescription = "Add Data",
                         modifier = Modifier.size(ButtonDefaults.IconSize),
-                        // Override tinting by forcing null tint
                         tint = Color.Unspecified
                     )
                 }
@@ -361,7 +308,6 @@ fun KpiDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- Statistics Capsules ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -384,7 +330,6 @@ fun KpiDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- Analysis Section ---
             Text(
                 text = "Analisis",
                 style = MaterialTheme.typography.titleMedium,
@@ -399,42 +344,56 @@ fun KpiDetailScreen(
     }
 }
 
-// --- Keep the Column Chart Composable here for now ---
 @Composable
-private fun JetpackComposeBasicColumnChart(
-    modelProducer: CartesianChartModelProducer,
+fun KpiStatCapsule(
     modifier: Modifier = Modifier,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    value: String,
+    unit: String,
+    label: String
 ) {
-    CartesianChartHost(
-        chart =
-        rememberCartesianChart(
-            rememberColumnCartesianLayer(),
-            startAxis = VerticalAxis.rememberStart(),
-            bottomAxis = HorizontalAxis.rememberBottom(),
-        ),
-        modelProducer = modelProducer,
+    Card(
         modifier = modifier,
-    )
-}
-
-// Public version that creates its own model producer (Can be removed if not used elsewhere)
-@Composable
-fun JetpackComposeBasicColumnChart(modifier: Modifier = Modifier) {
-    val modelProducer = remember { CartesianChartModelProducer() }
-    LaunchedEffect(Unit) {
-        modelProducer.runTransaction {
-            // Learn more: https://patrykandpatrick.com/eji9zq.
-            columnSeries { series(5, 6, 5, 2, 11, 8, 5, 2, 15, 11, 8, 13, 12, 10, 2, 7) }
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = Color(0xFF27361F),
+                modifier = Modifier.size(24.dp)
+            )
+            Column {
+                Text(
+                    text = "$value $unit",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = label,
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
-    JetpackComposeBasicColumnChart(modelProducer, modifier)
 }
+
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun KpiDetailScreenPreview() {
     KpiDetailScreen(
         navController = rememberNavController(),
-        kpiId = "carbon_footprint" // Example ID for preview
+        kpiId = "carbon_footprint"
     )
 }
+
+

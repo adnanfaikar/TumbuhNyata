@@ -1,20 +1,10 @@
 package com.example.tumbuhnyata.ui.dashboard.kpi.components
 
-/*
- * Copyright 2025 by Patryk Goworowski and Patrick Michalik.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Adapted from Vico Compose sample code.
+// Original copyright © 2025 Patryk Goworowski and Patrick Michalik.
+// Licensed under Apache 2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -23,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.* // Use wildcard import for cartesian functions
+import com.patrykandpatrick.vico.compose.cartesian.* 
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
@@ -38,8 +28,6 @@ import kotlinx.coroutines.runBlocking
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-
-// Imports needed for the custom rememberMarker function
 import android.text.Layout
 import androidx.compose.material3.MaterialTheme
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
@@ -56,47 +44,34 @@ import com.patrykandpatrick.vico.core.common.component.ShapeComponent
 import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 
-/**
- * Internal composable to display the configured Vico line chart.
- * Takes a modelProducer to dynamically update data.
- */
 @Composable
 internal fun VicoLineChart(
     modelProducer: CartesianChartModelProducer,
     modifier: Modifier = Modifier,
 ) {
-    // Define the line style using the Vico 2.0 API
     val line = LineCartesianLayer.rememberLine(
-        // Use LineFill.single with the fill() helper for color
-        fill = LineCartesianLayer.LineFill.single(fill(Color(0xFF27361F))), 
-        // Set thickness directly on rememberLine
-//        thickness = 3.dp,
-        areaFill = null // No area fill for now
+        fill = LineCartesianLayer.LineFill.single(fill(Color(0xFF27361F))),
+        areaFill = null
     )
 
     CartesianChartHost(
         chart = rememberCartesianChart(
             rememberLineCartesianLayer(
-                lineProvider = LineCartesianLayer.LineProvider.series(line) // Apply the line style
+                lineProvider = LineCartesianLayer.LineProvider.series(line)
             ),
             startAxis = VerticalAxis.rememberStart(),
             bottomAxis = HorizontalAxis.rememberBottom(),
-            marker = rememberMarker() // Use the custom marker
+            marker = rememberMarker()
         ),
         modelProducer = modelProducer,
         modifier = modifier
     )
 }
 
-/**
- * Preview function for the VicoLineChart component.
- * Uses static data for preview purposes.
- */
 @Preview(showBackground = true)
 @Composable
 private fun VicoLineChartPreview() {
     val modelProducer = remember { CartesianChartModelProducer() }
-    // Use runBlocking for preview data loading
     runBlocking {
         modelProducer.runTransaction {
             lineSeries { series(13, 8, 7, 12, 0, 1, 15, 14, 0, 11, 6, 12, 0, 11, 12, 11) }
@@ -107,7 +82,6 @@ private fun VicoLineChartPreview() {
     }
 }
 
-// Paste the custom rememberMarker function here
 @Composable
 internal fun rememberMarker(
     valueFormatter: DefaultCartesianMarker.ValueFormatter =

@@ -7,7 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar // Import Material 3 TopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,23 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController // Use rememberNavController for preview
-import com.example.tumbuhnyata.R // Make sure this matches your project's R file package
-import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily // Assuming you have this font defined
+import androidx.navigation.compose.rememberNavController
+import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Info
 import com.example.tumbuhnyata.ui.dashboard.components.KPIItem
 import androidx.compose.material3.Scaffold
 
@@ -39,14 +37,12 @@ import androidx.compose.material3.Scaffold
 @Composable
 fun DashboardScreen(navController: NavController) {
     Scaffold(
-        containerColor = Color.White,// Use Scaffold to apply theme background and structure
+        containerColor = Color.White,
         topBar = {
-            // Top App Bar
             TopAppBar(
                 title = {
                     Text(
                         text = "Dashboard",
-//                    modifier = Modifier.padding(start = 20.dp),
                         fontFamily = PoppinsFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 25.sp,
@@ -75,24 +71,19 @@ fun DashboardScreen(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    // Make TopAppBar background transparent to show Scaffold surface color
                     containerColor = Color.Transparent,
                     titleContentColor = Color.Black,
                     navigationIconContentColor = Color.White
                 )
             )
         }
-    ) { paddingValues -> // Content lambda provides padding
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Apply padding from Scaffold
-                // .verticalScroll(rememberScrollState()) // Optional: Add if content exceeds screen
-        ) {
-            // Remove the TopAppBar from here, it's now in Scaffold's topBar
-            // Spacer(modifier = Modifier.height(8.dp)) // Adjust or remove spacing as needed after moving TopAppBar
+                .padding(paddingValues)
 
-            // KPI Section Title
+        ) {
             Text(
                 "KPI (Key Performance Indicator)",
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -111,7 +102,7 @@ fun DashboardScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Carbon Footprint KPI
+                // Carbon Footprint
                 item {
                     KPIItem(
                         title = "Carbon Footprint",
@@ -126,7 +117,7 @@ fun DashboardScreen(navController: NavController) {
                     )
                 }
 
-                // Water Usage KPI
+                // Penggunaan Air
                 item {
                     KPIItem(
                         title = "Penggunaan Air",
@@ -141,7 +132,7 @@ fun DashboardScreen(navController: NavController) {
                     )
                 }
 
-                // Energy Consumption KPI
+                // Konsumsi Energi
                 item {
                     KPIItem(
                         title = "Konsumsi Energi",
@@ -156,7 +147,7 @@ fun DashboardScreen(navController: NavController) {
                     )
                 }
 
-                // Waste Management KPI
+                // Pengelolaan Sampah
                 item {
                     KPIItem(
                         title = "Pengelolaan Sampah",
@@ -171,7 +162,7 @@ fun DashboardScreen(navController: NavController) {
                     )
                 }
 
-                // Biodiversity Score KPI
+                // Pohon Tertanam
                 item {
                     KPIItem(
                         title = "Pohon Tertanam",
@@ -186,7 +177,7 @@ fun DashboardScreen(navController: NavController) {
                     )
                 }
 
-                // Sustainability Index KPI
+                // Penerima Manfaat
                 item {
                     KPIItem(
                         title = "Penerima Manfaat",
@@ -205,12 +196,9 @@ fun DashboardScreen(navController: NavController) {
     }
 }
 
-// Removed the custom TopAppBar function definition as we are using the Material 3 one
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF) // Set preview background to white
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DashboardScreenPreview() {
-    // Use rememberNavController() for previewing Composables that need a NavController
-    // In a real app, this NavController would be provided by your NavHost
     DashboardScreen(navController = rememberNavController())
 }

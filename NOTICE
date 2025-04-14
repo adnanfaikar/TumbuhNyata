@@ -1,0 +1,13 @@
+NOTICE
+
+This project uses and adapts code from the following open-source library:
+
+Vico (https://github.com/patrykandpatrick/vico)
+Copyright © 2025 Patryk Goworowski and Patrick Michalik
+Licensed under the Apache License, Version 2.0
+
+Specifically, the `rememberMarker` function used in our chart component
+was adapted from the Vico Compose sample code.
+
+For the full license text, see LICENSE or visit:
+https://www.apache.org/licenses/LICENSE-2.0

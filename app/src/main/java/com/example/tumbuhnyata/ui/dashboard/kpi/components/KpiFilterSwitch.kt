@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.dashboard.kpi.components // Package based on your structure
+package com.example.tumbuhnyata.ui.dashboard.kpi.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,20 +17,20 @@ fun KpiFilterSwitch(
     options: List<String>,
     selectedOption: String,
     onOptionSelected: (String) -> Unit,
-    selectedBackgroundColor: Color = MaterialTheme.colorScheme.primary, // Color for selected button
-    selectedContentColor: Color = MaterialTheme.colorScheme.onPrimary, // Text color for selected
-    unselectedBackgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant, // Color for unselected
-    unselectedContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant // Text color for unselected
+    selectedBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    selectedContentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    unselectedBackgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    unselectedContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
-    Surface( // Use Surface for background and shape
+    Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(50), // Capsule shape
-        color = unselectedBackgroundColor, // Base background
-        tonalElevation = 2.dp // Slight elevation
+        shape = RoundedCornerShape(50),
+        color = unselectedBackgroundColor,
+        tonalElevation = 2.dp
     ) {
         Row(
             modifier = Modifier
-                .padding(4.dp) // Padding inside the surface
+                .padding(4.dp)
                 .fillMaxWidth()
         ) {
             options.forEach { option ->
@@ -38,20 +38,20 @@ fun KpiFilterSwitch(
                 Button(
                     onClick = { onOptionSelected(option) },
                     modifier = Modifier
-                        .weight(1f) // Each button takes equal space
-                        .height(36.dp), // Fixed height for buttons
-                    shape = RoundedCornerShape(50), // Match capsule shape
+                        .weight(1f)
+                        .height(36.dp),
+                    shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) selectedBackgroundColor else Color.Transparent, // Selected color or transparent
+                        containerColor = if (isSelected) selectedBackgroundColor else Color.Transparent,
                         contentColor = if (isSelected) selectedContentColor else unselectedContentColor
                     ),
-                    elevation = null, // No elevation for individual buttons
-                    contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding
+                    elevation = null,
+                    contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
                     Text(
                         text = option,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        fontSize = 12.sp // Adjust font size
+                        fontSize = 12.sp
                     )
                 }
             }

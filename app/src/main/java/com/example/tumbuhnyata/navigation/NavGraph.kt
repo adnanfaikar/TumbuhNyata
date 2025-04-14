@@ -1,9 +1,12 @@
 package com.example.tumbuhnyata.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.tumbuhnyata.ui.eventcsr.CsrData
 import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.login.LoginScreen
@@ -15,6 +18,10 @@ import com.example.tumbuhnyata.ui.screens.OptionScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
+import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
+import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
+import com.example.tumbuhnyata.ui.eventcsr.CsrSuccessScreen
+import com.google.gson.Gson
 
 @Composable
 fun AppNavigation() {
@@ -28,16 +35,16 @@ fun AppNavigation() {
             SplashScreen(navController)
         }
         composable("onboarding") {
-            OnboardingScreen1 (navController)
+            OnboardingScreen1(navController)
         }
         composable("onboarding2") {
-            OnboardingScreen2 (navController)
+            OnboardingScreen2(navController)
         }
         composable("onboarding3") {
-            OnboardingScreen3 (navController)
+            OnboardingScreen3(navController)
         }
         composable("option") {
-            OptionScreen (navController)
+            OptionScreen(navController)
         }
         composable("home") {
             HomeScreen(navController)
@@ -49,13 +56,29 @@ fun AppNavigation() {
             RegisterScreen(navController)
         }
         composable("verifikasi") {
-            VerifikasiScreen (navController)
+            VerifikasiScreen(navController)
         }
         composable("otp") {
-            OtpScreen (navController)
+            OtpScreen(navController)
         }
         composable("akunberhasil") {
-            AkunBerhasil (navController)
+            AkunBerhasil(navController)
+        }
+        composable("csr_submission") {
+            CsrSubmissionScreen(navController)
+        }
+        composable(
+            route = "csr_verification/{csrData}",
+            arguments = listOf(
+                navArgument("csrData") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val csrDataJson = backStackEntry.arguments?.getString("csrData") ?: ""
+            val csrData = Gson().fromJson(csrDataJson, CsrData::class.java)
+            CsrVerificationScreen(navController = navController, csrData = csrData)
+        }
+        composable("csr_success") {
+            CsrSuccessScreen(navController)
         }
     }
 }

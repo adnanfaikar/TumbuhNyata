@@ -324,7 +324,7 @@ fun StepOne(onNext: () -> Unit) {
 
         //alamat perusahaan
         OutlinedTextField(
-            value = nib,
+            value = companyName,
             onValueChange = { newValue ->
                 if (newValue.all { it.isDigit() } && newValue.length <= 13) {
                     nib = newValue

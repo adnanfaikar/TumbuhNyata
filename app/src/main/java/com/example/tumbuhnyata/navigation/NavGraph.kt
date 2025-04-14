@@ -7,6 +7,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.login.LoginScreen
+import com.example.tumbuhnyata.ui.notifikasi.NotifikasiDetailScreen
+import com.example.tumbuhnyata.ui.notifikasi.NotifikasiScreen
 import com.example.tumbuhnyata.ui.register.AkunBerhasil
 import com.example.tumbuhnyata.ui.register.OtpScreen
 import com.example.tumbuhnyata.ui.register.RegisterScreen
@@ -22,22 +24,22 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "splash" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)
         }
         composable("onboarding") {
-            OnboardingScreen1 (navController)
+            OnboardingScreen1(navController)
         }
         composable("onboarding2") {
-            OnboardingScreen2 (navController)
+            OnboardingScreen2(navController)
         }
         composable("onboarding3") {
-            OnboardingScreen3 (navController)
+            OnboardingScreen3(navController)
         }
         composable("option") {
-            OptionScreen (navController)
+            OptionScreen(navController)
         }
         composable("home") {
             HomeScreen(navController)
@@ -49,13 +51,19 @@ fun AppNavigation() {
             RegisterScreen(navController)
         }
         composable("verifikasi") {
-            VerifikasiScreen (navController)
+            VerifikasiScreen(navController)
         }
         composable("otp") {
-            OtpScreen (navController)
+            OtpScreen(navController)
         }
         composable("akunberhasil") {
-            AkunBerhasil (navController)
+            AkunBerhasil(navController)
+        }
+        composable("notifikasi") {
+            NotifikasiScreen(navController = navController)
+        }
+        composable("notifikasi_detail") {
+            NotifikasiDetailScreen(navController = navController)
         }
     }
 }

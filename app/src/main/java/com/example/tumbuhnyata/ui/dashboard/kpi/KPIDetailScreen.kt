@@ -6,7 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
@@ -41,8 +40,6 @@ import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.example.tumbuhnyata.ui.dashboard.kpi.components.VicoLineChart
 import com.example.tumbuhnyata.ui.dashboard.kpi.components.VicoBarChart
 import kotlinx.coroutines.runBlocking
-
-
 
 data class KpiDetails(
     val id: String,
@@ -140,12 +137,10 @@ fun KpiDetailScreen(
     navController: NavController,
     kpiId: String
 ) {
-
     val kpiDetails = remember(kpiId) { getKpiDetails(kpiId) }
     var selectedFilter by remember { mutableStateOf("Tahunan") }
     val filterOptions = listOf("Tahunan", "5 Tahun")
     var selectedYear by remember { mutableStateOf(2025) }
-
 
     val lineModelProducer = remember { CartesianChartModelProducer() }
     val columnModelProducer = remember { CartesianChartModelProducer() }
@@ -277,7 +272,6 @@ fun KpiDetailScreen(
                 }
             }
 
-
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
@@ -314,14 +308,14 @@ fun KpiDetailScreen(
             ) {
                 KpiStatCapsule(
                     modifier = Modifier.weight(1f),
-                    icon = Icons.Filled.TrendingUp,
+                    icon = painterResource(id = R.drawable.ic_tachometer_average),
                     value = kpiDetails.averageValue,
                     unit = kpiDetails.unit,
                     label = "Rata-rata"
                 )
                 KpiStatCapsule(
                     modifier = Modifier.weight(1f),
-                    icon = Icons.Filled.Info,
+                    icon = painterResource(id = R.drawable.angle_double_small_down),
                     value = kpiDetails.minValue,
                     unit = kpiDetails.unit,
                     label = "Terkecil"
@@ -344,49 +338,6 @@ fun KpiDetailScreen(
     }
 }
 
-@Composable
-fun KpiStatCapsule(
-    modifier: Modifier = Modifier,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    value: String,
-    unit: String,
-    label: String
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = Color(0xFF27361F),
-                modifier = Modifier.size(24.dp)
-            )
-            Column {
-                Text(
-                    text = "$value $unit",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
-                Text(
-                    text = label,
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-        }
-    }
-}
-
-
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun KpiDetailScreenPreview() {
@@ -395,5 +346,3 @@ private fun KpiDetailScreenPreview() {
         kpiId = "carbon_footprint"
     )
 }
-
-

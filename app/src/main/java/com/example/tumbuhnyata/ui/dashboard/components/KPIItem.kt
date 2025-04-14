@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.dashboard.components // Adjust package if needed
+package com.example.tumbuhnyata.ui.dashboard.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowUpward // Placeholder for status icon
-import androidx.compose.material.icons.filled.Info // Placeholder for top-right icon
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -21,7 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush // Import Brush
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tumbuhnyata.R // Make sure this matches your project's R file package
+import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
@@ -40,168 +41,187 @@ fun KPIItem(
     title: String,
     @DrawableRes topIcon: Int,
     statusText: String,
-    statusPercentage: String,
-    statusIcon: ImageVector,
+    statusPercentageValue: String,
+    isUp: Boolean,
     value: String,
     unit: String,
     targetLabel: String = "Target:",
     targetValue: String,
     contentColor: Color = Color.White,
-    mainValueColor: Color = Color(0xFFE6FD4B), // Added specific color for main value
+    mainValueColor: Color = Color(0xFFE6FD4B),
     statusBackgroundColor: Color = Color.White.copy(alpha = 0.15f),
-    statusIndicatorColor: Color = Color(0xFF8BC34A),
+    arrowDownColor: Color = Color.Red,
     onClick: () -> Unit
 ) {
-    // Define gradient colors
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF5A7C47), Color(0xFF415A33))
     )
-    // Define card shape
-    val cardShape = RoundedCornerShape(10.dp) // 10px radius
+    val cardShape = RoundedCornerShape(10.dp)
+
+    val dynamicStatusIndicatorColor = if (statusText.trim() == "100% target") {
+        Color(0xFF8BC34A)
+    } else {
+        Color(0xFFE2C731)
+    }
+
+    val arrowIcon = if (isUp) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward
+    val arrowColor = if (isUp) contentColor else arrowDownColor
 
     Card(
         modifier = modifier
-            .size(width = 169.dp, height = 198.dp) // Apply fixed size
-            .background(brush = gradientBrush, shape = cardShape) // Apply gradient background with matching shape
+            .size(width = 169.dp, height = 198.dp)
+            .background(brush = gradientBrush, shape = cardShape)
             .clickable(onClick = onClick),
-        shape = cardShape, // Apply shape to card
+        shape = cardShape,
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent, // Make container transparent to show gradient
-            contentColor = contentColor // Default color for most text/icons
+            containerColor = Color.Transparent,
+            contentColor = contentColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // Set elevation to 0dp to remove shadow/outline
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
-                // Apply specific padding: 14px top, 18px sides, 14px bottom
                 .padding(start = 14.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
-                .fillMaxHeight(), // Fill height to allow arrangement
-            verticalArrangement = Arrangement.spacedBy(10.dp) // 10px gap between most elements
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // --- Top Row (Title + Icon) ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = title,
-                    fontSize = 10.sp, // 10px font size
+                    fontSize = 10.sp,
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold
-                    // Inherits default contentColor (White)
                 )
                 Spacer(Modifier.weight(1f))
                 Icon(
                     painter = painterResource(id = topIcon),
                     contentDescription = "$title icon",
                     modifier = Modifier.size(14.dp)
-                    // Inherits default contentColor (White)
                 )
             }
 
-            // --- Divider ---
             HorizontalDivider(
-                thickness = 1.dp, // Keep divider thin
+                thickness = 1.dp,
                 color = contentColor.copy(alpha = 0.5f)
             )
 
-            // --- Status Row ---
             Box(
-                modifier = Modifier.fillMaxWidth(), // Box takes full width
-                contentAlignment = Alignment.Center // Center content (the Surface)
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
                 Surface(
-                    modifier = Modifier.size(width = 144.dp, height = 25.dp),
-                    shape = RoundedCornerShape(50), // Keep capsule shape
+                    modifier = Modifier.height(25.dp),
+                    shape = RoundedCornerShape(50),
                     color = statusBackgroundColor,
-                    contentColor = contentColor // Content (text/icons) inside Surface uses this
+                    contentColor = contentColor
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 12.dp), // Adjust padding if needed
+                        modifier = Modifier.padding(horizontal = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(8.dp) // Keep circle small
-                                .background(statusIndicatorColor, CircleShape)
+                                .size(8.dp)
+                                .background(dynamicStatusIndicatorColor, CircleShape)
                         )
                         Text(
                             text = statusText,
                             fontFamily = PoppinsFontFamily,
-                            fontSize = 10.sp // 10px font size inside status
+                            fontSize = 10.sp
                         )
                         Spacer(Modifier.weight(1f))
-                        Text(
-                            text = statusPercentage,
-                            fontFamily = PoppinsFontFamily,
-                            fontSize = 10.sp // 10px font size inside status
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Icon(
+                                imageVector = arrowIcon,
+                                contentDescription = if (isUp) "Arrow Up" else "Arrow Down",
+                                modifier = Modifier.size(12.dp),
+                                tint = arrowColor
+                            )
+                            Text(
+                                text = statusPercentageValue,
+                                fontFamily = PoppinsFontFamily,
+                                fontSize = 10.sp,
+                                color = contentColor
+                            )
+                        }
                     }
                 }
             }
 
-            // --- Spacer for extra gap ---
-            // Added Spacer for explicit control over the gap below the status row
-            Spacer(Modifier.height(8.dp)) // Adjust height as needed (e.g., 8.dp, 12.dp, 16.dp)
+            Spacer(Modifier.height(8.dp))
 
-            // --- Value Row ---
             Row(
                 verticalAlignment = Alignment.Bottom
             ) {
                 Text(
                     text = value,
-                    fontSize = 25.sp, // 25px font size for main value
+                    fontSize = 25.sp,
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
-                    lineHeight = 26.sp, // Adjust line height close to font size
-                    color = mainValueColor // Apply specific color here
+                    lineHeight = 26.sp,
+                    color = mainValueColor
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = unit,
                     fontFamily = PoppinsFontFamily,
-                    fontSize = 10.sp, // Make unit smaller, 10px
-                    modifier = Modifier.padding(bottom = 2.dp) // Adjust alignment padding
-                    // Inherits default contentColor (White)
+                    fontSize = 10.sp,
+                    modifier = Modifier.padding(bottom = 2.dp)
                 )
             }
 
-            // --- Target Section (Label + Value below) ---
             Column {
                 Text(
                     text = targetLabel,
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp // 12px font size for target label
-                    // Inherits default contentColor (White)
+                    fontSize = 12.sp
                 )
                 Text(
                     text = targetValue,
                     fontFamily = PoppinsFontFamily,
-                    fontSize = 10.sp // 10px font size for target value
-                    // Inherits default contentColor (White)
+                    fontSize = 10.sp
                 )
             }
         }
     }
 }
 
-// --- Preview ---
-@Preview(showBackground = true, backgroundColor = 0xFFEEEEEE)
+@Preview(showBackground = true, backgroundColor = 0xFFEEEEEE, name = "KPI 100% Target")
 @Composable
-private fun KPIItemPreview() {
-    Column(modifier = Modifier.padding(16.dp)) {
-        KPIItem(
-            title = "Carbon Footprint",
-            topIcon = R.drawable.ic_launcher_foreground,
-            statusText = "100% target",
-            statusPercentage = "▲ 5%",
-            statusIcon = Icons.Filled.ArrowUpward,
-            value = "12.300",
-            unit = "kg CO₂e",
-            targetValue = "10.000 kg CO₂e",
-            onClick = { /* Preview click does nothing */ }
-        )
-    }
+private fun KPIItemPreviewGreen() {
+    KPIItem(
+        title = "Carbon Footprint",
+        topIcon = android.R.drawable.ic_dialog_info,
+        statusText = "100% target",
+        statusPercentageValue = "5%",
+        isUp = true,
+        value = "12.300",
+        unit = "kg CO₂e",
+        targetValue = "10.000 kg CO₂e",
+        onClick = { }
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFEEEEEE, name = "KPI <100% Target Down")
+@Composable
+private fun KPIItemPreviewYellowRed() {
+    KPIItem(
+        title = "Water Usage",
+        topIcon = android.R.drawable.ic_dialog_info,
+        statusText = "95% target",
+        statusPercentageValue = "2%",
+        isUp = false,
+        value = "8.500",
+        unit = "Liters",
+        targetValue = "8.000 Liters",
+        onClick = { }
+    )
 }

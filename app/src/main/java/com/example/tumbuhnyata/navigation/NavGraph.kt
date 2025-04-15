@@ -22,7 +22,7 @@ import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSuccessScreen
 import com.google.gson.Gson
-import com.example.tumbuhnyata.ui.splashscreen.OptionScreen
+import com.example.tumbuhnyata.ui.screens.OptionScreen
 import com.example.tumbuhnyata.ui.register.OtpScreen
 import com.example.tumbuhnyata.ui.register.VerifikasiScreen
 import com.example.tumbuhnyata.ui.register.AkunBerhasil
@@ -38,6 +38,7 @@ import com.example.tumbuhnyata.ui.dashboard.DashboardScreen
 import com.example.tumbuhnyata.ui.dashboard.kpi.KpiDetailScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
+import androidx.navigation.NavType
 
 @Composable
 fun AppNavigation() {
@@ -97,60 +98,6 @@ fun AppNavigation() {
         }
         composable("verification_success") {
             VerificationSuccess(navController)
-        }
-        composable("profile") {
-            ProfileScreen(navController)
-        }
-        composable("about") {
-            AboutScreen(navController)
-        }
-        composable("verification_one") {
-            VerificationOne(navController)
-        }
-        composable("verification_two") {
-            VerificationTwo(navController)
-        }
-        composable("verification_success") {
-            VerificationSuccess(navController)
-        }
-        // Main Dashboard Screen
-        composable("dashboard") {
-            // Assuming DashboardScreen is the main screen showing KPIItems
-            DashboardScreen(navController = navController)
-            // TODO: In DashboardScreen, when a KPIItem is clicked, call:
-            // navController.navigate("kpi_detail/your_kpi_id_here")
-        }
-
-        // KPI Detail Screen (with argument)
-        composable(
-            route = "kpi_detail/{kpiId}", // Route with argument placeholder
-            arguments = listOf(navArgument("kpiId") { // Define the argument
-                type = NavType.StringType
-                // defaultValue = "default_id" // Optional: Add default value
-                // nullable = true // Optional: Make argument nullable
-            })
-        ) { backStackEntry ->
-            // Retrieve the argument
-            val kpiId = backStackEntry.arguments?.getString("kpiId")
-            // Handle cases where argument might be missing (shouldn't happen if navigated correctly)
-            requireNotNull(kpiId) { "kpiId parameter wasn't found. Please make sure it's set!" }
-
-            KpiDetailScreen(navController = navController, kpiId = kpiId)
-            // TODO: In KpiDetailScreen, add a button/action for "Tambah Data" that calls:
-            // navController.navigate("upload_data")
-        }
-
-        // Upload Data Screen
-        composable("upload_data") {
-            UploadDataScreen(navController = navController)
-            // TODO: In UploadDataScreen, the "Unggah Data" button's onClick should call:
-            // navController.navigate("upload_success")
-        }
-
-        // Upload Success Screen
-        composable("upload_success") {
-            UploadSuccessScreen(navController = navController)
-            // Button inside this screen handles navigation back to Dashboard
         }
         // Main Dashboard Screen
         composable("dashboard") {

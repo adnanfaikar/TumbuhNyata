@@ -26,7 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
-import com.yourapp.ui.components.BottomNavigationBar
+import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 
 @Composable
 fun HomeScreen(navController: NavController) {

@@ -30,7 +30,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "riwayat"
     ) {
         composable("splash") {
             SplashScreen(navController)

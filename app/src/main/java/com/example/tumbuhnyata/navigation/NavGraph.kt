@@ -1,10 +1,11 @@
 package com.example.tumbuhnyata.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.tumbuhnyata.ui.eventcsr.CsrData
 import androidx.navigation.navArgument
 import com.example.tumbuhnyata.ui.login.LoginScreen
 import com.example.tumbuhnyata.ui.profile.AboutScreen
@@ -17,6 +18,10 @@ import com.example.tumbuhnyata.ui.notifikasi.NotifikasiScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
+import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
+import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
+import com.example.tumbuhnyata.ui.eventcsr.CsrSuccessScreen
+import com.google.gson.Gson
 import com.example.tumbuhnyata.ui.splashscreen.OptionScreen
 import com.example.tumbuhnyata.ui.register.OtpScreen
 import com.example.tumbuhnyata.ui.register.VerifikasiScreen

@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.riwayat
+package com.example.tumbuhnyata.ui.detail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,25 +28,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.data.model.CsrItem
 import com.example.tumbuhnyata.data.model.SubStatus
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.data.model.getSubStatusEmoji
-import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.ui.component.poppins
 import com.example.tumbuhnyata.ui.riwayat.TimelineStep
 import com.example.tumbuhnyata.ui.riwayat.VerticalTimeline
 import com.example.tumbuhnyata.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailRiwayatScreen(
-    navController: NavController,
-    csrId: String
-) {
-    // Find CSR item by ID
-    val detailItem = dummyCsrList.find { it.id == csrId }
+fun CsrDetailScreen(onBack: () -> Unit) {
+    // Ambil item dummy dengan judul "Penanaman 1000 Pohon"
+    val detailItem = dummyCsrList.find { it.title == "Penanaman 1000 Pohon" }
 
     // Pastikan item ditemukan
     if (detailItem == null) {
@@ -66,23 +62,23 @@ fun DetailRiwayatScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF2C3E1F))
-                        .clickable { navController.popBackStack() },
+                        .background(Color(0xFF2C3E1F)) // hijau tua
+                        .clickable { onBack() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp) // Sesuaikan ukuran ikon jika perlu
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     "Status Riwayat CSR",
-                    fontSize = 20.sp,
+                    fontSize = 20.sp, // Sesuaikan ukuran font agar tidak terlalu besar
                     fontWeight = FontWeight.Bold,
-                    fontFamily = PoppinsFontFamily
+                    fontFamily = poppins
                 )
             }
         }
@@ -124,13 +120,13 @@ fun DetailRiwayatScreen(
                         text = detailItem.title,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = PoppinsFontFamily
+                        fontFamily = poppins
                     )
                     Text(
                         text = detailItem.organization,
                         fontSize = 12.sp,
                         color = Color.Gray,
-                        fontFamily = PoppinsFontFamily
+                        fontFamily = poppins
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -140,7 +136,7 @@ fun DetailRiwayatScreen(
                         } ${getSubStatusEmoji(detailItem.subStatus)}",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = PoppinsFontFamily
+                        fontFamily = poppins
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -152,8 +148,8 @@ fun DetailRiwayatScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Kategori", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = PoppinsFontFamily)
-                            Text(detailItem.category, fontSize = 11.sp, fontFamily = PoppinsFontFamily)
+                            Text("Kategori", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = poppins)
+                            Text(detailItem.category, fontSize = 11.sp, fontFamily = poppins)
                         }
 
                         Spacer(modifier = Modifier.width(8.dp))
@@ -161,8 +157,8 @@ fun DetailRiwayatScreen(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Lokasi", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = PoppinsFontFamily)
-                            Text(detailItem.location, fontSize = 11.sp, fontFamily = PoppinsFontFamily)
+                            Text("Lokasi", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = poppins)
+                            Text(detailItem.location, fontSize = 11.sp, fontFamily = poppins)
                         }
 
                         Spacer(modifier = Modifier.width(8.dp))
@@ -170,8 +166,8 @@ fun DetailRiwayatScreen(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
-                            Text("Periode", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = PoppinsFontFamily)
-                            Text(detailItem.period, fontSize = 11.sp, fontFamily = PoppinsFontFamily)
+                            Text("Periode", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = poppins)
+                            Text(detailItem.period, fontSize = 11.sp, fontFamily = poppins)
                         }
                     }
                 }
@@ -184,7 +180,7 @@ fun DetailRiwayatScreen(
                     onClick = { /* TODO: Implement download proposal */ },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2C3E1F),
                         contentColor = Color.White
                     )
@@ -194,14 +190,14 @@ fun DetailRiwayatScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_download),
+                            painter = painterResource(id = R.drawable.ic_download), // Load drawable
                             contentDescription = "Download",
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             "Download Proposal Rancangan",
-                            fontFamily = PoppinsFontFamily,
+                            fontFamily = poppins,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -214,18 +210,17 @@ fun DetailRiwayatScreen(
                         TimelineStep("Review & Evaluasi", "10/05/2024 - 09:50 WIB", isInProgress = true),
                         TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB"),
                         TimelineStep("Implementasi Program")
+                        // Tambahkan langkah-langkah timeline lainnya sesuai kebutuhan
                     )
                 )
             }
+            // Tambahkan penanganan status lainnya jika diperlukan
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun DetailRiwayatScreenPreview() {
-    DetailRiwayatScreen(
-        navController = rememberNavController(),
-        csrId = dummyCsrList[0].id
-    )
+fun PreviewCsrDetailScreen() {
+    CsrDetailScreen(onBack = {})
 }

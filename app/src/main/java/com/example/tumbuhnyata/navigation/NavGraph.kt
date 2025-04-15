@@ -17,6 +17,7 @@ import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
 import android.util.Log
+import androidx.compose.runtime.remember
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
@@ -39,6 +40,7 @@ import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.riwayat.*
 import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.AjukanSertifikasiScreen
@@ -47,6 +49,7 @@ import com.example.tumbuhnyata.ui.Sertifikasi.RiwayatPengajuanScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
 import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
+import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
 
 @Composable
 fun AppNavigation() {
@@ -189,36 +192,42 @@ fun AppNavigation() {
         
         // Riwayat screens
         composable("riwayat") {
+            val riwayatViewModel = remember {
+                RiwayatViewModel(dummyList = dummyCsrList)
+            }
             RiwayatScreen(
-                navController = navController
+                navController = navController,
+                riwayatViewModel = riwayatViewModel,
+                onCsrCardClick = { csrItem ->
+                    Log.d("NavGraph", "CSR Card clicked: ${csrItem.title}")
+                    navController.navigate("detailRiwayat/${csrItem.title.hashCode()}")
+                },
+                onLihatSemuaPerluTindakan = {
+                    navController.navigate("perluTindakan")
+                },
+                onLihatSemuaDiterima = {
+                    navController.navigate("diterima")
+                }
             )
         }
-        
-        composable("perlu_tindakan_screen") {
-            PerluTindakanScreen(
-                navController = navController
-            )
+        composable("detailRiwayat/{csrItemId}") { backStackEntry ->
+            val csrItemId = backStackEntry.arguments?.getString("csrItemId")
+            // TODO: Fetch detail data based on csrItemId if needed
+            CsrDetailScreen(onBack = { navController.popBackStack() }) // Assuming CsrDetailScreen can act as DetailRiwayatScreen
         }
-        
-        composable("diterima_screen") {
-            DiterimaScreen(
-                navController = navController
-            )
+        composable("perluTindakan") {
+            val riwayatViewModel = remember {
+                RiwayatViewModel(dummyList = dummyCsrList)
+            }
+            PerluTindakanScreen(riwayatViewModel = riwayatViewModel, onBack = { navController.popBackStack() })
+        }
+        composable("diterima") {
+            val riwayatViewModel = remember {
+                RiwayatViewModel(dummyList = dummyCsrList)
+            }
+            DiterimaScreen(riwayatViewModel = riwayatViewModel, onBack = { navController.popBackStack() })
         }
 
-        composable(
-            route = "detail_riwayat_screen/{csrId}",
-            arguments = listOf(navArgument("csrId") {
-                type = NavType.StringType
-            })
-        ) { backStackEntry ->
-            val csrId = backStackEntry.arguments?.getString("csrId")
-            requireNotNull(csrId) { "csrId parameter wasn't found. Please make sure it's set!" }
-            DetailRiwayatScreen(
-                navController = navController,
-                csrId = csrId
-            )
-        }
         
         // Sertifikasi Routes
         composable("sertifikasi") {

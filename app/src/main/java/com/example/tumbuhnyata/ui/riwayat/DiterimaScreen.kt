@@ -23,19 +23,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.data.model.CsrItem
 import com.example.tumbuhnyata.data.model.SubStatus
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.component.CsrCard
-import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.ui.component.poppins
 
 @Composable
-fun DiterimaScreen(
-    navController: NavController,
-    riwayatViewModel: RiwayatViewModel = viewModel()
-) {
+fun DiterimaScreen(riwayatViewModel: RiwayatViewModel = viewModel(), onBack: () -> Unit) {
     val diterimaList by riwayatViewModel.diterimaItems.collectAsState()
 
     Column(
@@ -55,8 +50,8 @@ fun DiterimaScreen(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF2C3E1F))
-                    .clickable { navController.popBackStack() },
+                    .background(Color(0xFF2C3E1F)) // hijau tua
+                    .clickable(onClick = onBack),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -70,7 +65,7 @@ fun DiterimaScreen(
                 "Diterima",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = PoppinsFontFamily
+                fontFamily = poppins
             )
         }
 
@@ -81,9 +76,7 @@ fun DiterimaScreen(
                 .padding(bottom = 16.dp)
         ) {
             items(diterimaList) { item ->
-                CsrCard(item = item) {
-                    navController.navigate("detail_riwayat_screen/${item.id}")
-                }
+                CsrCard(item = item)
             }
         }
     }
@@ -92,12 +85,8 @@ fun DiterimaScreen(
 @Preview(showBackground = true)
 @Composable
 fun DiterimaScreenPreview() {
-    val navController = rememberNavController()
     val dummyViewModel = remember {
-        RiwayatViewModel(dummyList = dummyCsrList)
+        object : RiwayatViewModel(dummyList = dummyCsrList) {} // Anonymous object for preview
     }
-    DiterimaScreen(
-        navController = navController,
-        riwayatViewModel = dummyViewModel
-    )
+    DiterimaScreen(riwayatViewModel = dummyViewModel, onBack = {})
 }

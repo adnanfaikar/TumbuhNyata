@@ -40,7 +40,6 @@ val dummyCsrList = listOf(
         location = "Jakarta Timur",
         period = "12 Apr - 20 Jun 24"
     ),
-
     CsrItem(
         title = "Pembangunan Panti Sukamaju",
         organization = "Yayasan Asih Jaya",
@@ -50,7 +49,6 @@ val dummyCsrList = listOf(
         location = "Jakarta Raya",
         period = "1 Apr - 20 Jun 24"
     ),
-
     CsrItem(
         title = "Penghijauan Suaka Jateng",
         organization = "CV. Budi Raya",
@@ -96,7 +94,6 @@ val dummyCsrList = listOf(
         location = "Lombok Barat, Lombok",
         period = "12 Mar - 20 Jun 24"
     ),
-
 )
 
 fun getDummyTimelineData(status: String): List<TimelineItem> {

@@ -1,6 +1,5 @@
 package com.example.tumbuhnyata.data.model
 
-
 data class TimelineItem(
     val title: String,
     val timestamp: String = "",

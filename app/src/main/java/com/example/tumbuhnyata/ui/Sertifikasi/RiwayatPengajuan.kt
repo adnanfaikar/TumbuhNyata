@@ -31,10 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun RiwayatPengajuanScreen() {
-
+fun RiwayatPengajuanScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +45,7 @@ fun RiwayatPengajuanScreen() {
             title = "Riwayat Pengajuan",
             step = "",
             iconResId = R.drawable.btn_back,
-            onBackClick = { }
+            onBackClick = { navController.popBackStack() }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -156,5 +157,6 @@ fun InfoRow2(iconId: Int, label: String, value: String) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewRiwayatPengajuanScreen() {
-    RiwayatPengajuanScreen()
+    val navController = rememberNavController()
+    RiwayatPengajuanScreen(navController)
 }

@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun SertifikasiScreen(navController: NavController) {
@@ -43,16 +44,16 @@ fun SertifikasiScreen(navController: NavController) {
             .padding(16.dp)
     ) {
         Spacer(modifier = Modifier.height(24.dp))
-        BannerSection(navController)
+        BannerSection()
         Spacer(modifier = Modifier.height(24.dp))
-        SertifikasiSection(navController)
+        SertifikasiSection()
         Spacer(modifier = Modifier.height(24.dp))
-        RiwayatPengajuanSection(navController)
+        RiwayatPengajuanSection()
     }
 }
 
 @Composable
-fun BannerSection(navController: NavController) {
+fun BannerSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,7 +62,7 @@ fun BannerSection(navController: NavController) {
     ) {
         // Gambar background banner
         Image(
-            painter = painterResource(id = R.drawable.banner_sertifikasi),
+            painter = painterResource(id = R.drawable.banner_sertifikasi), // ganti sesuai nama file kamu
             contentDescription = "Banner Sertifikasi",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -87,7 +88,7 @@ fun BannerSection(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { navController.navigate("ajukansertifikasi") },
+                onClick = { /* Aksi klik */ },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             ) {
@@ -108,7 +109,7 @@ data class Sertifikasi(
 )
 
 @Composable
-fun SertifikasiSection(navController: NavController) {
+fun SertifikasiSection() {
     val sertifikasiList = listOf(
         Sertifikasi(
             title = "Environmental Management System",
@@ -141,7 +142,7 @@ fun SertifikasiSection(navController: NavController) {
     }
 
     Button(
-        onClick = { navController.navigate("sertifikasianda") },
+        onClick = { /* Lihat semua */ },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFE9E9E9),
@@ -222,7 +223,7 @@ data class Pengajuan(
 )
 
 @Composable
-fun RiwayatPengajuanSection(navController: NavController) {
+fun RiwayatPengajuanSection() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -237,7 +238,7 @@ fun RiwayatPengajuanSection(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
 
         TextButton(
-            onClick = { navController.navigate("riwayatpengajuan") },
+            onClick = { /* Aksi lihat semua */ },
             contentPadding = PaddingValues(0.dp)
         ) {
             Text(
@@ -340,6 +341,7 @@ fun InfoRow(iconId: Int, label: String, value: String) {
 @Preview(showBackground = true)
 @Composable
 fun SertifikasiScreenPreview() {
-    SertifikasiScreen(navController = NavController())
+    val navController = rememberNavController()
+    SertifikasiScreen(navController)
 }
 

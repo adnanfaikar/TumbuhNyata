@@ -25,7 +25,7 @@ import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
-fun CertificationSuccessScreen() {
+fun CertificationSuccessScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -102,7 +102,7 @@ fun CertificationSuccessScreen() {
             Spacer(modifier = Modifier.height(5.dp))
 
             Button(
-                onClick = { /* TODO: Lihat Riwayat */ },
+                onClick = { navController.navigate("riwayatpengajuan") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
@@ -116,7 +116,7 @@ fun CertificationSuccessScreen() {
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { /* TODO: Kembali ke Beranda */ },
+                onClick = { navController.navigate("home") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
@@ -132,5 +132,6 @@ fun CertificationSuccessScreen() {
 @Preview()
 @Composable
 fun CertificationSuccessScreenPreview() {
-    CertificationSuccessScreen()
+    val navController = rememberNavController()
+    CertificationSuccessScreen(navController)
 }

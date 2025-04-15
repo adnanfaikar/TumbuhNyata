@@ -1,16 +1,10 @@
 package com.example.tumbuhnyata.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.tumbuhnyata.ui.eventcsr.CsrData
-import androidx.navigation.navArgument
 import com.example.tumbuhnyata.ui.home.HomeScreen
-import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
-import androidx.navigation.navArgument
 import com.example.tumbuhnyata.ui.login.LoginScreen
 import com.example.tumbuhnyata.ui.profile.AboutScreen
 import com.example.tumbuhnyata.ui.profile.ProfileScreen
@@ -22,6 +16,8 @@ import com.example.tumbuhnyata.ui.notifikasi.NotifikasiScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
+import android.util.Log
+import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSuccessScreen
@@ -35,20 +31,24 @@ import com.example.tumbuhnyata.ui.workshop.DeskripsiWorkshopScreen
 import com.example.tumbuhnyata.ui.workshop.NewWorkshop
 import com.example.tumbuhnyata.ui.register.RegisterScreen
 import com.example.tumbuhnyata.ui.workshop.RekomWorkshop
-import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.workshop.WorkshopBerhasil
 import com.example.tumbuhnyata.ui.workshop.WorkshopScreen
 import com.example.tumbuhnyata.ui.dashboard.DashboardScreen
 import com.example.tumbuhnyata.ui.dashboard.kpi.KpiDetailScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
-import com.example.tumbuhnyata.ui.sertifikasi.SertifikasiScreen
-import com.example.tumbuhnyata.ui.sertifikasi.AjukanSertifikasiScreen
-import com.example.tumbuhnyata.ui.sertifikasi.SertifikasiAndaScreen
-import com.example.tumbuhnyata.ui.sertifikasi.RiwayatPengajuanScreen
-import com.example.tumbuhnyata.ui.sertifikasi.DetailSertifikasiScreen
-import com.example.tumbuhnyata.ui.sertifikasi.DokumenOne
-import com.example.tumbuhnyata.ui.sertifikasi.CertificationSuccessScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.tumbuhnyata.ui.riwayat.RiwayatScreen
+import com.example.tumbuhnyata.ui.riwayat.PerluTindakanScreen
+import com.example.tumbuhnyata.ui.riwayat.DiterimaScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.AjukanSertifikasiScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiAndaScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.RiwayatPengajuanScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
+import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
 
 @Composable
 fun AppNavigation() {
@@ -62,57 +62,42 @@ fun AppNavigation() {
             SplashScreen(navController)
         }
         composable("onboarding") {
-            OnboardingScreen1 (navController)
+            OnboardingScreen1(navController)
         }
         composable("onboarding2") {
-            OnboardingScreen2 (navController)
+            OnboardingScreen2(navController)
         }
         composable("onboarding3") {
-            OnboardingScreen3 (navController)
+            OnboardingScreen3(navController)
         }
         composable("option") {
-            OptionScreen (navController)
+            OptionScreen(navController)
         }
-        composable("home") {
-            HomeScreen(navController)
+        composable("register") {
+            RegisterScreen(navController)
         }
         composable("login") {
             LoginScreen(navController)
         }
-        composable("register") {
-            RegisterScreen (navController)
-        }
         composable("verifikasi") {
-            VerifikasiScreen (navController)
+            VerifikasiScreen(navController)
         }
         composable("otp") {
-            OtpScreen (navController)
+            OtpScreen(navController)
         }
         composable("akunberhasil") {
-            AkunBerhasil (navController)
+            AkunBerhasil(navController)
         }
-        composable("csr_submission") {
-            CsrSubmissionScreen(navController)
-        }
-        composable(
-            route = "csr_verification/{csrData}",
-            arguments = listOf(
-                navArgument("csrData") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val csrDataJson = backStackEntry.arguments?.getString("csrData") ?: ""
-            val csrData = Gson().fromJson(csrDataJson, CsrData::class.java)
-            CsrVerificationScreen(navController = navController, csrData = csrData)
-        }
-        composable("csr_success") {
-            CsrSuccessScreen(navController)
-        }
+        
+        // Notifikasi
         composable("notifikasi") {
-            NotifikasiScreen(navController = navController)
+            NotifikasiScreen(navController)
         }
         composable("notifikasi_detail") {
             NotifikasiDetailScreen(navController = navController)
         }
+        
+        // Profile
         composable("profile") {
             ProfileScreen(navController)
         }
@@ -128,64 +113,106 @@ fun AppNavigation() {
         composable("verification_success") {
             VerificationSuccess(navController)
         }
-        // Main Dashboard Screen
+        
+        // Dashboard
         composable("dashboard") {
-            // Assuming DashboardScreen is the main screen showing KPIItems
             DashboardScreen(navController = navController)
-            // TODO: In DashboardScreen, when a KPIItem is clicked, call:
-            // navController.navigate("kpi_detail/your_kpi_id_here")
         }
-
-        // KPI Detail Screen (with argument)
+        
+        // KPI Detail
         composable(
-            route = "kpi_detail/{kpiId}", // Route with argument placeholder
-            arguments = listOf(navArgument("kpiId") { // Define the argument
+            route = "kpi_detail/{kpiId}",
+            arguments = listOf(navArgument("kpiId") {
                 type = NavType.StringType
-                // defaultValue = "default_id" // Optional: Add default value
-                // nullable = true // Optional: Make argument nullable
             })
         ) { backStackEntry ->
-            // Retrieve the argument
             val kpiId = backStackEntry.arguments?.getString("kpiId")
-            // Handle cases where argument might be missing (shouldn't happen if navigated correctly)
             requireNotNull(kpiId) { "kpiId parameter wasn't found. Please make sure it's set!" }
-
             KpiDetailScreen(navController = navController, kpiId = kpiId)
-            // TODO: In KpiDetailScreen, add a button/action for "Tambah Data" that calls:
-            // navController.navigate("upload_data")
         }
-
-        // Upload Data Screen
+        
+        // Upload screens
         composable("upload_data") {
             UploadDataScreen(navController = navController)
-            // TODO: In UploadDataScreen, the "Unggah Data" button's onClick should call:
-            // navController.navigate("upload_success")
         }
-
-        // Upload Success Screen
         composable("upload_success") {
             UploadSuccessScreen(navController = navController)
-            // Button inside this screen handles navigation back to Dashboard
         }
+        
+        // Workshop screens
         composable("workshop") {
-            WorkshopScreen (navController)
+            WorkshopScreen(navController)
         }
         composable("rekomendasiworkshop") {
-            RekomWorkshop (navController)
+            RekomWorkshop(navController)
         }
         composable("workshopterbaru") {
-            NewWorkshop (navController)
+            NewWorkshop(navController)
         }
         composable("deskripsiworkshop/{workshopId}") { backStackEntry ->
             val workshopId = backStackEntry.arguments?.getString("workshopId") ?: ""
             DeskripsiWorkshopScreen(navController, workshopId)
         }
         composable("daftarworkshop") {
-            DaftarWorkshop (navController)
+            DaftarWorkshop(navController)
         }
         composable("workshopberhasil") {
-            WorkshopBerhasil (navController)
+            WorkshopBerhasil(navController)
         }
+        
+        // CSR Event screens
+        composable("csr_submission") {
+            CsrSubmissionScreen(navController)
+        }
+        composable(
+            route = "csr_verification",
+            arguments = listOf()
+        ) {
+            // Buat data default jika tidak ada data yang dilewatkan
+            val defaultCsrData = com.example.tumbuhnyata.ui.eventcsr.CsrData(
+                programName = "Program CSR",
+                category = "Lingkungan",
+                startDate = "01/01/2023",
+                endDate = "31/12/2023",
+                location = "Jakarta",
+                partnerName = "PT Mitra Sejahtera",
+                budget = "Rp 100.000.000"
+            )
+            CsrVerificationScreen(navController, defaultCsrData)
+        }
+        composable("csr_success") {
+            CsrSuccessScreen(navController)
+        }
+        
+        // Home
+        composable("home") {
+            HomeScreen(navController)
+        }
+        
+        // Riwayat screens
+        composable("riwayat") {
+            RiwayatScreen(
+                navController = navController,
+                onCsrCardClick = { csrItem ->
+                    // Navigate to detail page (you can create this route)
+                },
+                onLihatSemuaPerluTindakan = {
+                    navController.navigate("perlu_tindakan")
+                },
+                onLihatSemuaDiterima = {
+                    navController.navigate("diterima")
+                }
+            )
+        }
+        
+        composable("perlu_tindakan") {
+            PerluTindakanScreen(navController = navController)
+        }
+        
+        composable("diterima") {
+            DiterimaScreen(navController = navController)
+        }
+        
         // Sertifikasi Routes
         composable("sertifikasi") {
             SertifikasiScreen(navController)
@@ -210,4 +237,3 @@ fun AppNavigation() {
         }
     }
 }
-

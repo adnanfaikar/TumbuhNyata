@@ -27,10 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun AjukanSertifikasiScreen() {
-
+fun AjukanSertifikasiScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,7 +41,7 @@ fun AjukanSertifikasiScreen() {
             title = "Ajukan Sertifikasi",
             step = "",
             iconResId = R.drawable.btn_back,
-            onBackClick = { }
+            onBackClick = { navController.popBackStack() }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -144,5 +145,6 @@ fun AjukanSertifikasiCard(data: AjukanSertifikasi) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewAjukanSertifikasiScreen() {
-    AjukanSertifikasiScreen()
+    val navController = rememberNavController()
+    AjukanSertifikasiScreen(navController)
 }

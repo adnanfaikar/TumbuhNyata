@@ -3,6 +3,7 @@ package com.example.tumbuhnyata.ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -26,7 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
-import com.yourapp.ui.components.BottomNavigationBar
+import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -43,7 +44,7 @@ fun HomeScreen(navController: NavController) {
                 .padding(bottom = paddingValues.calculateBottomPadding()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MainCard()
+            MainCard(navController)
             Text(
                 text = "Kelola Program CSR Anda",
                 fontSize = 21.sp,
@@ -54,13 +55,13 @@ fun HomeScreen(navController: NavController) {
                     .padding(horizontal = 15.dp, vertical = 10.dp)
             )
             MenuButtons(navController)
-            ActivitySection()
+            ActivitySection(navController)
         }
     }
 }
 
 @Composable
-fun MainCard() {
+fun MainCard(navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,12 +88,12 @@ fun MainCard() {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                CompanyHeader(hasNotifications = true)
+                CompanyHeader(hasNotifications = true, navController)
                 CSRStatusSection()
                 CSRFundSection()
                 BadgesSection()
                 Button(
-                    onClick = { },
+                    onClick = { navController.navigate("dashboard") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
@@ -113,7 +114,7 @@ fun MainCard() {
 }
 
 @Composable
-fun CompanyHeader(hasNotifications: Boolean) {
+fun CompanyHeader(hasNotifications: Boolean, navController: NavController) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -143,7 +144,7 @@ fun CompanyHeader(hasNotifications: Boolean) {
             }
         }
         Button(
-            onClick = { navController.navigate("notifications") },
+            onClick = { },
             modifier = Modifier
                 .width(38.dp)
                 .height(38.dp),
@@ -339,7 +340,7 @@ fun MenuButtons(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         MenuButton("Ajukan CSR", R.drawable.ic_ajukan) { navController.navigate("csrsubmission") }
-        MenuButton("Riwayat", R.drawable.ic_history)
+        MenuButton("Riwayat", R.drawable.ic_history) { navController.navigate("riwayat") }
         MenuButton("Keuangan", R.drawable.ic_finance)
     }
 }
@@ -388,7 +389,7 @@ fun MenuButton(text: String, iconRes: Int, onClick: () -> Unit = {}) {
 }
 
 @Composable
-fun ActivitySection() {
+fun ActivitySection(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -404,7 +405,7 @@ fun ActivitySection() {
                 fontSize = 21.sp,
                 fontWeight = FontWeight.ExtraBold
             )
-            TextButton(onClick = { }) {
+            TextButton(onClick = { navController.navigate("riwayat") }) {
                 Text(
                     "Lihat Semua   >",
                     fontSize = 12.sp,
@@ -426,7 +427,8 @@ fun ActivitySection() {
                     kategori = "Lingkungan",
                     lokasi = "Jakarta Timur",
                     periode = "12 Mar - 20 Jun 24",
-                    statusType = StatusType.COMPLETED
+                    statusType = StatusType.COMPLETED,
+                    navController = navController
                 )
             }
             item {
@@ -437,7 +439,8 @@ fun ActivitySection() {
                     kategori = "Lingkungan",
                     lokasi = "Kalimantan",
                     periode = "12 Mar - 20 Mar 25",
-                    statusType = StatusType.UPCOMING
+                    statusType = StatusType.UPCOMING,
+                    navController = navController
                 )
             }
             item {
@@ -448,7 +451,8 @@ fun ActivitySection() {
                     kategori = "Sosial",
                     lokasi = "Jawa Barat",
                     periode = "6 Mar - 15 Jun 25",
-                    statusType = StatusType.IN_PROGRESS
+                    statusType = StatusType.IN_PROGRESS,
+                    navController = navController
                 )
             }
             item {
@@ -459,7 +463,8 @@ fun ActivitySection() {
                     kategori = "Sosial",
                     lokasi = "Jakarta Raya",
                     periode = "12 Jan - 2 Apr 25",
-                    statusType = StatusType.IN_PROGRESS
+                    statusType = StatusType.IN_PROGRESS,
+                    navController = navController
                 )
             }
             item {
@@ -470,7 +475,8 @@ fun ActivitySection() {
                     kategori = "Lingkungan",
                     lokasi = "Pantai Barat, Lombok",
                     periode = "12 Mar - 20 Jun 24",
-                    statusType = StatusType.COMPLETED
+                    statusType = StatusType.COMPLETED,
+                    navController = navController
                 )
             }
         }
@@ -491,7 +497,8 @@ fun ActivityItem(
     kategori: String,
     lokasi: String,
     periode: String,
-    statusType: StatusType
+    statusType: StatusType,
+    navController: NavController
 ) {
     Card(
         modifier = Modifier

@@ -46,9 +46,9 @@ fun SertifikasiScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(24.dp))
         BannerSection()
         Spacer(modifier = Modifier.height(24.dp))
-        SertifikasiSection()
+        SertifikasiSection(navController)
         Spacer(modifier = Modifier.height(24.dp))
-        RiwayatPengajuanSection()
+        RiwayatPengajuanSection(navController)
     }
 }
 
@@ -109,7 +109,7 @@ data class Sertifikasi(
 )
 
 @Composable
-fun SertifikasiSection() {
+fun SertifikasiSection(navController: NavController) {
     val sertifikasiList = listOf(
         Sertifikasi(
             title = "Environmental Management System",
@@ -141,22 +141,30 @@ fun SertifikasiSection() {
         Spacer(modifier = Modifier.height(12.dp))
     }
 
-    Button(
-        onClick = { /* Lihat semua */ },
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFE9E9E9),
-            contentColor = Color(0xFF4B4B4B)
-        ),
-        shape = RoundedCornerShape(5.dp)
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Lihat Semua Sertifikasi")
-        Spacer(modifier = Modifier.width(8.dp))
-        Image(
-            painter = painterResource(id = R.drawable.arrow_rightsertif),
-            contentDescription = "Arrow Right",
-            modifier = Modifier.size(18.dp)
-        )
+        Button(
+            onClick = { navController.navigate("berhasil") },
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFE9E9E9),
+                contentColor = Color(0xFF4B4B4B)
+            ),
+            shape = RoundedCornerShape(5.dp)
+        ) {
+            Text("Lihat Semua Sertifikasi")
+            Spacer(modifier = Modifier.width(8.dp))
+            Image(
+                painter = painterResource(id = R.drawable.arrow_rightsertif),
+                contentDescription = "Arrow Right",
+                modifier = Modifier.size(18.dp)
+            )
+        }
     }
 }
 
@@ -223,7 +231,7 @@ data class Pengajuan(
 )
 
 @Composable
-fun RiwayatPengajuanSection() {
+fun RiwayatPengajuanSection(navController: NavController) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -238,7 +246,7 @@ fun RiwayatPengajuanSection() {
         Spacer(modifier = Modifier.weight(1f))
 
         TextButton(
-            onClick = { /* Aksi lihat semua */ },
+            onClick = { navController.navigate("riwayatpengajuan") },
             contentPadding = PaddingValues(0.dp)
         ) {
             Text(

@@ -1,7 +1,6 @@
 package com.example.tumbuhnyata.ui.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,25 +11,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.data.model.CsrItem
-import com.example.tumbuhnyata.data.model.Status
 import com.example.tumbuhnyata.data.model.SubStatus
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
-val poppins = PoppinsFontFamily
-
 @Composable
-fun CsrCard(item: CsrItem, onClick: () -> Unit) {
+fun CsrCardComponent(item: CsrItem, onClick: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,13 +46,13 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit) {
             ) {
                 Text(
                     text = item.title,
-                    fontFamily = poppins,
+                    fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     modifier = Modifier.weight(1f)
                 )
                 
-                StatusChip(status = item.status, subStatus = item.subStatus)
+                StatusChipComponent(status = item.status, subStatus = item.subStatus)
             }
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -79,28 +71,15 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit) {
                     text = item.location,
                     color = Color.Gray,
                     fontSize = 12.sp,
-                    fontFamily = poppins,
+                    fontFamily = PoppinsFontFamily,
                     modifier = Modifier.padding(start = 4.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = item.date,
+                    text = item.period,
                     color = Color.Gray,
                     fontSize = 12.sp,
-                    fontFamily = poppins
-                )
-            }
-            
-            if (item.imageRes != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Image(
-                    painter = painterResource(id = item.imageRes),
-                    contentDescription = "CSR Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
+                    fontFamily = PoppinsFontFamily
                 )
             }
         }
@@ -108,11 +87,17 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit) {
 }
 
 @Composable
-fun StatusChip(status: Status, subStatus: SubStatus) {
-    val (backgroundColor, textColor) = when (status) {
-        Status.DITERIMA -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
-        Status.DITOLAK -> Color(0xFFFFEBEE) to Color(0xFFC62828)
-        Status.PENDING -> Color(0xFFFFF8E1) to Color(0xFFF57F17)
+fun StatusChipComponent(status: String, subStatus: SubStatus) {
+    val (backgroundColor, textColor) = when (status.lowercase()) {
+        "diterima" -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
+        "ditolak" -> Color(0xFFFFEBEE) to Color(0xFFC62828)
+        "proses review" -> Color(0xFFFFF8E1) to Color(0xFFF57F17)
+        "menunggu pembayaran" -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
+        "memerlukan revisi" -> Color(0xFFFFEBEE) to Color(0xFFC62828)
+        "mendatang" -> Color(0xFFFFF8E1) to Color(0xFFF57F17)
+        "progress" -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
+        "program selesai" -> Color(0xFFE0E0E0) to Color(0xFF757575)
+        else -> Color(0xFFFFF8E1) to Color(0xFFF57F17)
     }
     
     val statusText = when (subStatus) {
@@ -133,7 +118,7 @@ fun StatusChip(status: Status, subStatus: SubStatus) {
             color = textColor,
             fontSize = 10.sp,
             fontWeight = FontWeight.Medium,
-            fontFamily = poppins,
+            fontFamily = PoppinsFontFamily,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
     }
@@ -141,6 +126,6 @@ fun StatusChip(status: Status, subStatus: SubStatus) {
 
 @Preview
 @Composable
-fun CsrCardPreview() {
-    CsrCard(item = dummyCsrList[0]) {}
+fun CsrCardPreviewComponent() {
+    CsrCardComponent(item = dummyCsrList[0])
 } 

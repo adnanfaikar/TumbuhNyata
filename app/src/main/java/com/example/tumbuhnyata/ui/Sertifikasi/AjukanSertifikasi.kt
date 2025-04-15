@@ -2,6 +2,7 @@ package com.example.tumbuhnyata.ui.Sertifikasi
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,13 +30,22 @@ import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.painterResource
+import com.example.tumbuhnyata.ui.components.TopBarProfile
+import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AjukanSertifikasiScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 20.dp, top = 95.dp, end = 20.dp)
+            .padding(start = 20.dp, top = 30.dp, end = 20.dp)
     ) {
         TopBarProfile(
             title = "Ajukan Sertifikasi",
@@ -54,7 +64,7 @@ fun AjukanSertifikasiScreen(navController: NavController) {
             color = Color(0xFF1A4218)
         )
 
-        AjukanSertifikasiSection()
+        AjukanSertifikasiSection(navController)
     }
 }
 
@@ -66,53 +76,49 @@ data class AjukanSertifikasi(
 )
 
 @Composable
-fun AjukanSertifikasiSection() {
+fun AjukanSertifikasiSection(navController: NavController) {
     val sertifikasiList = listOf(
         AjukanSertifikasi(
             title = "Social Responsibility",
             code = "ISO 26000",
             deskripsi = "International Organization for Standardization (ISO)",
-
             imageRes = R.drawable.iso_26000
         ),
         AjukanSertifikasi(
             title = "PROPER",
             code = "Program Penilaian Peringkat Kinerja Perusahaan dalam Pengelolaan Lingkungan",
             deskripsi = "Kementerian Lingkungan Hidup dan Kehutanan (KLHK)",
-
             imageRes = R.drawable.proper
         ),
         AjukanSertifikasi(
             title = "Ecolabel Indonesia",
             code = "Ecolabel",
             deskripsi = "Kementerian Perindustrian RI",
-
             imageRes = R.drawable.ecolabel
         ),
         AjukanSertifikasi(
-                title = "Social Accountability Certification",
-        code = "SA8000",
-        deskripsi = "Social Accountability International (SAI)",
-
-        imageRes = R.drawable.sai
-    )
+            title = "Social Accountability Certification",
+            code = "SA8000",
+            deskripsi = "Social Accountability International (SAI)",
+            imageRes = R.drawable.sai
+        )
     )
 
     Spacer(modifier = Modifier.height(8.dp))
 
     sertifikasiList.forEach {
-        AjukanSertifikasiCard(it)
+        AjukanSertifikasiCard(it, navController)
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
-
 @Composable
-fun AjukanSertifikasiCard(data: AjukanSertifikasi) {
+fun AjukanSertifikasiCard(data: AjukanSertifikasi, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 1.dp),
+            .padding(vertical = 1.dp)
+            .clickable { navController.navigate("detailsertifikasi") },
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {

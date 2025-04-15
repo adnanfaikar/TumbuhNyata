@@ -1,7 +1,6 @@
 package com.example.tumbuhnyata.data.model
 
 data class CsrItem(
-    val id: String,
     val title: String,
     val organization: String,
     val status: String,
@@ -33,7 +32,6 @@ enum class SubStatus(val displayText: String, val colorHex: String) {
 
 val dummyCsrList = listOf(
     CsrItem(
-        id = "1",
         title = "Penanaman 1000 Pohon",
         organization = "Komunitas Jaya Hijau",
         status = "Proses Review",
@@ -44,7 +42,6 @@ val dummyCsrList = listOf(
     ),
 
     CsrItem(
-        id = "2",
         title = "Pembangunan Panti Sukamaju",
         organization = "Yayasan Asih Jaya",
         status = "Menunggu Pembayaran",
@@ -55,7 +52,6 @@ val dummyCsrList = listOf(
     ),
 
     CsrItem(
-        id = "3",
         title = "Penghijauan Suaka Jateng",
         organization = "CV. Budi Raya",
         status = "Memerlukan Revisi",
@@ -65,7 +61,6 @@ val dummyCsrList = listOf(
         period = "12 Mar - 20 Jun 24"
     ),
     CsrItem(
-        id = "4",
         title = "Penghijauan Hutan Kaltim",
         organization = "PT Hijau Sejati",
         status = "Mendatang",
@@ -75,7 +70,6 @@ val dummyCsrList = listOf(
         period = "12 Mei - 20 Mei 25"
     ),
     CsrItem(
-        id = "5",
         title = "Beasiswa Yatim Jabar",
         organization = "Pemerintah Prov. Jabar",
         status = "Progress",
@@ -85,7 +79,6 @@ val dummyCsrList = listOf(
         period = "8 Mar - 10 Jun 25"
     ),
     CsrItem(
-        id = "6",
         title = "Donor Darah Paragon 2025",
         organization = "RS Bunda Mulia",
         status = "Progress",
@@ -95,7 +88,6 @@ val dummyCsrList = listOf(
         period = "12 Jan - 2 Apr 25"
     ),
     CsrItem(
-        id = "7",
         title = "Penanaman Mangrove",
         organization = "Pemkot Kota Lombok",
         status = "Program Selesai",
@@ -105,7 +97,7 @@ val dummyCsrList = listOf(
         period = "12 Mar - 20 Jun 24"
     ),
 
-    )
+)
 
 fun getDummyTimelineData(status: String): List<TimelineItem> {
     return listOf(

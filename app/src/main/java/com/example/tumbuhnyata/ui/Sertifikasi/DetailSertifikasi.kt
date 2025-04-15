@@ -140,7 +140,7 @@ fun DetailSertifikasiScreen(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = { /* Ajukan sertifikasi */ },
+            onClick = { navController.navigate("dokumen_one") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F4019)),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier

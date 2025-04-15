@@ -39,9 +39,7 @@ import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.tumbuhnyata.ui.riwayat.RiwayatScreen
-import com.example.tumbuhnyata.ui.riwayat.PerluTindakanScreen
-import com.example.tumbuhnyata.ui.riwayat.DiterimaScreen
+import com.example.tumbuhnyata.ui.riwayat.*
 import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.AjukanSertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiAndaScreen
@@ -192,25 +190,34 @@ fun AppNavigation() {
         // Riwayat screens
         composable("riwayat") {
             RiwayatScreen(
-                navController = navController,
-                onCsrCardClick = { csrItem ->
-                    // Navigate to detail page (you can create this route)
-                },
-                onLihatSemuaPerluTindakan = {
-                    navController.navigate("perlu_tindakan")
-                },
-                onLihatSemuaDiterima = {
-                    navController.navigate("diterima")
-                }
+                navController = navController
             )
         }
         
-        composable("perlu_tindakan") {
-            PerluTindakanScreen(navController = navController)
+        composable("perlu_tindakan_screen") {
+            PerluTindakanScreen(
+                navController = navController
+            )
         }
         
-        composable("diterima") {
-            DiterimaScreen(navController = navController)
+        composable("diterima_screen") {
+            DiterimaScreen(
+                navController = navController
+            )
+        }
+
+        composable(
+            route = "detail_riwayat_screen/{csrId}",
+            arguments = listOf(navArgument("csrId") {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val csrId = backStackEntry.arguments?.getString("csrId")
+            requireNotNull(csrId) { "csrId parameter wasn't found. Please make sure it's set!" }
+            DetailRiwayatScreen(
+                navController = navController,
+                csrId = csrId
+            )
         }
         
         // Sertifikasi Routes

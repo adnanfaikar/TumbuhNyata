@@ -42,7 +42,7 @@ fun DokumenOne(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 20.dp, top = 95.dp, end = 20.dp)
+                .padding(start = 20.dp, top = 40.dp, end = 20.dp)
         ) {
             TopBarProfile(
                 title = "Verifikasi",
@@ -108,7 +108,7 @@ fun DokumenOne(navController: NavController) {
                 modifier = Modifier.padding(start = 2.dp, top = 10.dp, end = 5.dp)
             )
 
-            Spacer(modifier = Modifier.height(228.dp))
+            Spacer(modifier = Modifier.height(150.dp))
 
             Button(
                 onClick = { navController.navigate("verification_two")},

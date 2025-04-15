@@ -4,13 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tumbuhnyata.data.model.CsrItem
 import com.example.tumbuhnyata.data.model.SubStatus
-import com.example.tumbuhnyata.data.model.dummyCsrList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RiwayatViewModel(dummyList: List<CsrItem> = dummyCsrList) : ViewModel() {
+open class RiwayatViewModel(dummyList: List<CsrItem>) : ViewModel() {
     private val _perluTindakanItems = MutableStateFlow(dummyList.filter {
         it.subStatus == SubStatus.MENUNGGU_PEMBAYARAN ||
                 it.subStatus == SubStatus.MEMERLUKAN_REVISI ||

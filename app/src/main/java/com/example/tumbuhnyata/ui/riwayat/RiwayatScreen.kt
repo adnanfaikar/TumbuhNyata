@@ -44,10 +44,7 @@ import com.example.tumbuhnyata.ui.components.SectionHeader
 @Composable
 fun RiwayatScreen(
     navController: NavController,
-    riwayatViewModel: RiwayatViewModel = viewModel(),
-    onCsrCardClick: (CsrItem) -> Unit,
-    onLihatSemuaPerluTindakan: () -> Unit,
-    onLihatSemuaDiterima: () -> Unit
+    riwayatViewModel: RiwayatViewModel = viewModel()
 ) {
     val perluTindakanList by riwayatViewModel.perluTindakanItems.collectAsState()
     val diterimaList by riwayatViewModel.diterimaItems.collectAsState()
@@ -71,7 +68,7 @@ fun RiwayatScreen(
                     .size(40.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF2C3E1F))
-                    .clickable { navController.popBackStack() }, // Navigasi ke Home
+                    .clickable { navController.popBackStack() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -124,13 +121,13 @@ fun RiwayatScreen(
             item {
                 SectionHeader(
                     title = "Perlu Tindakan",
-                    onLihatSemua = onLihatSemuaPerluTindakan
+                    onLihatSemua = { navController.navigate("perlu_tindakan_screen") }
                 )
             }
             
             items(perluTindakanList.take(4)) { item ->
                 CsrCard(item = item) {
-                    onCsrCardClick(item)
+                    navController.navigate("detail_riwayat_screen/${item.id}")
                 }
             }
 
@@ -138,13 +135,13 @@ fun RiwayatScreen(
             item {
                 SectionHeader(
                     title = "Diterima",
-                    onLihatSemua = onLihatSemuaDiterima
+                    onLihatSemua = { navController.navigate("diterima_screen") }
                 )
             }
             
             items(diterimaList.take(4)) { item ->
                 CsrCard(item = item) {
-                    onCsrCardClick(item)
+                    navController.navigate("detail_riwayat_screen/${item.id}")
                 }
             }
         }
@@ -160,9 +157,6 @@ fun RiwayatScreenPreview() {
     }
     RiwayatScreen(
         navController = navController,
-        riwayatViewModel = dummyViewModel,
-        onCsrCardClick = { Log.d("Preview", "Card Clicked: ${it.title}") },
-        onLihatSemuaPerluTindakan = { Log.d("Preview", "Lihat Semua Perlu Tindakan") },
-        onLihatSemuaDiterima = { Log.d("Preview", "Lihat Semua Diterima") }
+        riwayatViewModel = dummyViewModel
     )
 }

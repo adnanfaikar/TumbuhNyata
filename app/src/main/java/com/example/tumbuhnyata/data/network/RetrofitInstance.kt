@@ -1,3 +1,6 @@
+package com.example.tumbuhnyata.data.network
+
+import com.example.tumbuhnyata.data.api.AuthApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

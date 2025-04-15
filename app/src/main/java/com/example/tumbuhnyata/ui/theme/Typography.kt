@@ -9,15 +9,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.tumbuhnyata.R
 
-val TumbuhNyataTypography = Typography(
-    bodyLarge = TextStyle(
-        fontSize = 16.sp
-    ),
-    titleLarge = TextStyle(
-        fontSize = 22.sp
-    )
-)
-
 val PoppinsFontFamily = FontFamily(
     Font(R.font.poppins_thin, FontWeight.Thin),
     Font(R.font.poppins_thinitalic, FontWeight.Thin, FontStyle.Italic),
@@ -45,4 +36,24 @@ val PoppinsFontFamily = FontFamily(
 
     Font(R.font.poppins_black, FontWeight.Black),
     Font(R.font.poppins_blackitalic, FontWeight.Black, FontStyle.Italic)
+)
+
+val TumbuhNyataTypography = Typography(
+    bodyLarge = TextStyle(
+        fontSize = 16.sp
+    ),
+    titleLarge = TextStyle(
+        fontSize = 22.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = PoppinsFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp
+
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = PoppinsFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
+    ),
 )

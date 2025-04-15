@@ -9,10 +9,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import kotlinx.coroutines.delay
 
@@ -62,10 +60,4 @@ fun SplashScreen(navController: NavController) {
             contentScale = ContentScale.Fit
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewSplashScreen() {
-    SplashScreen(navController = rememberNavController())
 }

@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.screens
+package com.example.tumbuhnyata.ui.splashscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.vico.multiplatform)
     implementation(libs.vico.views)
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation("androidx.compose.material3:material3:1.2.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

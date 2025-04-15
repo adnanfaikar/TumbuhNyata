@@ -1,4 +1,4 @@
-package com.yourapp.ui.components
+package com.example.tumbuhnyata.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.tumbuhnyata.R
-import com.example.tumbuhnyata.ui.register.RegisterScreen
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
@@ -38,29 +38,29 @@ fun BottomNavigationBar(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             BottomNavItem(
-                icon = R.drawable.ic_home,
-                iconSelected = R.drawable.ic_home_fill,
+                icon = R.drawable.ic_unhome,
+                iconSelected = R.drawable.ic_home,
                 label = "Beranda",
                 route = "home",
                 navController = navController
             )
             BottomNavItem(
-                icon = R.drawable.ic_certificate,
-                iconSelected = R.drawable.ic_certificate_fill,
+                icon = R.drawable.ic_unsertif,
+                iconSelected = R.drawable.ic_sertif,
                 label = "Sertifikasi",
                 route = "sertifikasi",
                 navController = navController
             )
             BottomNavItem(
-                icon = R.drawable.ic_workshop,
-                iconSelected = R.drawable.ic_workshop_fill,
+                icon = R.drawable.ic_unwork,
+                iconSelected = R.drawable.ic_work,
                 label = "Workshop",
                 route = "workshop",
                 navController = navController
             )
             BottomNavItem(
-                icon = R.drawable.ic_profile,
-                iconSelected = R.drawable.ic_profile_fill,
+                icon = R.drawable.ic_unprofile,
+                iconSelected = R.drawable.ic_profile,
                 label = "Profil",
                 route = "profile",
                 navController = navController
@@ -77,10 +77,11 @@ fun BottomNavItem(
     route: String,
     navController: NavController
 ) {
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    val navBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentRoute = navBackStackEntry?.destination?.route
     val isSelected = currentRoute == route
     val selectedColor = Color(0xFF4C8C4A)
-    val unselectedColor = Color.Gray
+    val unselectedColor = Color(0xFF888888)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

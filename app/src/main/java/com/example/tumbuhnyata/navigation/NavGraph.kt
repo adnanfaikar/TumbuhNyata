@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.tumbuhnyata.ui.eventcsr.CsrData
+import androidx.navigation.navArgument
 import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import androidx.navigation.navArgument
@@ -41,6 +42,13 @@ import com.example.tumbuhnyata.ui.dashboard.DashboardScreen
 import com.example.tumbuhnyata.ui.dashboard.kpi.KpiDetailScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
+import com.example.tumbuhnyata.ui.sertifikasi.SertifikasiScreen
+import com.example.tumbuhnyata.ui.sertifikasi.AjukanSertifikasiScreen
+import com.example.tumbuhnyata.ui.sertifikasi.SertifikasiAndaScreen
+import com.example.tumbuhnyata.ui.sertifikasi.RiwayatPengajuanScreen
+import com.example.tumbuhnyata.ui.sertifikasi.DetailSertifikasiScreen
+import com.example.tumbuhnyata.ui.sertifikasi.DokumenOne
+import com.example.tumbuhnyata.ui.sertifikasi.CertificationSuccessScreen
 
 @Composable
 fun AppNavigation() {
@@ -48,7 +56,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "splash" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)
@@ -72,7 +80,7 @@ fun AppNavigation() {
             LoginScreen(navController)
         }
         composable("register") {
-            RegisterScreen(navController)
+            RegisterScreen (navController)
         }
         composable("verifikasi") {
             VerifikasiScreen (navController)
@@ -99,7 +107,6 @@ fun AppNavigation() {
         composable("csr_success") {
             CsrSuccessScreen(navController)
         }
-
         composable("notifikasi") {
             NotifikasiScreen(navController = navController)
         }
@@ -120,60 +127,6 @@ fun AppNavigation() {
         }
         composable("verification_success") {
             VerificationSuccess(navController)
-        }
-        composable("profile") {
-            ProfileScreen(navController)
-        }
-        composable("about") {
-            AboutScreen(navController)
-        }
-        composable("verification_one") {
-            VerificationOne(navController)
-        }
-        composable("verification_two") {
-            VerificationTwo(navController)
-        }
-        composable("verification_success") {
-            VerificationSuccess(navController)
-        }
-        // Main Dashboard Screen
-        composable("dashboard") {
-            // Assuming DashboardScreen is the main screen showing KPIItems
-            DashboardScreen(navController = navController)
-            // TODO: In DashboardScreen, when a KPIItem is clicked, call:
-            // navController.navigate("kpi_detail/your_kpi_id_here")
-        }
-
-        // KPI Detail Screen (with argument)
-        composable(
-            route = "kpi_detail/{kpiId}", // Route with argument placeholder
-            arguments = listOf(navArgument("kpiId") { // Define the argument
-                type = NavType.StringType
-                // defaultValue = "default_id" // Optional: Add default value
-                // nullable = true // Optional: Make argument nullable
-            })
-        ) { backStackEntry ->
-            // Retrieve the argument
-            val kpiId = backStackEntry.arguments?.getString("kpiId")
-            // Handle cases where argument might be missing (shouldn't happen if navigated correctly)
-            requireNotNull(kpiId) { "kpiId parameter wasn't found. Please make sure it's set!" }
-
-            KpiDetailScreen(navController = navController, kpiId = kpiId)
-            // TODO: In KpiDetailScreen, add a button/action for "Tambah Data" that calls:
-            // navController.navigate("upload_data")
-        }
-
-        // Upload Data Screen
-        composable("upload_data") {
-            UploadDataScreen(navController = navController)
-            // TODO: In UploadDataScreen, the "Unggah Data" button's onClick should call:
-            // navController.navigate("upload_success")
-        }
-
-        // Upload Success Screen
-        composable("upload_success") {
-            UploadSuccessScreen(navController = navController)
-            // Button inside this screen handles navigation back to Dashboard
         }
         // Main Dashboard Screen
         composable("dashboard") {
@@ -227,12 +180,33 @@ fun AppNavigation() {
             val workshopId = backStackEntry.arguments?.getString("workshopId") ?: ""
             DeskripsiWorkshopScreen(navController, workshopId)
         }
-
         composable("daftarworkshop") {
             DaftarWorkshop (navController)
         }
         composable("workshopberhasil") {
             WorkshopBerhasil (navController)
+        }
+        // Sertifikasi Routes
+        composable("sertifikasi") {
+            SertifikasiScreen(navController)
+        }
+        composable("ajukansertifikasi") {
+            AjukanSertifikasiScreen(navController)
+        }
+        composable("sertifikasianda") {
+            SertifikasiAndaScreen(navController)
+        }
+        composable("riwayatpengajuan") {
+            RiwayatPengajuanScreen(navController)
+        }
+        composable("detailsertifikasi") {
+            DetailSertifikasiScreen(navController)
+        }
+        composable("dokumenone") {
+            DokumenOne(navController)
+        }
+        composable("berhasil") {
+            CertificationSuccessScreen(navController)
         }
     }
 }

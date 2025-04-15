@@ -53,7 +53,7 @@ fun HomeScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp, vertical = 10.dp)
             )
-            MenuButtons()
+            MenuButtons(navController)
             ActivitySection()
         }
     }
@@ -143,13 +143,13 @@ fun CompanyHeader(hasNotifications: Boolean) {
             }
         }
         Button(
-            onClick = { },
+            onClick = { navController.navigate("notifications") },
             modifier = Modifier
                 .width(38.dp)
                 .height(38.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A613C)),
             shape = RoundedCornerShape(10.dp),
-            contentPadding = PaddingValues(0.dp) // <--- ini penting
+            contentPadding = PaddingValues(0.dp)
         ) {
             Image(
                 painter = painterResource(id = if (hasNotifications) R.drawable.ic_notif_ping else R.drawable.ic_notif),
@@ -158,7 +158,6 @@ fun CompanyHeader(hasNotifications: Boolean) {
                     .size(if (hasNotifications) 22.dp else 22.dp, if (hasNotifications) 26.dp else 24.dp)
             )
         }
-
     }
 }
 
@@ -332,21 +331,21 @@ fun BadgesSection() {
 }
 
 @Composable
-fun MenuButtons() {
+fun MenuButtons(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        MenuButton("Ajukan CSR", R.drawable.ic_ajukan)
+        MenuButton("Ajukan CSR", R.drawable.ic_ajukan) { navController.navigate("csrsubmission") }
         MenuButton("Riwayat", R.drawable.ic_history)
         MenuButton("Keuangan", R.drawable.ic_finance)
     }
 }
 
 @Composable
-fun MenuButton(text: String, iconRes: Int) {
+fun MenuButton(text: String, iconRes: Int, onClick: () -> Unit = {}) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -367,7 +366,8 @@ fun MenuButton(text: String, iconRes: Int) {
                                 Color(0xFF27361F)
                             )
                         )
-                    ),
+                    )
+                    .clickable(onClick = onClick),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -618,8 +618,6 @@ fun ActivityItem(
         }
     }
 }
-
-
 
 @Preview
 @Composable

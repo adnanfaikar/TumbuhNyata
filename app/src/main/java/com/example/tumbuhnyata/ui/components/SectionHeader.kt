@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tumbuhnyata.ui.component.poppins
+import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
 fun SectionHeader(title: String, onLihatSemua: () -> Unit) {
@@ -33,14 +33,14 @@ fun SectionHeader(title: String, onLihatSemua: () -> Unit) {
             text = title,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            fontFamily = poppins
+            fontFamily = PoppinsFontFamily
         )
         TextButton(onClick = onLihatSemua) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text("Lihat Semua", fontFamily = poppins,color = Color(0xFF525E4C) )
+                Text("Lihat Semua", fontFamily = PoppinsFontFamily, color = Color(0xFF525E4C) )
                 Icon(
                     imageVector = Icons.Filled.KeyboardArrowRight,
                     contentDescription = "Lihat Semua",

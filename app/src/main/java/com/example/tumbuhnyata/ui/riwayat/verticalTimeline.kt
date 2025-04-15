@@ -1,6 +1,5 @@
 package com.example.tumbuhnyata.ui.riwayat
 
-
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
@@ -17,7 +16,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tumbuhnyata.ui.component.poppins
+import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
 fun VerticalTimeline(
@@ -58,9 +57,9 @@ fun VerticalTimeline(
 
                 // Text and Date
                 Column {
-                    Text(step.title, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold, fontFamily = poppins)
+                    Text(step.title, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold, fontFamily = PoppinsFontFamily)
                     if (step.date.isNotEmpty()) {
-                        Text(step.date, color = Color.Gray, fontSize = 12.sp, fontFamily = poppins)
+                        Text(step.date, color = Color.Gray, fontSize = 12.sp, fontFamily = PoppinsFontFamily)
                     }
                 }
 

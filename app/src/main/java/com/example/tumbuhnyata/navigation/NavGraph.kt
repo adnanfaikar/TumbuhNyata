@@ -57,7 +57,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "splash" // Ganti dengan "splash" jika ingin memulai dari splash screen,
+        startDestination = "home" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)

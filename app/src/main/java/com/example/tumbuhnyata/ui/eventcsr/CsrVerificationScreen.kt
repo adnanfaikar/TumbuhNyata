@@ -259,7 +259,7 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { navController.navigateUp() },
+                    onClick = { navController.navigate("csr_submission") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

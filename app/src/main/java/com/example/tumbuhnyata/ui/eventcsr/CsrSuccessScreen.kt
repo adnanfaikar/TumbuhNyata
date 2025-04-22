@@ -74,7 +74,7 @@ fun CsrSuccessScreen(navController: NavController) {
 
             // Action Buttons
             Button(
-                onClick = { /* Navigate to detail screen */ },
+                onClick = { navController.navigate("detail_riwayat") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

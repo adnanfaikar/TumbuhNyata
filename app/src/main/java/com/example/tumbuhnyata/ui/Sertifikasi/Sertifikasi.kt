@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,26 +35,34 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 
 @Composable
 fun SertifikasiScreen(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(24.dp))
-        BannerSection()
-        Spacer(modifier = Modifier.height(24.dp))
-        SertifikasiSection(navController)
-        Spacer(modifier = Modifier.height(24.dp))
-        RiwayatPengajuanSection(navController)
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+                .padding(bottom = paddingValues.calculateBottomPadding())
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+            BannerSection(navController)
+            Spacer(modifier = Modifier.height(24.dp))
+            SertifikasiSection(navController)
+            Spacer(modifier = Modifier.height(24.dp))
+            RiwayatPengajuanSection(navController)
+        }
     }
 }
 
 @Composable
-fun BannerSection() {
+fun BannerSection(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,7 +71,7 @@ fun BannerSection() {
     ) {
         // Gambar background banner
         Image(
-            painter = painterResource(id = R.drawable.banner_sertifikasi), // ganti sesuai nama file kamu
+            painter = painterResource(id = R.drawable.banner_sertifikasi),
             contentDescription = "Banner Sertifikasi",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -88,7 +97,7 @@ fun BannerSection() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { /* Aksi klik */ },
+                onClick = { navController.navigate("ajukansertifikasi") },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             ) {
@@ -147,7 +156,7 @@ fun SertifikasiSection(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
-            onClick = { navController.navigate("berhasil") },
+            onClick = { navController.navigate("sertifikasianda") },
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),

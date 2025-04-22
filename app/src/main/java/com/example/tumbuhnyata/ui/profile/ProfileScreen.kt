@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,98 +31,104 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.BottomNavBarProfile
+import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
 fun ProfileScreen(navController: NavController) {
     var selectedIndex by remember { mutableStateOf(3) }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF8F8F8))
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.bg_circle_top),
-            contentDescription = "background",
-            modifier = Modifier
-                .size(300.dp)
-                .align(Alignment.TopStart)
-                .offset(x = (-30).dp, y = (-10).dp)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.bg_circle_bottom),
-            contentDescription = "background",
-            modifier = Modifier
-                .size(310.dp)
-                .align(Alignment.BottomEnd)
-                .offset(x = (40).dp, y = (0).dp)
-        )
-        Column(
+    
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        }
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp)
-        ){
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Row(
+                .background(Color(0xFFF8F8F8))
+                .padding(bottom = paddingValues.calculateBottomPadding())
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_circle_top),
+                contentDescription = "background",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 95.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_profile),
-                    contentDescription = "Profile Picture",
+                    .size(300.dp)
+                    .align(Alignment.TopStart)
+                    .offset(x = (-30).dp, y = (-10).dp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.bg_circle_bottom),
+                contentDescription = "background",
+                modifier = Modifier
+                    .size(310.dp)
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (40).dp, y = (0).dp)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+            ){
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(
                     modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .border(3.dp, Color(0xFF4B4B4B), CircleShape)
-                )
-                Spacer(modifier = Modifier.width(20.dp))
-                Column(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(end = 35.dp),
+                        .fillMaxWidth()
+                        .padding(top = 95.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "PT Paragon Corp",
-                        fontSize = 26.sp,
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Bold
+                    Image(
+                        painter = painterResource(id = R.drawable.img_profile),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape)
+                            .border(3.dp, Color(0xFF4B4B4B), CircleShape)
                     )
-                    Text(
-                        text = "Kampung Baru, No 1 Jakarta",
-                        fontSize = 14.sp,
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Normal,
-                        color = Color(0xFF4B4B4B)
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Column(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(end = 35.dp),
+                    ) {
+                        Text(
+                            text = "PT Paragon Corp",
+                            fontSize = 26.sp,
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Kampung Baru, No 1 Jakarta",
+                            fontSize = 14.sp,
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFF4B4B4B)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.arrow_profile),
+                        contentDescription = "Arrow",
+                        modifier = Modifier
+                            .size(26.dp),
                     )
                 }
+                Spacer(modifier = Modifier.height(60.dp))
+                ProfileOption("Verifikasi Akun", R.drawable.ic_verification_account, R.drawable.arrow_option, onClick = { navController.navigate("verification_one") })
+                ProfileOption("Ganti Password", R.drawable.ic_change_password, R.drawable.arrow_option, onClick = {})
+                ProfileOption("Help & Support", R.drawable.ic_help_support, R.drawable.arrow_option, onClick = {})
+                ProfileOption("Bahasa", R.drawable.ic_langauge, R.drawable.arrow_option, onClick = {})
+                ProfileOption("Tentang Aplikasi", R.drawable.ic_about, R.drawable.arrow_option, onClick = { navController.navigate("about") })
+
                 Spacer(modifier = Modifier.height(20.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.arrow_profile),
-                    contentDescription = "Arrow",
-                    modifier = Modifier
-                        .size(26.dp),
-                )
+
+                LogoutButton(navController = navController)
             }
-            Spacer(modifier = Modifier.height(60.dp))
-            ProfileOption("Verifikasi Akun", R.drawable.ic_verification_account, R.drawable.arrow_option, onClick = { navController.navigate("verification_one") })
-            ProfileOption("Ganti Password", R.drawable.ic_change_password, R.drawable.arrow_option, onClick = {})
-            ProfileOption("Help & Support", R.drawable.ic_help_support, R.drawable.arrow_option, onClick = {})
-            ProfileOption("Bahasa", R.drawable.ic_langauge, R.drawable.arrow_option, onClick = {})
-            ProfileOption("Tentang Aplikasi", R.drawable.ic_about, R.drawable.arrow_option, onClick = { navController.navigate("about") })
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            LogoutButton(navController = navController)
         }
     }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Spacer(modifier = Modifier.weight(1f))
-        BottomNavBarProfile(selectedIndex) { selectedIndex = it }
-    }
 }
+
 @Composable
 fun ProfileOption(title: String, iconStart: Int, iconEnd: Int, onClick: () -> Unit) {
     Card(

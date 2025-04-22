@@ -113,7 +113,7 @@ fun CsrSubmissionScreen(navController: NavController) {
                     onNext = { step++ }
                 )
                 3 -> StepThree { step++ }
-                4 -> StepFour { 
+                4 -> StepFour(navController = navController) { 
                     // Create CSR data object
                     val csrData = CsrData(
                         programName = programName,
@@ -708,7 +708,7 @@ fun StepThree(onNext: () -> Unit) {
 }
 
 @Composable
-fun StepFour(onNext: () -> Unit) {
+fun StepFour(navController: NavController, onNext: () -> Unit) {
     var isChecked by remember { mutableStateOf(false) }
 
     Column(
@@ -764,7 +764,7 @@ fun StepFour(onNext: () -> Unit) {
 
         // Submit Button
         Button(
-            onClick = onNext,
+            onClick = { navController.navigate("csr_verification") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

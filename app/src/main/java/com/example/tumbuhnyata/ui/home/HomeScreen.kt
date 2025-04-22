@@ -144,7 +144,7 @@ fun CompanyHeader(hasNotifications: Boolean, navController: NavController) {
             }
         }
         Button(
-            onClick = { },
+            onClick = { navController.navigate("notifikasi") },
             modifier = Modifier
                 .width(38.dp)
                 .height(38.dp),
@@ -339,7 +339,7 @@ fun MenuButtons(navController: NavController) {
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        MenuButton("Ajukan CSR", R.drawable.ic_ajukan) { navController.navigate("csrsubmission") }
+        MenuButton("Ajukan CSR", R.drawable.ic_ajukan) { navController.navigate("csr_submission") }
         MenuButton("Riwayat", R.drawable.ic_history) { navController.navigate("riwayat") }
         MenuButton("Keuangan", R.drawable.ic_finance)
     }

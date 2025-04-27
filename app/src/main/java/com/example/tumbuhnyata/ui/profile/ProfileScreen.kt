@@ -14,6 +14,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
@@ -35,8 +37,12 @@ import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController,
+    viewModel: ProfileViewModel = viewModel()
+) {
     var selectedIndex by remember { mutableStateOf(3) }
+    val profileState by viewModel.profileState.collectAsState()
     
     Scaffold(
         bottomBar = {
@@ -93,13 +99,13 @@ fun ProfileScreen(navController: NavController) {
                             .padding(end = 35.dp),
                     ) {
                         Text(
-                            text = "PT Paragon Corp",
+                            text = profileState.companyName,
                             fontSize = 26.sp,
                             fontFamily = PoppinsFontFamily,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Kampung Baru, No 1 Jakarta",
+                            text = profileState.companyAddress,
                             fontSize = 14.sp,
                             fontFamily = PoppinsFontFamily,
                             fontWeight = FontWeight.Normal,
@@ -123,7 +129,10 @@ fun ProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                LogoutButton(navController = navController)
+                LogoutButton(
+                    navController = navController,
+                    onLogout = { viewModel.logout() }
+                )
             }
         }
     }
@@ -181,9 +190,15 @@ fun ProfileOption(title: String, iconStart: Int, iconEnd: Int, onClick: () -> Un
 }
 
 @Composable
-fun LogoutButton(navController : NavController) {
+fun LogoutButton(
+    navController: NavController,
+    onLogout: () -> Unit
+) {
     Button(
-        onClick = { navController.navigate("option") },
+        onClick = { 
+            onLogout()
+            navController.navigate("option") 
+        },
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF27361F)),
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier

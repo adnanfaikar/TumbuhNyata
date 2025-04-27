@@ -1,4 +1,5 @@
 package com.example.tumbuhnyata.ui.Sertifikasi
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,10 +16,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,9 +40,13 @@ import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.ui.components.BottomNavigationBar
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun SertifikasiScreen(navController: NavController) {
+    val viewModel: SertifikasiViewModel = viewModel()
+    val state by viewModel.state.collectAsState()
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController)
@@ -54,7 +62,23 @@ fun SertifikasiScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(24.dp))
             BannerSection(navController)
             Spacer(modifier = Modifier.height(24.dp))
-            SertifikasiSection(navController)
+            
+            when {
+                state.isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+                state.error != null -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = state.error ?: "An error occurred")
+                    }
+                }
+                else -> {
+                    SertifikasiSection(navController, state.sertifikasiList)
+                }
+            }
+            
             Spacer(modifier = Modifier.height(24.dp))
             RiwayatPengajuanSection(navController)
         }
@@ -66,7 +90,7 @@ fun BannerSection(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(140.dp)
             .clip(RoundedCornerShape(16.dp))
     ) {
         // Gambar background banner
@@ -86,12 +110,25 @@ fun BannerSection(navController: NavController) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Naikkan Kredibilitas Perusahaan Anda",
-                style = MaterialTheme.typography.titleMedium.copy(color = Color.White, fontFamily = PoppinsFontFamily)
+                text = "Naikkan Kredibilitas",
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
             Text(
+                text = "Perusahaan Anda",
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
                 text = "Ajukan Sertifikasi Sekarang!",
-                style = MaterialTheme.typography.bodySmall.copy(color = Color.White, fontFamily = PoppinsFontFamily)
+                fontSize = 12.sp,
+                fontFamily = PoppinsFontFamily,
+                color = Color.White,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -118,24 +155,7 @@ data class Sertifikasi(
 )
 
 @Composable
-fun SertifikasiSection(navController: NavController) {
-    val sertifikasiList = listOf(
-        Sertifikasi(
-            title = "Environmental Management System",
-            code = "ISO 14001",
-            issued = "Issued Jun 2024 - Expires Jun 2027",
-            credentialId = "Credential ID ABC123XYZ",
-            imageRes = R.drawable.iso_14001
-        ),
-        Sertifikasi(
-            title = "Social Responsibility",
-            code = "ISO 26000",
-            issued = "Issued Feb 2023 - Expires Feb 2026",
-            credentialId = "Credential ID DEF456LMN",
-            imageRes = R.drawable.iso_26000
-        )
-    )
-
+fun SertifikasiSection(navController: NavController, sertifikasiList: List<Sertifikasi>) {
     Text(
         "Sertifikasi Anda",
         fontWeight = FontWeight.Bold,
@@ -176,7 +196,6 @@ fun SertifikasiSection(navController: NavController) {
         }
     }
 }
-
 
 @Composable
 fun SertifikasiCard(data: Sertifikasi) {
@@ -228,7 +247,6 @@ fun SertifikasiCard(data: Sertifikasi) {
         }
     }
 }
-
 
 data class Pengajuan(
     val status: String,
@@ -306,7 +324,6 @@ fun RiwayatPengajuanSection(navController: NavController) {
     }
 }
 
-
 @Composable
 fun PengajuanCard(data: Pengajuan) {
     Card(
@@ -354,11 +371,9 @@ fun InfoRow(iconId: Int, label: String, value: String) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun SertifikasiScreenPreview() {
     val navController = rememberNavController()
     SertifikasiScreen(navController)
 }
-

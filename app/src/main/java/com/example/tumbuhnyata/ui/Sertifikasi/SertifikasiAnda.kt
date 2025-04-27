@@ -31,7 +31,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun SertifikasiAndaScreen(navController: NavController) {
+fun SertifikasiAndaScreen(
+    navController: NavController
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,7 +82,7 @@ fun SertifikasiAndaSection() {
         issued = "Issued Feb 2023 - Expires Feb 2026",
         credentialId = "Credential ID DEF456LMN",
         imageRes = R.drawable.iscc
-    )
+        )
     )
 
     Spacer(modifier = Modifier.height(8.dp))

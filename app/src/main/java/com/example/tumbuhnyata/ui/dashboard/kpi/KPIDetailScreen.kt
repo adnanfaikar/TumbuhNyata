@@ -40,6 +40,9 @@ import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.example.tumbuhnyata.ui.dashboard.kpi.components.VicoLineChart
 import com.example.tumbuhnyata.ui.dashboard.kpi.components.VicoBarChart
 import kotlinx.coroutines.runBlocking
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 
 data class KpiDetails(
     val id: String,
@@ -135,9 +138,23 @@ fun getKpiDetails(kpiId: String): KpiDetails {
 @Composable
 fun KpiDetailScreen(
     navController: NavController,
-    kpiId: String
+    kpiId: String,
+    viewModel: KPIDetailViewModel = viewModel()
 ) {
-    val kpiDetails = remember(kpiId) { getKpiDetails(kpiId) }
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(kpiId) {
+        viewModel.loadKPIDetails(kpiId)
+    }
+
+    val kpiDetails = uiState.kpiDetails
+    if (kpiDetails == null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
     var selectedFilter by remember { mutableStateOf("Tahunan") }
     val filterOptions = listOf("Tahunan", "5 Tahun")
     var selectedYear by remember { mutableStateOf(2025) }

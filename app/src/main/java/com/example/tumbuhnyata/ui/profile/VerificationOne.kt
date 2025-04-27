@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
@@ -26,11 +27,11 @@ import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
-fun VerificationOne(navController: NavController) {
-    var fileAkta by remember { mutableStateOf<String?>(null) }
-    var fileSKDP by remember { mutableStateOf<String?>(null) }
-
-    val isBothFilesUploaded = fileAkta != null && fileSKDP != null
+fun VerificationOne(
+    navController: NavController,
+    viewModel: VerificationOneViewModel = viewModel()
+) {
+    val verificationState by viewModel.verificationState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -84,19 +85,19 @@ fun VerificationOne(navController: NavController) {
 
             UploadField(
                 label = "Akta Pendirian Perusahaan",
-                fileName = fileAkta,
+                fileName = verificationState.aktaFile,
                 placeholder = "Akta Pendirian",
-                onUploadClick = { fileAkta = "SK Kemenkumham Paragon.pdf" }, // Simulasi upload
-                onDelete = { fileAkta = null },
+                onUploadClick = { viewModel.uploadAktaFile("SK Kemenkumham Paragon.pdf") },
+                onDelete = { viewModel.deleteAktaFile() },
                 modifier = Modifier.padding(top=40.dp)
             )
 
             UploadField(
                 label = "Surat Keterangan Domisili Perusahaan",
-                fileName = fileSKDP,
+                fileName = verificationState.skdpFile,
                 placeholder = "SKDP",
-                onUploadClick = { fileSKDP = "Paragon-SKDP.pdf" }, // Simulasi upload
-                onDelete = { fileSKDP = null },
+                onUploadClick = { viewModel.uploadSkdpFile("Paragon-SKDP.pdf") },
+                onDelete = { viewModel.deleteSkdpFile() },
                 modifier = Modifier.padding(top=20.dp)
             )
 
@@ -110,9 +111,9 @@ fun VerificationOne(navController: NavController) {
                     .padding(start = 1.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
-                    if (isBothFilesUploaded) Color(0xFF27361F) else Color(0xFF989898)
+                    if (verificationState.isBothFilesUploaded) Color(0xFF27361F) else Color(0xFF989898)
                 ),
-                enabled = isBothFilesUploaded
+                enabled = verificationState.isBothFilesUploaded
             ) {
                 Text(
                     text = "Selanjutnya",

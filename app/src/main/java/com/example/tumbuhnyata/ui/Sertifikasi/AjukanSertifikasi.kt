@@ -13,8 +13,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,16 +35,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.material3.Text
-import androidx.compose.ui.res.painterResource
-import com.example.tumbuhnyata.ui.components.TopBarProfile
-import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tumbuhnyata.viewmodel.*
 
 @Composable
 fun AjukanSertifikasiScreen(navController: NavController) {
+    val viewModel: AjukanSertifikasiViewModel = viewModel()
+    val state by viewModel.state.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +65,21 @@ fun AjukanSertifikasiScreen(navController: NavController) {
             color = Color(0xFF1A4218)
         )
 
-        AjukanSertifikasiSection(navController)
+        when {
+            state.isLoading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            state.error != null -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = state.error ?: "An error occurred")
+                }
+            }
+            else -> {
+                AjukanSertifikasiSection(navController, state.availableSertifikasiList, viewModel)
+            }
+        }
     }
 }
 
@@ -76,49 +91,37 @@ data class AjukanSertifikasi(
 )
 
 @Composable
-fun AjukanSertifikasiSection(navController: NavController) {
-    val sertifikasiList = listOf(
-        AjukanSertifikasi(
-            title = "Social Responsibility",
-            code = "ISO 26000",
-            deskripsi = "International Organization for Standardization (ISO)",
-            imageRes = R.drawable.iso_26000
-        ),
-        AjukanSertifikasi(
-            title = "PROPER",
-            code = "Program Penilaian Peringkat Kinerja Perusahaan dalam Pengelolaan Lingkungan",
-            deskripsi = "Kementerian Lingkungan Hidup dan Kehutanan (KLHK)",
-            imageRes = R.drawable.proper
-        ),
-        AjukanSertifikasi(
-            title = "Ecolabel Indonesia",
-            code = "Ecolabel",
-            deskripsi = "Kementerian Perindustrian RI",
-            imageRes = R.drawable.ecolabel
-        ),
-        AjukanSertifikasi(
-            title = "Social Accountability Certification",
-            code = "SA8000",
-            deskripsi = "Social Accountability International (SAI)",
-            imageRes = R.drawable.sai
-        )
-    )
-
+fun AjukanSertifikasiSection(
+    navController: NavController,
+    sertifikasiList: List<AjukanSertifikasi>,
+    viewModel: AjukanSertifikasiViewModel
+) {
     Spacer(modifier = Modifier.height(8.dp))
 
-    sertifikasiList.forEach {
-        AjukanSertifikasiCard(it, navController)
+    sertifikasiList.forEach { sertifikasi ->
+        AjukanSertifikasiCard(
+            data = sertifikasi,
+            navController = navController,
+            onSelect = { viewModel.selectSertifikasi(sertifikasi) }
+        )
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
 @Composable
-fun AjukanSertifikasiCard(data: AjukanSertifikasi, navController: NavController) {
+fun AjukanSertifikasiCard(
+    data: AjukanSertifikasi,
+    navController: NavController,
+    onSelect: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 1.dp)
-            .clickable { navController.navigate("detailsertifikasi") },
+            .clickable { 
+                onSelect()
+                navController.navigate("detailsertifikasi")
+            },
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
@@ -142,7 +145,6 @@ fun AjukanSertifikasiCard(data: AjukanSertifikasi, navController: NavController)
                 Text(data.code, fontSize = 14.sp, fontFamily = PoppinsFontFamily, color = Color.Gray)
                 Text(data.deskripsi, fontFamily = PoppinsFontFamily, fontSize = 12.sp)
                 Spacer(modifier = Modifier.height(4.dp))
-
             }
         }
     }

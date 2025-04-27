@@ -3,6 +3,7 @@ package com.example.tumbuhnyata.ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -11,6 +12,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
@@ -29,7 +33,12 @@ import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = viewModel()
+) {
+    val homeState by viewModel.homeState.collectAsState()
+    
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController)
@@ -43,7 +52,7 @@ fun HomeScreen(navController: NavController) {
                 .padding(bottom = paddingValues.calculateBottomPadding()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MainCard()
+            MainCard(navController, homeState)
             Text(
                 text = "Kelola Program CSR Anda",
                 fontSize = 21.sp,
@@ -53,14 +62,14 @@ fun HomeScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp, vertical = 10.dp)
             )
-            MenuButtons()
-            ActivitySection()
+            MenuButtons(navController)
+            ActivitySection(navController, homeState.activities)
         }
     }
 }
 
 @Composable
-fun MainCard() {
+fun MainCard(navController: NavController, homeState: HomeState) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,12 +96,27 @@ fun MainCard() {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                CompanyHeader(hasNotifications = true)
-                CSRStatusSection()
-                CSRFundSection()
-                BadgesSection()
+                CompanyHeader(
+                    hasNotifications = homeState.companyInfo.hasNotifications, 
+                    navController,
+                    companyName = homeState.companyInfo.name,
+                    companyAddress = homeState.companyInfo.address
+                )
+                CSRStatusSection(
+                    completed = homeState.csrStatus.completed,
+                    inProgress = homeState.csrStatus.inProgress,
+                    upcoming = homeState.csrStatus.upcoming
+                )
+                CSRFundSection(
+                    amount = homeState.csrFund.amount,
+                    note = homeState.csrFund.note
+                )
+                BadgesSection(
+                    levelBadge = homeState.badgeInfo.levelBadge,
+                    emissionReduction = homeState.badgeInfo.emissionReduction
+                )
                 Button(
-                    onClick = { },
+                    onClick = { navController.navigate("dashboard") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
@@ -113,7 +137,12 @@ fun MainCard() {
 }
 
 @Composable
-fun CompanyHeader(hasNotifications: Boolean) {
+fun CompanyHeader(
+    hasNotifications: Boolean, 
+    navController: NavController,
+    companyName: String,
+    companyAddress: String
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -130,26 +159,26 @@ fun CompanyHeader(hasNotifications: Boolean) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    "PT Paragon Corp",
+                    companyName,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
                 Text(
-                    "Kampung Baru, No.1 Jakarta",
+                    companyAddress,
                     color = Color.White,
                     fontSize = 12.sp
                 )
             }
         }
         Button(
-            onClick = { },
+            onClick = { navController.navigate("notifikasi") },
             modifier = Modifier
                 .width(38.dp)
                 .height(38.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A613C)),
             shape = RoundedCornerShape(10.dp),
-            contentPadding = PaddingValues(0.dp) // <--- ini penting
+            contentPadding = PaddingValues(0.dp)
         ) {
             Image(
                 painter = painterResource(id = if (hasNotifications) R.drawable.ic_notif_ping else R.drawable.ic_notif),
@@ -158,12 +187,15 @@ fun CompanyHeader(hasNotifications: Boolean) {
                     .size(if (hasNotifications) 22.dp else 22.dp, if (hasNotifications) 26.dp else 24.dp)
             )
         }
-
     }
 }
 
 @Composable
-fun CSRStatusSection() {
+fun CSRStatusSection(
+    completed: Int,
+    inProgress: Int,
+    upcoming: Int
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,9 +212,9 @@ fun CSRStatusSection() {
                 modifier = Modifier.padding(top = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                StatusItem("Selesai ", "12")
-                StatusItem("    Progres ", "4")
-                StatusItem("    Mendatang ", "7")
+                StatusItem("Selesai ", completed.toString())
+                StatusItem("    Progres ", inProgress.toString())
+                StatusItem("    Mendatang ", upcoming.toString())
             }
         }
     }
@@ -204,7 +236,10 @@ fun StatusItem(label: String, value: String) {
 }
 
 @Composable
-fun CSRFundSection() {
+fun CSRFundSection(
+    amount: String,
+    note: String
+) {
     Column(modifier = Modifier.padding(top = 8.dp, bottom = 20.dp, start = 14.dp, end = 14.dp)) {
         Text(
             "Riwayat Dana CSR",
@@ -219,19 +254,18 @@ fun CSRFundSection() {
             Image(
                 painter = painterResource(id = R.drawable.ic_money),
                 contentDescription = "Money",
-
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                "Rp 2.987.450.725",
+                amount,
                 color = Color.White,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 30.sp
             )
         }
         Text(
-            "*terhitung dari dana CSR yang telah selesai",
+            note,
             color = Color.White.copy(alpha = 0.7f),
             fontWeight = FontWeight.Normal,
             fontSize = 10.sp
@@ -240,7 +274,10 @@ fun CSRFundSection() {
 }
 
 @Composable
-fun BadgesSection() {
+fun BadgesSection(
+    levelBadge: String,
+    emissionReduction: String
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -285,7 +322,7 @@ fun BadgesSection() {
                     )
                 }
                 Text(
-                    "Super Star", 
+                    levelBadge, 
                     color = Color.White, 
                     fontSize = 14.sp, 
                     fontWeight = FontWeight.ExtraBold
@@ -321,7 +358,7 @@ fun BadgesSection() {
                     modifier = Modifier.size(60.dp)
                 )
                 Text(
-                    "4.250 kg CO₂e", 
+                    emissionReduction, 
                     color = Color.White, 
                     fontSize = 14.sp, 
                     fontWeight = FontWeight.ExtraBold
@@ -332,21 +369,21 @@ fun BadgesSection() {
 }
 
 @Composable
-fun MenuButtons() {
+fun MenuButtons(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        MenuButton("Ajukan CSR", R.drawable.ic_ajukan)
-        MenuButton("Riwayat", R.drawable.ic_history)
-        MenuButton("Keuangan", R.drawable.ic_finance)
+        MenuButton("Ajukan CSR", R.drawable.ic_ajukan) { navController.navigate("csr_submission") }
+        MenuButton("Riwayat", R.drawable.ic_history) { navController.navigate("riwayat") }
+        MenuButton("Keuangan", R.drawable.ic_finance) { navController.navigate("dashboardkeuangan") }
     }
 }
 
 @Composable
-fun MenuButton(text: String, iconRes: Int) {
+fun MenuButton(text: String, iconRes: Int, onClick: () -> Unit = {}) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -367,7 +404,8 @@ fun MenuButton(text: String, iconRes: Int) {
                                 Color(0xFF27361F)
                             )
                         )
-                    ),
+                    )
+                    .clickable(onClick = onClick),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -388,7 +426,7 @@ fun MenuButton(text: String, iconRes: Int) {
 }
 
 @Composable
-fun ActivitySection() {
+fun ActivitySection(navController: NavController, activities: List<Activity>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -404,7 +442,7 @@ fun ActivitySection() {
                 fontSize = 21.sp,
                 fontWeight = FontWeight.ExtraBold
             )
-            TextButton(onClick = { }) {
+            TextButton(onClick = { navController.navigate("riwayat") }) {
                 Text(
                     "Lihat Semua   >",
                     fontSize = 12.sp,
@@ -418,59 +456,17 @@ fun ActivitySection() {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(vertical = 0.dp)
         ) {
-            item {
+            items(activities.size) { index ->
+                val activity = activities[index]
                 ActivityItem(
-                    title = "Penanaman 1000 Pohon",
-                    community = "Komunitas Jaya Hijau",
-                    status = "Program Selesai",
-                    kategori = "Lingkungan",
-                    lokasi = "Jakarta Timur",
-                    periode = "12 Mar - 20 Jun 24",
-                    statusType = StatusType.COMPLETED
-                )
-            }
-            item {
-                ActivityItem(
-                    title = "Penghijauan Hutan Kaltim",
-                    community = "PT Hijau Sejati",
-                    status = "Mendatang",
-                    kategori = "Lingkungan",
-                    lokasi = "Kalimantan",
-                    periode = "12 Mar - 20 Mar 25",
-                    statusType = StatusType.UPCOMING
-                )
-            }
-            item {
-                ActivityItem(
-                    title = "Beasiswa Yatim Jabar",
-                    community = "Pemerintah Prov. Jabar",
-                    status = "Progress",
-                    kategori = "Sosial",
-                    lokasi = "Jawa Barat",
-                    periode = "6 Mar - 15 Jun 25",
-                    statusType = StatusType.IN_PROGRESS
-                )
-            }
-            item {
-                ActivityItem(
-                    title = "Donor Darah Paragon 2025",
-                    community = "RS Bunda Mulia",
-                    status = "Progress",
-                    kategori = "Sosial",
-                    lokasi = "Jakarta Raya",
-                    periode = "12 Jan - 2 Apr 25",
-                    statusType = StatusType.IN_PROGRESS
-                )
-            }
-            item {
-                ActivityItem(
-                    title = "Penanaman Mangrove",
-                    community = "Pemkot Kota Lombok",
-                    status = "Program Selesai",
-                    kategori = "Lingkungan",
-                    lokasi = "Pantai Barat, Lombok",
-                    periode = "12 Mar - 20 Jun 24",
-                    statusType = StatusType.COMPLETED
+                    title = activity.title,
+                    community = activity.community,
+                    status = activity.status,
+                    kategori = activity.kategori,
+                    lokasi = activity.lokasi,
+                    periode = activity.periode,
+                    statusType = activity.statusType,
+                    navController = navController
                 )
             }
         }
@@ -491,7 +487,8 @@ fun ActivityItem(
     kategori: String,
     lokasi: String,
     periode: String,
-    statusType: StatusType
+    statusType: StatusType,
+    navController: NavController
 ) {
     Card(
         modifier = Modifier
@@ -618,8 +615,6 @@ fun ActivityItem(
         }
     }
 }
-
-
 
 @Preview
 @Composable

@@ -217,15 +217,15 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
     val email by viewModel.email.collectAsState()
     val phoneNumber by viewModel.phoneNumber.collectAsState()
     val nib by viewModel.nib.collectAsState()
-    val address by viewModel.address.collectAsState()
     
     var isEmailValid by remember { mutableStateOf(true) }
+    var isPhoneValid by remember { mutableStateOf(true) }
+    var isNIBValid by remember { mutableStateOf(true) }
     
-    val isNextAvailable = companyName.isNotBlank() && 
-                           email.isNotBlank() && isEmailValid && 
-                           phoneNumber.isNotBlank() && 
-                           nib.isNotBlank() &&
-                           address.isNotBlank()
+    val isNextAvailable = companyName.isNotBlank() &&
+                           email.isNotBlank() && isEmailValid &&
+                           phoneNumber.isNotBlank() && isPhoneValid &&
+                           nib.isNotBlank() && isNIBValid
 
     Column(modifier = Modifier.padding(16.dp)) {
 
@@ -308,8 +308,9 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
         OutlinedTextField(
             value = phoneNumber,
             onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() } && newValue.length <= 12) {
+                if (newValue.all { it.isDigit() } && newValue.length <= 13) {
                     viewModel.updatePhoneNumber(newValue)
+                    isPhoneValid = newValue.length >= 10
                 }
             },
             label = {
@@ -335,14 +336,28 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
             singleLine = true
         )
 
+        // Menampilkan warning jika nomor telepon tidak valid
+        if (!isPhoneValid && phoneNumber.isNotBlank()) {
+            Text(
+                text = "Nomor telepon harus terdiri dari 10 hingga 13 digit",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // nib perusahaan
         OutlinedTextField(
             value = nib,
             onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() } && newValue.length <= 13) {
+                if (newValue.all { it.isDigit() } && newValue.length <= 12) {
                     viewModel.updateNIB(newValue)
+                    isNIBValid = newValue.length == 12
                 }
             },
             label = {
@@ -368,33 +383,18 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
             singleLine = true
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // alamat perusahaan
-        OutlinedTextField(
-            value = address,
-            onValueChange = { viewModel.updateAddress(it) },
-            label = {
-                Text(
-                    "Alamat Perusahaan" ,
-                    color = Color(0xFF686868),
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                ) },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_office),
-                    modifier = Modifier.size(18.dp),
-                    contentDescription = "Office Icon"
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
-            shape = RoundedCornerShape(15.dp),
-            singleLine = true
-        )
+        // Menampilkan warning jika NIB tidak valid
+        if (!isNIBValid && nib.isNotBlank()) {
+            Text(
+                text = "NIB harus terdiri dari 12 digit",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
 
         Spacer(modifier = Modifier.height(33.dp))
 

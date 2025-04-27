@@ -17,12 +17,13 @@ import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
 import android.util.Log
+import androidx.compose.runtime.remember
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSuccessScreen
 import com.google.gson.Gson
-import com.example.tumbuhnyata.ui.screens.OptionScreen
+import com.example.tumbuhnyata.ui.splashscreen.OptionScreen
 import com.example.tumbuhnyata.ui.register.OtpScreen
 import com.example.tumbuhnyata.ui.register.VerifikasiScreen
 import com.example.tumbuhnyata.ui.register.AkunBerhasil
@@ -39,9 +40,18 @@ import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.tumbuhnyata.ui.riwayat.RiwayatScreen
-import com.example.tumbuhnyata.ui.riwayat.PerluTindakanScreen
-import com.example.tumbuhnyata.ui.riwayat.DiterimaScreen
+import com.example.tumbuhnyata.data.model.dummyCsrList
+import com.example.tumbuhnyata.ui.riwayat.*
+import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.AjukanSertifikasiScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiAndaScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.RiwayatPengajuanScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
+import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
+import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
+import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
+import com.example.tumbuhnyata.viewmodel.DashboardKeuanganViewModel
+import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
 
 @Composable
 fun AppNavigation() {
@@ -49,7 +59,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "splash" // Ganti dengan "splash" jika ingin memulai dari splash screen,
+        startDestination = "home" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)
@@ -182,28 +192,103 @@ fun AppNavigation() {
             HomeScreen(navController)
         }
         
+        // Invoice Screen
+        composable("invoice") {
+            InvoiceScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         // Riwayat screens
         composable("riwayat") {
+            val riwayatViewModel = remember {
+                RiwayatViewModel(dummyList = dummyCsrList)
+            }
             RiwayatScreen(
                 navController = navController,
+                riwayatViewModel = riwayatViewModel,
                 onCsrCardClick = { csrItem ->
-                    // Navigate to detail page (you can create this route)
+                    Log.d("NavGraph", "CSR Card clicked: ${csrItem.title}")
+                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
                 },
                 onLihatSemuaPerluTindakan = {
-                    navController.navigate("perlu_tindakan")
+                    navController.navigate("perluTindakan")
                 },
                 onLihatSemuaDiterima = {
                     navController.navigate("diterima")
                 }
             )
         }
-        
-        composable("perlu_tindakan") {
-            PerluTindakanScreen(navController = navController)
+
+        composable(
+            route = "detailRiwayat/{csrTitle}",
+            arguments = listOf(
+                navArgument("csrTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val csrTitle = backStackEntry.arguments?.getString("csrTitle")?.replace("_", " ")
+            val csrItem = dummyCsrList.find { it.title == csrTitle }
+            if (csrItem != null) {
+                CsrDetailScreen(
+                    csr = csrItem,
+                    onBack = { navController.popBackStack() },
+                    onNavigateToInvoice = { navController.navigate("invoice") }
+                )
+            }
         }
-        
+
+        composable("perluTindakan") {
+            val riwayatViewModel = remember {
+                RiwayatViewModel(dummyList = dummyCsrList)
+            }
+            PerluTindakanScreen(
+                riwayatViewModel = riwayatViewModel,
+                onBack = { navController.popBackStack() },
+                onCsrCardClick = { csrItem ->
+                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
+                }
+            )
+        }
+
         composable("diterima") {
-            DiterimaScreen(navController = navController)
+            val riwayatViewModel = remember {
+                RiwayatViewModel(dummyList = dummyCsrList)
+            }
+            DiterimaScreen(
+                riwayatViewModel = riwayatViewModel,
+                onBack = { navController.popBackStack() },
+                onCsrCardClick = { csrItem ->
+                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
+                }
+            )
+        }
+
+        
+        // Sertifikasi Routes
+        composable("sertifikasi") {
+            SertifikasiScreen(navController)
+        }
+        composable("ajukansertifikasi") {
+            AjukanSertifikasiScreen(navController)
+        }
+        composable("sertifikasianda") {
+            SertifikasiAndaScreen(navController)
+        }
+        composable("riwayatpengajuan") {
+            RiwayatPengajuanScreen(navController)
+        }
+        composable("detailsertifikasi") {
+            DetailSertifikasiScreen(navController)
+        }
+        composable("dokumenone") {
+            DokumenOne(navController)
+        }
+        composable("berhasil") {
+            CertificationSuccessScreen(navController)
+        }
+
+        composable("dashboardkeuangan") {
+            DashboardKeuanganScreen(navController)
         }
     }
 }

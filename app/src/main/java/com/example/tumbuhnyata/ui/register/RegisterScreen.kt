@@ -217,15 +217,15 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
     val email by viewModel.email.collectAsState()
     val phoneNumber by viewModel.phoneNumber.collectAsState()
     val nib by viewModel.nib.collectAsState()
-    val address by viewModel.address.collectAsState()
     
     var isEmailValid by remember { mutableStateOf(true) }
+    var isPhoneValid by remember { mutableStateOf(true) }
+    var isNIBValid by remember { mutableStateOf(true) }
     
-    val isNextAvailable = companyName.isNotBlank() && 
-                           email.isNotBlank() && isEmailValid && 
-                           phoneNumber.isNotBlank() && 
-                           nib.isNotBlank() &&
-                           address.isNotBlank()
+    val isNextAvailable = companyName.isNotBlank() &&
+                           email.isNotBlank() && isEmailValid &&
+                           phoneNumber.isNotBlank() && isPhoneValid &&
+                           nib.isNotBlank() && isNIBValid
 
     Column(modifier = Modifier.padding(16.dp)) {
 
@@ -308,8 +308,9 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
         OutlinedTextField(
             value = phoneNumber,
             onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() } && newValue.length <= 12) {
+                if (newValue.all { it.isDigit() } && newValue.length <= 13) {
                     viewModel.updatePhoneNumber(newValue)
+                    isPhoneValid = newValue.length >= 10
                 }
             },
             label = {
@@ -335,14 +336,28 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
             singleLine = true
         )
 
+        // Menampilkan warning jika nomor telepon tidak valid
+        if (!isPhoneValid && phoneNumber.isNotBlank()) {
+            Text(
+                text = "Nomor telepon harus terdiri dari 10 hingga 13 digit",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // nib perusahaan
         OutlinedTextField(
             value = nib,
             onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() } && newValue.length <= 13) {
+                if (newValue.all { it.isDigit() } && newValue.length <= 12) {
                     viewModel.updateNIB(newValue)
+                    isNIBValid = newValue.length == 12
                 }
             },
             label = {
@@ -368,33 +383,18 @@ fun StepOne(viewModel: RegisterViewModel, onNext: () -> Unit) {
             singleLine = true
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // alamat perusahaan
-        OutlinedTextField(
-            value = address,
-            onValueChange = { viewModel.updateAddress(it) },
-            label = {
-                Text(
-                    "Alamat Perusahaan" ,
-                    color = Color(0xFF686868),
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                ) },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_office),
-                    modifier = Modifier.size(18.dp),
-                    contentDescription = "Office Icon"
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
-            shape = RoundedCornerShape(15.dp),
-            singleLine = true
-        )
+        // Menampilkan warning jika NIB tidak valid
+        if (!isNIBValid && nib.isNotBlank()) {
+            Text(
+                text = "NIB harus terdiri dari 12 digit",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
 
         Spacer(modifier = Modifier.height(33.dp))
 
@@ -466,110 +466,32 @@ fun StepTwo(viewModel: RegisterViewModel, onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(33.dp))
 
-        Box (
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, Color.Gray, RoundedCornerShape(15.dp))
-        ){
-            Column() {
-                // TextField untuk "Cari Alamat"
-                OutlinedTextField(
-                    value = address,
-                    onValueChange = { viewModel.updateAddress(it) },
-                    label = {
-                        Text(
-                            "Cari Alamat",
-                            color = Color(0xFF686868),
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp,
-                        ) },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_loc),
-                            modifier = Modifier.size(18.dp),
-                            contentDescription = "Location Icon"
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .height(55.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    singleLine = true
+        // Alamat Perusahaan input field
+        OutlinedTextField(
+            value = address,
+            onValueChange = { viewModel.updateAddress(it) },
+            label = { Text(
+                "Alamat Perusahaan",
+                color = Color(0xFF686868),
+                fontFamily = PoppinsFontFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp
+            ) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_office),
+                    contentDescription = "Office Icon",
+                    modifier = Modifier.size(18.dp)
                 )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            shape = RoundedCornerShape(15.dp),
+            singleLine = true
+        )
 
-                Divider(color = Color.White, thickness = 1.dp)
-
-                // Lokasi Saat Ini
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            // Replace with actual current location
-                            viewModel.updateAddress("Jl. Joyo Raharjo No.185, Merjosari, Kec. Lowokwaru. Kota Malang, Jawa Timur 65144, Indonesia")
-                        }
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_mark_loc),
-                        contentDescription = "Current Location Icon",
-                        tint = Color.Black,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(18.dp))
-                    Column {
-                        Text(
-                            "Lokasi Anda Saat Ini",
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
-                            color = Color.Black
-                        )
-                        Text(
-                            "Jl. Joyo Raharjo No.185, Merjosari, Kec. Lowokwaru. Kota Malang, Jawa Timur 65144, Indonesia",
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-
-                Divider(color = Color.Gray, thickness = 1.dp)
-
-                // Pilih Lewat Peta
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            // Handle map selection
-                        }
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_map),
-                        contentDescription = "Map Icon",
-                        tint = Color(0xFF3A5A40),
-                        modifier = Modifier.size(20.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(18.dp))
-
-                    Text(
-                        "Pilih Lewat Peta",
-                        fontFamily = PoppinsFontFamily,
-                        color = Color(0xFF3A5A40),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(33.dp))
+        Spacer(modifier = Modifier.height(170.dp))
 
         Button(
             onClick = onNext,

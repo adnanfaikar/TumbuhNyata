@@ -49,6 +49,8 @@ import com.example.tumbuhnyata.ui.Sertifikasi.RiwayatPengajuanScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
 import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
+import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
+import com.example.tumbuhnyata.viewmodel.DashboardKeuanganViewModel
 import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
 
 @Composable
@@ -57,7 +59,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "home" // Ganti dengan "splash" jika ingin memulai dari splash screen,
+        startDestination = "workshop" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)
@@ -190,6 +192,13 @@ fun AppNavigation() {
             HomeScreen(navController)
         }
         
+        // Invoice Screen
+        composable("invoice") {
+            InvoiceScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         // Riwayat screens
         composable("riwayat") {
             val riwayatViewModel = remember {
@@ -200,7 +209,7 @@ fun AppNavigation() {
                 riwayatViewModel = riwayatViewModel,
                 onCsrCardClick = { csrItem ->
                     Log.d("NavGraph", "CSR Card clicked: ${csrItem.title}")
-                    navController.navigate("detailRiwayat/${csrItem.title.hashCode()}")
+                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
                 },
                 onLihatSemuaPerluTindakan = {
                     navController.navigate("perluTindakan")
@@ -210,22 +219,48 @@ fun AppNavigation() {
                 }
             )
         }
-        composable("detailRiwayat/{csrItemId}") { backStackEntry ->
-            val csrItemId = backStackEntry.arguments?.getString("csrItemId")
-            // TODO: Fetch detail data based on csrItemId if needed
-            CsrDetailScreen(onBack = { navController.popBackStack() }) // Assuming CsrDetailScreen can act as DetailRiwayatScreen
+
+        composable(
+            route = "detailRiwayat/{csrTitle}",
+            arguments = listOf(
+                navArgument("csrTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val csrTitle = backStackEntry.arguments?.getString("csrTitle")?.replace("_", " ")
+            val csrItem = dummyCsrList.find { it.title == csrTitle }
+            if (csrItem != null) {
+                CsrDetailScreen(
+                    csr = csrItem,
+                    onBack = { navController.popBackStack() },
+                    onNavigateToInvoice = { navController.navigate("invoice") }
+                )
+            }
         }
+
         composable("perluTindakan") {
             val riwayatViewModel = remember {
                 RiwayatViewModel(dummyList = dummyCsrList)
             }
-            PerluTindakanScreen(riwayatViewModel = riwayatViewModel, onBack = { navController.popBackStack() })
+            PerluTindakanScreen(
+                riwayatViewModel = riwayatViewModel,
+                onBack = { navController.popBackStack() },
+                onCsrCardClick = { csrItem ->
+                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
+                }
+            )
         }
+
         composable("diterima") {
             val riwayatViewModel = remember {
                 RiwayatViewModel(dummyList = dummyCsrList)
             }
-            DiterimaScreen(riwayatViewModel = riwayatViewModel, onBack = { navController.popBackStack() })
+            DiterimaScreen(
+                riwayatViewModel = riwayatViewModel,
+                onBack = { navController.popBackStack() },
+                onCsrCardClick = { csrItem ->
+                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
+                }
+            )
         }
 
         
@@ -250,6 +285,10 @@ fun AppNavigation() {
         }
         composable("berhasil") {
             CertificationSuccessScreen(navController)
+        }
+
+        composable("dashboardkeuangan") {
+            DashboardKeuanganScreen(navController)
         }
     }
 }

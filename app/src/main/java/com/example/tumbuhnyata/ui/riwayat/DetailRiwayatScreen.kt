@@ -10,15 +10,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,18 +29,35 @@ import com.example.tumbuhnyata.ui.component.poppins
 import com.example.tumbuhnyata.ui.riwayat.TimelineStep
 import com.example.tumbuhnyata.ui.riwayat.VerticalTimeline
 import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.ui.component.CsrCard
+import com.example.tumbuhnyata.ui.component.SuccessDialog
+import com.example.tumbuhnyata.ui.riwayat.MendatangDetailScreen
+import com.example.tumbuhnyata.ui.riwayat.ProgressDetailScreen
+import com.example.tumbuhnyata.ui.riwayat.SelesaiDetailScreen
+
+@Composable
+fun CsrDetailScreen(
+    csr: CsrItem,
+    onBack: () -> Unit,
+    onNavigateToInvoice: () -> Unit
+) {
+    when (csr.subStatus) {
+        SubStatus.MENDATANG -> MendatangDetailScreen(csr = csr, onBack = onBack)
+        SubStatus.PROGRESS -> ProgressDetailScreen(csr = csr, onBack = onBack)
+        SubStatus.SELESAI -> SelesaiDetailScreen(csr = csr, onBack = onBack)
+        else -> ReviewDetailScreen(csr = csr, onBack = onBack, onNavigateToInvoice = onNavigateToInvoice)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CsrDetailScreen(onBack: () -> Unit) {
-    // Ambil item dummy dengan judul "Penanaman 1000 Pohon"
-    val detailItem = dummyCsrList.find { it.title == "Penanaman 1000 Pohon" }
-
-    // Pastikan item ditemukan
-    if (detailItem == null) {
-        Text("Data CSR tidak ditemukan")
-        return
-    }
+private fun ReviewDetailScreen(
+    csr: CsrItem,
+    onBack: () -> Unit,
+    onNavigateToInvoice: () -> Unit
+) {
+    var showProposalSuccessDialog by remember { mutableStateOf(false) }
+    var showRevisionSuccessDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -62,21 +72,20 @@ fun CsrDetailScreen(onBack: () -> Unit) {
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF2C3E1F)) // hijau tua
+                        .background(Color(0xFF2C3E1F))
                         .clickable { onBack() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp) // Sesuaikan ukuran ikon jika perlu
+                        tint = Color.White
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     "Status Riwayat CSR",
-                    fontSize = 20.sp, // Sesuaikan ukuran font agar tidak terlalu besar
+                    fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = poppins
                 )
@@ -91,130 +100,144 @@ fun CsrDetailScreen(onBack: () -> Unit) {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Card Detail Informasi
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
+            // CSR Card with elevation
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                // Strip warna kiri
-                Box(
-                    modifier = Modifier
-                        .width(20.dp)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp))
-                        .background(Color(android.graphics.Color.parseColor(detailItem.subStatus.colorHex)))
+                CsrCard(item = csr)
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Download Proposal Button
+            Button(
+                onClick = { showProposalSuccessDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF2C3E1F)
                 )
-
-                // Konten utama kartu
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
-                        )
-                        .padding(16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = detailItem.title,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = poppins
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_download),
+                        contentDescription = "Download",
+                        modifier = Modifier.size(20.dp)
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = detailItem.organization,
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        fontFamily = poppins
+                        "Download Proposal Rancangan",
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.SemiBold
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Status : ${
-                            detailItem.subStatus.name.replace("_", " ").lowercase()
-                                .replaceFirstChar { it.uppercase() }
-                        } ${getSubStatusEmoji(detailItem.subStatus)}",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = poppins
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Divider(color = Color.LightGray, thickness = 0.5.dp)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Kategori", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = poppins)
-                            Text(detailItem.category, fontSize = 11.sp, fontFamily = poppins)
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(modifier = Modifier.fillMaxHeight().width(0.5.dp).background(Color.LightGray))
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Lokasi", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = poppins)
-                            Text(detailItem.location, fontSize = 11.sp, fontFamily = poppins)
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(modifier = Modifier.fillMaxHeight().width(0.5.dp).background(Color.LightGray))
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
-                            Text("Periode", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = poppins)
-                            Text(detailItem.period, fontSize = 11.sp, fontFamily = poppins)
-                        }
-                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (detailItem.status.lowercase() == "proses review") {
+            // Additional button for MEMERLUKAN_REVISI status
+            if (csr.subStatus == SubStatus.MEMERLUKAN_REVISI) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(
-                    onClick = { /* TODO: Implement download proposal */ },
+                    onClick = { showRevisionSuccessDialog = true },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2C3E1F),
-                        contentColor = Color.White
+                        containerColor = Color(0xFF2C3E1F)
                     )
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_download), // Load drawable
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_download),
                             contentDescription = "Download",
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Download Proposal Rancangan",
+                            "Download Panduan Revisi",
                             fontFamily = poppins,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+            }
 
-                VerticalTimeline(
-                    steps = listOf(
-                        TimelineStep("Pengajuan Dikirim", "10/05/2024 - 09:41 WIB", isCompleted = true),
-                        TimelineStep("Review & Evaluasi", "10/05/2024 - 09:50 WIB", isInProgress = true),
-                        TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB"),
-                        TimelineStep("Implementasi Program")
-                        // Tambahkan langkah-langkah timeline lainnya sesuai kebutuhan
+            // Additional button for MENUNGGU_PEMBAYARAN status
+            if (csr.subStatus == SubStatus.MENUNGGU_PEMBAYARAN) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = onNavigateToInvoice,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2C3E1F)
                     )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_invoice),
+                            contentDescription = "Invoice",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Detail Invoice",
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Timeline
+            val timelineSteps = when (csr.subStatus) {
+                SubStatus.MENUNGGU_PEMBAYARAN -> listOf(
+                    TimelineStep("Pengajuan Dikirim", "10/05/2024 - 09:41 WIB", isCompleted = true),
+                    TimelineStep("Review & Evaluasi", "10/05/2024 - 09:50 WIB", isCompleted = true),
+                    TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB", isInProgress = true),
+                    TimelineStep("Implementasi Program")
+                )
+                else -> listOf(
+                    TimelineStep("Pengajuan Dikirim", "10/05/2024 - 09:41 WIB", isCompleted = true),
+                    TimelineStep(
+                        title = when (csr.subStatus) {
+                            SubStatus.MEMERLUKAN_REVISI -> "Review & Evaluasi - Revisi Diperlukan"
+                            else -> "Review & Evaluasi"
+                        },
+                        date = "10/05/2024 - 09:50 WIB",
+                        isInProgress = true
+                    ),
+                    TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB"),
+                    TimelineStep("Implementasi Program")
                 )
             }
-            // Tambahkan penanganan status lainnya jika diperlukan
+            VerticalTimeline(steps = timelineSteps)
+        }
+
+        // Success Dialogs
+        if (showProposalSuccessDialog) {
+            SuccessDialog(
+                message = "Berhasil mengunduh proposal rancangan",
+                onDismiss = { showProposalSuccessDialog = false }
+            )
+        }
+
+        if (showRevisionSuccessDialog) {
+            SuccessDialog(
+                message = "Berhasil mengunduh panduan revisi",
+                onDismiss = { showRevisionSuccessDialog = false }
+            )
         }
     }
 }
@@ -222,5 +245,5 @@ fun CsrDetailScreen(onBack: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewCsrDetailScreen() {
-    CsrDetailScreen(onBack = {})
+    CsrDetailScreen(csr = dummyCsrList[0], onBack = {}, onNavigateToInvoice = {})
 }

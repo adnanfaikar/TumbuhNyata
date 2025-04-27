@@ -30,7 +30,11 @@ import com.example.tumbuhnyata.ui.component.CsrCard
 import com.example.tumbuhnyata.ui.component.poppins
 
 @Composable
-fun DiterimaScreen(riwayatViewModel: RiwayatViewModel = viewModel(), onBack: () -> Unit) {
+fun DiterimaScreen(
+    riwayatViewModel: RiwayatViewModel = viewModel(),
+    onBack: () -> Unit,
+    onCsrCardClick: (CsrItem) -> Unit
+) {
     val diterimaList by riwayatViewModel.diterimaItems.collectAsState()
 
     Column(
@@ -76,7 +80,9 @@ fun DiterimaScreen(riwayatViewModel: RiwayatViewModel = viewModel(), onBack: () 
                 .padding(bottom = 16.dp)
         ) {
             items(diterimaList) { item ->
-                CsrCard(item = item)
+                CsrCard(item = item) {
+                    onCsrCardClick(item)
+                }
             }
         }
     }
@@ -88,5 +94,9 @@ fun DiterimaScreenPreview() {
     val dummyViewModel = remember {
         object : RiwayatViewModel(dummyList = dummyCsrList) {} // Anonymous object for preview
     }
-    DiterimaScreen(riwayatViewModel = dummyViewModel, onBack = {})
+    DiterimaScreen(
+        riwayatViewModel = dummyViewModel,
+        onBack = {},
+        onCsrCardClick = {}
+    )
 }

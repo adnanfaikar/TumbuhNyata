@@ -32,20 +32,13 @@ import androidx.navigation.compose.rememberNavController
 import java.text.SimpleDateFormat
 import java.util.*
 import com.google.gson.Gson
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun CsrSubmissionScreen(navController: NavController) {
+    val viewModel: CsrSubmissionViewModel = viewModel()
     var step by remember { mutableStateOf(1) }
     
-    // State for CSR data
-    var programName by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("") }
-    var startDate by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
-    var partnerName by remember { mutableStateOf("") }
-    var budget by remember { mutableStateOf("") }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,36 +86,36 @@ fun CsrSubmissionScreen(navController: NavController) {
         AnimatedContent(targetState = step, label = "CSR Steps") { currentStep ->
             when (currentStep) {
                 1 -> StepOne(
-                    programName = programName,
-                    selectedCategory = selectedCategory,
-                    onProgramNameChange = { programName = it },
-                    onCategoryChange = { selectedCategory = it },
+                    programName = viewModel.programName.value,
+                    selectedCategory = viewModel.category.value,
+                    onProgramNameChange = { viewModel.programName.value = it },
+                    onCategoryChange = { viewModel.category.value = it },
                     onNext = { step++ }
                 )
                 2 -> StepTwo(
-                    location = location,
-                    partnerName = partnerName,
-                    startDate = startDate,
-                    endDate = endDate,
-                    budget = budget,
-                    onLocationChange = { location = it },
-                    onPartnerNameChange = { partnerName = it },
-                    onStartDateChange = { startDate = it },
-                    onEndDateChange = { endDate = it },
-                    onBudgetChange = { budget = it },
+                    location = viewModel.location.value,
+                    partnerName = viewModel.partnerName.value,
+                    startDate = viewModel.startDate.value,
+                    endDate = viewModel.endDate.value,
+                    budget = viewModel.budget.value,
+                    onLocationChange = { viewModel.location.value = it },
+                    onPartnerNameChange = { viewModel.partnerName.value = it },
+                    onStartDateChange = { viewModel.startDate.value = it },
+                    onEndDateChange = { viewModel.endDate.value = it },
+                    onBudgetChange = { viewModel.budget.value = it },
                     onNext = { step++ }
                 )
                 3 -> StepThree { step++ }
                 4 -> StepFour(navController = navController) { 
                     // Create CSR data object
                     val csrData = CsrData(
-                        programName = programName,
-                        category = selectedCategory,
-                        startDate = startDate,
-                        endDate = endDate,
-                        location = location,
-                        partnerName = partnerName,
-                        budget = budget
+                        programName = viewModel.programName.value,
+                        category = viewModel.category.value,
+                        startDate = viewModel.startDate.value,
+                        endDate = viewModel.endDate.value,
+                        location = viewModel.location.value,
+                        partnerName = viewModel.partnerName.value,
+                        budget = viewModel.budget.value
                     )
                     // Convert to JSON and encode for URL
                     val csrDataJson = Uri.encode(Gson().toJson(csrData))
@@ -146,7 +139,8 @@ fun StepOne(
     var showCategoryDropdown by remember { mutableStateOf(false) }
     
     val categories = listOf("Lingkungan")
-    val isFormValid = programName.isNotBlank() && selectedCategory.isNotBlank() && description.isNotBlank()
+    val viewModel: CsrSubmissionViewModel = viewModel()
+    val isFormValid = viewModel.isFormStepOneValid(description)
 
     Column(
         modifier = Modifier
@@ -307,7 +301,8 @@ fun StepTwo(
     var isSelectingStartDate by remember { mutableStateOf(true) }
 
     val datePickerState = rememberDatePickerState()
-    val isFormValid = location.isNotBlank() && startDate.isNotBlank() && endDate.isNotBlank() && budget.isNotBlank()
+    val viewModel: CsrSubmissionViewModel = viewModel()
+    val isFormValid = viewModel.isFormStepTwoValid()
 
     Column(
         modifier = Modifier

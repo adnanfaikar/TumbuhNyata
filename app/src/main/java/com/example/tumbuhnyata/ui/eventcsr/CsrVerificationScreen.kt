@@ -20,9 +20,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
+    val viewModel: CsrVerificationViewModel = viewModel()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -238,14 +241,29 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
+                if (viewModel.isSubmitting.value) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(bottom = 16.dp),
+                        color = Color(0xFF27361F)
+                    )
+                }
+
                 Button(
-                    onClick = { navController.navigate("csr_success") },
+                    onClick = {
+                        viewModel.submitCsr {
+                            navController.navigate("csr_success")
+                        }
+                    },
+                    enabled = !viewModel.isSubmitting.value,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF27361F)
+                        containerColor = Color(0xFF27361F),
+                        disabledContainerColor = Color(0xFF27361F).copy(alpha = 0.5f)
                     )
                 ) {
                     Text(

@@ -59,7 +59,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "home" // Ganti dengan "splash" jika ingin memulai dari splash screen,
+        startDestination = "notifikasi" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)
@@ -94,7 +94,10 @@ fun AppNavigation() {
         
         // Notifikasi
         composable("notifikasi") {
-            NotifikasiScreen(navController)
+            com.example.tumbuhnyata.ui.notification.NotificationScreen(
+                userId = "1", // Ganti dengan ID user yang sebenarnya dari session
+                onBackClick = { navController.popBackStack() }
+            )
         }
         composable("notifikasi_detail") {
             NotifikasiDetailScreen(navController = navController)

@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,17 +35,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.ui.login.LoginScreen
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.navigation.AppNavigation
 
 data class NotifikasiItem(
-    val id: String,
     val judul: String,
     val deskripsi: String,
     val waktu: String
 )
 
 @Composable
-fun NotifikasiScreen(navController: NavController) {
+fun NotifikasiScreen(
+    onBackClick: () -> Unit = {},
+    navController: NavController
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.White
@@ -54,7 +59,7 @@ fun NotifikasiScreen(navController: NavController) {
         ) {
             // Header with Back Button
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -67,7 +72,7 @@ fun NotifikasiScreen(navController: NavController) {
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(Color(0xFF094F2E))
-                        .clickable { navController.popBackStack() },
+                        .clickable { onBackClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -90,38 +95,29 @@ fun NotifikasiScreen(navController: NavController) {
             // List Notifikasi
             val daftarNotifikasi = listOf(
                 NotifikasiItem(
-                    id = "1",
-                    judul = "Invoice Diterima",
-                    deskripsi = "Klik di sini untuk melihat detail invoicemu",
-                    waktu = "2 Menit lalu"
+                    "Invoice Diterima",
+                    "Klik di sini untuk melihat detail invoicemu",
+                    "2 Menit"
                 ),
                 NotifikasiItem(
-                    id = "2",
-                    judul = "Pengajuan CSR Diterima!",
-                    deskripsi = "Klik di sini untuk melihat detail pengajuan",
-                    waktu = "3 Hari lalu"
+                    "Pengajuan CSR Diterima!",
+                    "Klik di sini untuk melihat detail pengajuan",
+                    "3 Hari"
                 ),
                 NotifikasiItem(
-                    id = "3",
-                    judul = "Pembaruan Aplikasi",
-                    deskripsi = "Ayo perbarui aplikasi Tumbuh Nyata ke versi terbaru",
-                    waktu = "12 Maret"
+                    "Pembaruan Aplikasi",
+                    "Ayo perbarui aplikasi Tumbuh Nyata ke versi terbaru",
+                    "12 Maret"
                 )
             )
             
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 items(daftarNotifikasi) { notifikasi ->
-                    NotifikasiItemCard(
-                        notifikasi = notifikasi,
-                        onClick = {
-                            // Navigasi ke NotifikasiDetailScreen ketika item diklik
-                            navController.navigate("notifikasi_detail")
-                        }
-                    )
+                    NotifikasiItemCard(notifikasi)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -130,14 +126,11 @@ fun NotifikasiScreen(navController: NavController) {
 }
 
 @Composable
-fun NotifikasiItemCard(
-    notifikasi: NotifikasiItem,
-    onClick: () -> Unit
-) {
+fun NotifikasiItemCard(notifikasi: NotifikasiItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { },
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -375,4 +368,4 @@ fun NotifikasiItemCard(
 fun PreviewNotificationScreen() {
     val navController = rememberNavController()
     NotifikasiScreen(navController = navController)
-} 
+}

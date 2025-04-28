@@ -38,8 +38,8 @@ import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
 fun NotifikasiDetailScreen(
-    navController: NavController,
-    onBackClick: () -> Unit = { navController.popBackStack() }
+    onBackClick: () -> Unit = {},
+    navController: NavController
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -65,7 +65,7 @@ fun NotifikasiDetailScreen(
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(Color(0xFF094F2E))
-                        .clickable { navController.popBackStack() },
+                        .clickable { onBackClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -250,8 +250,6 @@ fun NotifikasiDetailScreen(
 @Composable
 fun PreviewNotifikasiDetailScreen() {
     val navController = rememberNavController()
-    NotifikasiDetailScreen(
-        navController = navController
-    )
+    NotifikasiDetailScreen(navController = navController)
 }
 

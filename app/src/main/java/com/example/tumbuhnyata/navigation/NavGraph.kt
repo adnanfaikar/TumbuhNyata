@@ -1,12 +1,9 @@
 package com.example.tumbuhnyata.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tumbuhnyata.data.model.dummyCsrList
-import com.example.tumbuhnyata.ui.detail.CsrDetailScreen // Assuming this is your DetailRiwayatScreen or you'll create a separate one
 import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.login.LoginScreen
 import com.example.tumbuhnyata.ui.profile.AboutScreen
@@ -15,10 +12,6 @@ import com.example.tumbuhnyata.ui.profile.VerificationOne
 import com.example.tumbuhnyata.ui.profile.VerificationSuccess
 import com.example.tumbuhnyata.ui.profile.VerificationTwo
 import com.example.tumbuhnyata.ui.notifikasi.NotifikasiDetailScreen
-import com.example.tumbuhnyata.ui.riwayat.DiterimaScreen
-import com.example.tumbuhnyata.ui.riwayat.PerluTindakanScreen
-import com.example.tumbuhnyata.ui.riwayat.RiwayatScreen
-import com.example.tumbuhnyata.ui.riwayat.RiwayatViewModel
 import com.example.tumbuhnyata.ui.notifikasi.NotifikasiScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
@@ -39,7 +32,6 @@ import com.example.tumbuhnyata.ui.workshop.DeskripsiWorkshopScreen
 import com.example.tumbuhnyata.ui.workshop.NewWorkshop
 import com.example.tumbuhnyata.ui.register.RegisterScreen
 import com.example.tumbuhnyata.ui.workshop.RekomWorkshop
-import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.workshop.WorkshopBerhasil
 import com.example.tumbuhnyata.ui.workshop.WorkshopScreen
 import com.example.tumbuhnyata.ui.dashboard.DashboardScreen
@@ -47,7 +39,6 @@ import com.example.tumbuhnyata.ui.dashboard.kpi.KpiDetailScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
-<<<<<<< HEAD
 import androidx.navigation.navArgument
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.riwayat.*
@@ -61,8 +52,6 @@ import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
 import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
 import com.example.tumbuhnyata.viewmodel.DashboardKeuanganViewModel
 import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
-=======
->>>>>>> parent of 0e0914d (fix error on project)
 
 @Composable
 fun AppNavigation() {
@@ -77,7 +66,6 @@ fun AppNavigation() {
         }
         composable("onboarding") {
             OnboardingScreen1(navController)
-            OnboardingScreen1(navController)
         }
         composable("onboarding2") {
             OnboardingScreen2(navController)
@@ -89,20 +77,18 @@ fun AppNavigation() {
             OptionScreen(navController)
         }
         composable("register") {
-            RegisterScreen (navController)
+            RegisterScreen(navController)
         }
         composable("login") {
-            LoginScreen (navController)
+            LoginScreen(navController)
         }
         composable("verifikasi") {
-            VerifikasiScreen(navController)
             VerifikasiScreen(navController)
         }
         composable("otp") {
             OtpScreen(navController)
         }
         composable("akunberhasil") {
-<<<<<<< HEAD
             AkunBerhasil(navController)
         }
         
@@ -303,9 +289,6 @@ fun AppNavigation() {
 
         composable("dashboardkeuangan") {
             DashboardKeuanganScreen(navController)
-=======
-            AkunBerhasil (navController)
->>>>>>> parent of 0e0914d (fix error on project)
         }
     }
 }

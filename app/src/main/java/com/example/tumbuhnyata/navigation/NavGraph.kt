@@ -171,20 +171,17 @@ fun AppNavigation() {
             CsrSubmissionScreen(navController)
         }
         composable(
-            route = "csr_verification",
-            arguments = listOf()
-        ) {
-            // Buat data default jika tidak ada data yang dilewatkan
-            val defaultCsrData = com.example.tumbuhnyata.ui.eventcsr.CsrData(
-                programName = "Program CSR",
-                category = "Lingkungan",
-                startDate = "01/01/2023",
-                endDate = "31/12/2023",
-                location = "Jakarta",
-                partnerName = "PT Mitra Sejahtera",
-                budget = "Rp 100.000.000"
-            )
-            CsrVerificationScreen(navController, defaultCsrData)
+            route = "csr_verification/{csrDataJson}",
+            arguments = listOf(navArgument("csrDataJson") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val csrDataJson = backStackEntry.arguments?.getString("csrDataJson")
+            if (csrDataJson != null) {
+                val csrData = Gson().fromJson(csrDataJson, com.example.tumbuhnyata.ui.eventcsr.CsrData::class.java)
+                CsrVerificationScreen(navController, csrData)
+            } else {
+                // Optionally show an error or navigate back
+                // navController.popBackStack()
+            }
         }
         composable("csr_success") {
             CsrSuccessScreen(navController)

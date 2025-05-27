@@ -38,89 +38,95 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun CsrSubmissionScreen(navController: NavController) {
     val viewModel: CsrSubmissionViewModel = viewModel()
     var step by remember { mutableStateOf(1) }
-    
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Header with back button and step indicator
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Back button
-                Image(
-                    painter = painterResource(id = R.drawable.btn_back),
-                    contentDescription = "Kembali",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable { navController.navigateUp() }
-                )
-                
-                Text(
-                    text = "Ajukan CSR",
-                    fontSize = 20.sp,
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                
-                Text(
-                    text = "Langkah $step/4",
-                    fontSize = 16.sp,
-                    fontFamily = PoppinsFontFamily,
-                    color = Color.Gray
-                )
-            }
-        }
 
-        // Content based on current step
-        AnimatedContent(targetState = step, label = "CSR Steps") { currentStep ->
-            when (currentStep) {
-                1 -> StepOne(
-                    programName = viewModel.programName.value,
-                    selectedCategory = viewModel.category.value,
-                    onProgramNameChange = { viewModel.programName.value = it },
-                    onCategoryChange = { viewModel.category.value = it },
-                    onNext = { step++ }
-                )
-                2 -> StepTwo(
-                    location = viewModel.location.value,
-                    partnerName = viewModel.partnerName.value,
-                    startDate = viewModel.startDate.value,
-                    endDate = viewModel.endDate.value,
-                    budget = viewModel.budget.value,
-                    onLocationChange = { viewModel.location.value = it },
-                    onPartnerNameChange = { viewModel.partnerName.value = it },
-                    onStartDateChange = { viewModel.startDate.value = it },
-                    onEndDateChange = { viewModel.endDate.value = it },
-                    onBudgetChange = { viewModel.budget.value = it },
-                    onNext = { step++ }
-                )
-                3 -> StepThree { step++ }
-                4 -> StepFour(navController = navController) { 
-                    // Create CSR data object
-                    val csrData = CsrData(
+    Scaffold()
+    { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Header with back button and step indicator
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Back button
+                    Image(
+                        painter = painterResource(id = R.drawable.btn_back),
+                        contentDescription = "Kembali",
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable { navController.navigateUp() }
+                    )
+
+                    Text(
+                        text = "Ajukan CSR",
+                        fontSize = 20.sp,
+                        fontFamily = PoppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+
+                    Text(
+                        text = "Langkah $step/4",
+                        fontSize = 16.sp,
+                        fontFamily = PoppinsFontFamily,
+                        color = Color.Gray
+                    )
+                }
+            }
+
+            // Content based on current step
+            AnimatedContent(targetState = step, label = "CSR Steps") { currentStep ->
+                when (currentStep) {
+                    1 -> StepOne(
                         programName = viewModel.programName.value,
-                        category = viewModel.category.value,
-                        startDate = viewModel.startDate.value,
-                        endDate = viewModel.endDate.value,
+                        selectedCategory = viewModel.category.value,
+                        onProgramNameChange = { viewModel.programName.value = it },
+                        onCategoryChange = { viewModel.category.value = it },
+                        onNext = { step++ }
+                    )
+
+                    2 -> StepTwo(
                         location = viewModel.location.value,
                         partnerName = viewModel.partnerName.value,
-                        budget = viewModel.budget.value
+                        startDate = viewModel.startDate.value,
+                        endDate = viewModel.endDate.value,
+                        budget = viewModel.budget.value,
+                        onLocationChange = { viewModel.location.value = it },
+                        onPartnerNameChange = { viewModel.partnerName.value = it },
+                        onStartDateChange = { viewModel.startDate.value = it },
+                        onEndDateChange = { viewModel.endDate.value = it },
+                        onBudgetChange = { viewModel.budget.value = it },
+                        onNext = { step++ }
                     )
-                    // Convert to JSON and encode for URL
-                    val csrDataJson = Uri.encode(Gson().toJson(csrData))
-                    // Navigate to verification screen with data
-                    navController.navigate("csr_verification/$csrDataJson")
+
+                    3 -> StepThree { step++ }
+                    4 -> StepFour(navController = navController) {
+                        // Create CSR data object
+                        val csrData = CsrData(
+                            programName = viewModel.programName.value,
+                            category = viewModel.category.value,
+                            startDate = viewModel.startDate.value,
+                            endDate = viewModel.endDate.value,
+                            location = viewModel.location.value,
+                            partnerName = viewModel.partnerName.value,
+                            budget = viewModel.budget.value
+                        )
+                        // Convert to JSON and encode for URL
+                        val csrDataJson = Uri.encode(Gson().toJson(csrData))
+                        // Navigate to verification screen with data
+                        navController.navigate("csr_verification/$csrDataJson")
+                    }
                 }
             }
         }
@@ -138,7 +144,7 @@ fun StepOne(
     var description by remember { mutableStateOf("") }
     var showCategoryDropdown by remember { mutableStateOf(false) }
     
-    val categories = listOf("Lingkungan")
+    val categories = listOf("Lingkungan", "Sosial")
     val viewModel: CsrSubmissionViewModel = viewModel()
     val isFormValid = viewModel.isFormStepOneValid(description)
 
@@ -780,7 +786,7 @@ fun StepFour(navController: NavController, onNext: () -> Unit) {
     }
 }
 
-@Preview
+@Preview (showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewCsrSubmissionScreen() {
     val navController = rememberNavController()

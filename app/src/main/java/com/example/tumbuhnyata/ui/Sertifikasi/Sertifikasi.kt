@@ -51,13 +51,13 @@ fun SertifikasiScreen(navController: NavController) {
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
-    ) { paddingValues ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
-                .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             BannerSection(navController)
@@ -371,7 +371,8 @@ fun InfoRow(iconId: Int, label: String, value: String) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,     showSystemUi = true
+)
 @Composable
 fun SertifikasiScreenPreview() {
     val navController = rememberNavController()

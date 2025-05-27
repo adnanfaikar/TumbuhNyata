@@ -23,20 +23,25 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.layout.ContentScale
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.data.model.Notification
+import com.example.tumbuhnyata.viewmodel.NotificationViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun VerificationSuccess(navController: NavController) {
+
     Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-    Image(
-        painter = painterResource(id = R.drawable.background_sc),
-        contentDescription = "Background",
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop
-    )
+        Image(
+            painter = painterResource(id = R.drawable.background_sc),
+            contentDescription = "Background",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -213,7 +213,7 @@ fun DaftarWorkshop(navController: NavController) {
     }
 }
 
-@Preview
+@Preview (showBackground = true)
 @Composable
 fun PreviewDaftarWorkshop() {
     DaftarWorkshop(navController = rememberNavController())

@@ -52,6 +52,8 @@ import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
 import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
 import com.example.tumbuhnyata.viewmodel.DashboardKeuanganViewModel
 import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
+import com.example.tumbuhnyata.ui.riwayat.UploadRevisiScreen
+import com.example.tumbuhnyata.ui.riwayat.RevisiSuccessScreen
 
 @Composable
 fun AppNavigation() {
@@ -59,7 +61,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "notifikasi" // Ganti dengan "splash" jika ingin memulai dari splash screen,
+        startDestination = "home" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)
@@ -235,7 +237,8 @@ fun AppNavigation() {
                 CsrDetailScreen(
                     csr = csrItem,
                     onBack = { navController.popBackStack() },
-                    onNavigateToInvoice = { navController.navigate("invoice") }
+                    onNavigateToInvoice = { navController.navigate("invoice") },
+                    onNavigateToUploadRevisi = { navController.navigate("upload_revisi") }
                 )
             }
         }
@@ -266,6 +269,16 @@ fun AppNavigation() {
             )
         }
 
+        // Tambahkan route untuk upload revisi
+        composable("upload_revisi") {
+            UploadRevisiScreen(
+                navController = navController,
+                onBack = { navController.popBackStack() },
+                onUpload = { fileName ->
+                    // Handle file upload logic here
+                }
+            )
+        }
         
         // Sertifikasi Routes
         composable("sertifikasi") {
@@ -292,6 +305,10 @@ fun AppNavigation() {
 
         composable("dashboardkeuangan") {
             DashboardKeuanganScreen(navController)
+        }
+
+        composable("revisi_success") {
+            RevisiSuccessScreen(navController = navController)
         }
     }
 }

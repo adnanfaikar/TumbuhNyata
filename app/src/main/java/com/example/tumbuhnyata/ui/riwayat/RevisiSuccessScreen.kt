@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.eventcsr
+package com.example.tumbuhnyata.ui.riwayat
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -21,7 +21,7 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
-fun CsrSuccessScreen(navController: NavController) {
+fun RevisiSuccessScreen(navController: NavController) {
 
     Scaffold()
     { innerPadding ->
@@ -58,7 +58,7 @@ fun CsrSuccessScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Pengajuan CSR",
+                    text = "Upload Revisi",
                     fontSize = 24.sp,
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
@@ -130,7 +130,7 @@ fun CsrSuccessScreen(navController: NavController) {
 }
 @Preview(showSystemUi = true)
 @Composable
-fun PreviewCsrSuccessScreen() {
+fun PreviewRevisiSuccessScreen() {
     val navController = rememberNavController()
-    CsrSuccessScreen(navController = navController)
-} 
+    RevisiSuccessScreen(navController = navController)
+}

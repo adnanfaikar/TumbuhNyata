@@ -111,7 +111,7 @@ fun DokumenOne(navController: NavController) {
             Spacer(modifier = Modifier.height(150.dp))
 
             Button(
-                onClick = { navController.navigate("verification_two")},
+                onClick = { navController.navigate("berhasil")},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)

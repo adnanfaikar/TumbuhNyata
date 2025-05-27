@@ -37,7 +37,7 @@ fun SertifikasiAndaScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 20.dp, top = 95.dp, end = 20.dp)
+            .padding(start = 20.dp, top = 40.dp, end = 20.dp)
     ) {
         TopBarProfile(
             title = "Sertifikasi Anda",

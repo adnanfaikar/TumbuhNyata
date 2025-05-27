@@ -43,14 +43,11 @@ fun HomeScreen(
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
-    ) { paddingValues ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = paddingValues.calculateBottomPadding()),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MainCard(navController, homeState)
             Text(

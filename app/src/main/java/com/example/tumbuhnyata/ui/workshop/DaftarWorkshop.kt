@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -30,65 +29,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.Response
-import com.example.tumbuhnyata.data.repository.ProfileRepository
-import com.example.tumbuhnyata.di.NetworkModule
-import retrofit2.http.POST
-import retrofit2.http.Body
-
-interface WorkshopApiService {
-    @POST("workshops/register")
-    suspend fun registerWorkshop(@Body body: Map<String, String>): Response<Any>
-}
 
 @Composable
 fun DaftarWorkshop(navController: NavController) {
     var fileSelected by remember { mutableStateOf(false) }
     var fileName by remember { mutableStateOf("") }
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
-
-    // Autofill state
-    var workshopId by remember { mutableStateOf("1") }
-    var companyName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var profileLoaded by remember { mutableStateOf(false) }
-
-    // Fetch profile on first composition
-    LaunchedEffect(Unit) {
-        val repo = NetworkModule.profileRepository
-        val profile = repo.getUserProfile()
-        if (profile != null) {
-            companyName = profile.companyName
-            email = profile.email
-            profileLoaded = true
-        } else {
-            errorMessage = "Gagal mengambil data profil perusahaan."
-        }
-    }
-
-    suspend fun registerWorkshopToBackend() : Boolean {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:5000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val service = retrofit.create(WorkshopApiService::class.java)
-        val body = mapOf(
-            "workshop_id" to workshopId,
-            "company_name" to companyName,
-            "email" to email
-        )
-        val response = service.registerWorkshop(body)
-        return response.isSuccessful
-    }
 
     Column(
         modifier = Modifier
@@ -243,47 +189,21 @@ fun DaftarWorkshop(navController: NavController) {
             )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-
         Spacer(modifier = Modifier.weight(1f))
 
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage ?: "",
-                color = Color.Red,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-
         Button(
-            onClick = {
-                isLoading = true
-                errorMessage = null
-                CoroutineScope(Dispatchers.IO).launch {
-                    val result = registerWorkshopToBackend()
-                    withContext(Dispatchers.Main) {
-                        isLoading = false
-                        if (result) {
-                            navController.navigate("workshopberhasil")
-                        } else {
-                            errorMessage = "Gagal daftar workshop"
-                        }
-                    }
-                }
-            },
+            onClick = { navController.navigate("workshopberhasil") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (!isLoading && profileLoaded) Color(0xFF27361F) else Color.Gray
+                containerColor = if (fileSelected) Color(0xFF27361F) else Color.Gray
             ),
-            enabled = !isLoading && profileLoaded,
+            enabled = fileSelected,
             shape = RoundedCornerShape(10.dp)
         ) {
             Text(
-                text = if (isLoading) "Loading..." else "Daftarkan Sekarang",
+                text = "Daftarkan Sekarang",
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.ExtraBold

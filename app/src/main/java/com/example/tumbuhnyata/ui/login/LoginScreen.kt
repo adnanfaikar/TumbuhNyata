@@ -39,12 +39,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.data.model.LoginRequest
 import com.example.tumbuhnyata.data.model.LoginResponse
 import com.example.tumbuhnyata.data.network.RetrofitInstance
-import com.example.tumbuhnyata.util.TokenManager
 import org.json.JSONObject
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    val context = LocalContext.current
+    val context = LocalContext.current // Ambil context di sini
     var nib by remember { mutableStateOf("") }
     var isNibValid by remember { mutableStateOf(true) }
     var password by remember { mutableStateOf("") }
@@ -207,7 +206,6 @@ fun LoginScreen(navController: NavController) {
                                 popUpTo("login") { inclusive = true }
                                 launchSingleTop = true
                             }
-                            TokenManager.saveToken(context, token ?: "")
                         } else {
                             val errorBody = response.errorBody()?.string()
                             val errorMessage = try {

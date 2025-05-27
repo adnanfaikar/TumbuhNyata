@@ -12,14 +12,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.tumbuhnyata.R
-import com.example.tumbuhnyata.util.TokenManager
 import kotlinx.coroutines.delay
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun SplashScreen(navController: NavController) {
     var isVisible by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     // Animasi scale in dari kecil ke besar
     val scale by animateFloatAsState(
@@ -37,16 +34,7 @@ fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         isVisible = true
         delay(3000)
-        val token = TokenManager.getToken(context)
-        if (token.isNullOrEmpty()) {
-            navController.navigate("login") {
-                popUpTo("splash") { inclusive = true }
-            }
-        } else {
-            navController.navigate("onboarding") {
-                popUpTo("splash") { inclusive = true }
-            }
-        }
+        navController.navigate("onboarding")
     }
 
     Box(

@@ -126,7 +126,7 @@ fun StepOne(
 ) {
     var showCategoryDropdown by remember { mutableStateOf(false) }
     
-    val categories = listOf("Lingkungan")
+    val categories = listOf("Lingkungan"," Pendidikan", "Kesehatan", "Ekonomi", "Sosial Budaya")
     val viewModel: CsrSubmissionViewModel = viewModel()
     val isFormValid = viewModel.isFormStepOneValid(description)
 

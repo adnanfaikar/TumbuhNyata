@@ -466,32 +466,110 @@ fun StepTwo(viewModel: RegisterViewModel, onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(33.dp))
 
-        // Alamat Perusahaan input field
-        OutlinedTextField(
-            value = address,
-            onValueChange = { viewModel.updateAddress(it) },
-            label = { Text(
-                "Alamat Perusahaan",
-                color = Color(0xFF686868),
-                fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp
-            ) },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_office),
-                    contentDescription = "Office Icon",
-                    modifier = Modifier.size(18.dp)
-                )
-            },
-            modifier = Modifier
+        Box (
+            Modifier
                 .fillMaxWidth()
-                .height(55.dp),
-            shape = RoundedCornerShape(15.dp),
-            singleLine = true
-        )
+                .clip(RoundedCornerShape(10.dp))
+                .border(1.dp, Color.Gray, RoundedCornerShape(15.dp))
+        ){
+            Column() {
+                // TextField untuk "Cari Alamat"
+                OutlinedTextField(
+                    value = address,
+                    onValueChange = { viewModel.updateAddress(it) },
+                    label = {
+                        Text(
+                            "Cari Alamat",
+                            color = Color(0xFF686868),
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                        ) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_loc),
+                            modifier = Modifier.size(18.dp),
+                            contentDescription = "Location Icon"
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .height(55.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    singleLine = true
+                )
 
-        Spacer(modifier = Modifier.height(170.dp))
+                Divider(color = Color.White, thickness = 1.dp)
+
+                // Lokasi Saat Ini
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            // Replace with actual current location
+                            viewModel.updateAddress("Jl. Joyo Raharjo No.185, Merjosari, Kec. Lowokwaru. Kota Malang, Jawa Timur 65144, Indonesia")
+                        }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_mark_loc),
+                        contentDescription = "Current Location Icon",
+                        tint = Color.Black,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(18.dp))
+                    Column {
+                        Text(
+                            "Lokasi Anda Saat Ini",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = Color.Black
+                        )
+                        Text(
+                            "Jl. Joyo Raharjo No.185, Merjosari, Kec. Lowokwaru. Kota Malang, Jawa Timur 65144, Indonesia",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+                }
+
+                Divider(color = Color.Gray, thickness = 1.dp)
+
+                // Pilih Lewat Peta
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            // Handle map selection
+                        }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_map),
+                        contentDescription = "Map Icon",
+                        tint = Color(0xFF3A5A40),
+                        modifier = Modifier.size(20.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(18.dp))
+
+                    Text(
+                        "Pilih Lewat Peta",
+                        fontFamily = PoppinsFontFamily,
+                        color = Color(0xFF3A5A40),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(33.dp))
 
         Button(
             onClick = onNext,

@@ -88,8 +88,10 @@ fun CsrSubmissionScreen(navController: NavController) {
                 1 -> StepOne(
                     programName = viewModel.programName.value,
                     selectedCategory = viewModel.category.value,
+                    description = viewModel.description.value,
                     onProgramNameChange = { viewModel.programName.value = it },
                     onCategoryChange = { viewModel.category.value = it },
+                    onDescriptionChange = { viewModel.description.value = it },
                     onNext = { step++ }
                 )
                 2 -> StepTwo(
@@ -106,22 +108,7 @@ fun CsrSubmissionScreen(navController: NavController) {
                     onNext = { step++ }
                 )
                 3 -> StepThree { step++ }
-                4 -> StepFour(navController = navController) { 
-                    // Create CSR data object
-                    val csrData = CsrData(
-                        programName = viewModel.programName.value,
-                        category = viewModel.category.value,
-                        startDate = viewModel.startDate.value,
-                        endDate = viewModel.endDate.value,
-                        location = viewModel.location.value,
-                        partnerName = viewModel.partnerName.value,
-                        budget = viewModel.budget.value
-                    )
-                    // Convert to JSON and encode for URL
-                    val csrDataJson = Uri.encode(Gson().toJson(csrData))
-                    // Navigate to verification screen with data
-                    navController.navigate("csr_verification/$csrDataJson")
-                }
+                4 -> StepFour(navController = navController, viewModel = viewModel) { step++ }
             }
         }
     }
@@ -131,14 +118,15 @@ fun CsrSubmissionScreen(navController: NavController) {
 fun StepOne(
     programName: String,
     selectedCategory: String,
+    description: String,
     onProgramNameChange: (String) -> Unit,
     onCategoryChange: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit,
     onNext: () -> Unit
 ) {
-    var description by remember { mutableStateOf("") }
     var showCategoryDropdown by remember { mutableStateOf(false) }
     
-    val categories = listOf("Lingkungan")
+    val categories = listOf("Lingkungan"," Pendidikan", "Kesehatan", "Ekonomi", "Sosial Budaya")
     val viewModel: CsrSubmissionViewModel = viewModel()
     val isFormValid = viewModel.isFormStepOneValid(description)
 
@@ -225,9 +213,9 @@ fun StepOne(
         // Description
         OutlinedTextField(
             value = description,
-            onValueChange = { 
+            onValueChange = {
                 if (it.length <= 2000) {
-                    description = it 
+                    onDescriptionChange(it)
                 }
             },
             label = { Text("Deskripsi", fontFamily = PoppinsFontFamily) },
@@ -703,7 +691,7 @@ fun StepThree(onNext: () -> Unit) {
 }
 
 @Composable
-fun StepFour(navController: NavController, onNext: () -> Unit) {
+fun StepFour(navController: NavController, viewModel: CsrSubmissionViewModel, onNext: () -> Unit) {
     var isChecked by remember { mutableStateOf(false) }
 
     Column(
@@ -759,7 +747,21 @@ fun StepFour(navController: NavController, onNext: () -> Unit) {
 
         // Submit Button
         Button(
-            onClick = { navController.navigate("csr_verification") },
+            onClick = { 
+                // Buat ulang csrData dari ViewModel
+                val csrData = CsrData(
+                    programName = viewModel.programName.value,
+                    category = viewModel.category.value,
+                    description = viewModel.description.value,
+                    startDate = viewModel.startDate.value,
+                    endDate = viewModel.endDate.value,
+                    location = viewModel.location.value,
+                    partnerName = viewModel.partnerName.value,
+                    budget = viewModel.budget.value
+                )
+                val csrDataJson = Uri.encode(Gson().toJson(csrData))
+                navController.navigate("csr_verification/$csrDataJson")
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

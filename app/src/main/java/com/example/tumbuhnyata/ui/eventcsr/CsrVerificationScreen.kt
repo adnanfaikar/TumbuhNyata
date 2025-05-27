@@ -22,6 +22,7 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+@Preview
 @Composable
 fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
     val viewModel: CsrVerificationViewModel = viewModel()
@@ -60,7 +61,7 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
                             .align(Alignment.Center)
                     )
                 }
-                
+
                 Text(
                     text = "Ajukan CSR",
                     fontSize = 20.sp,
@@ -68,9 +69,9 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(start = 16.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 Text(
                     text = "Verifikasi",
                     fontSize = 14.sp,
@@ -195,7 +196,7 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "Besar Anggaran",
                         fontSize = 16.sp,
@@ -252,7 +253,7 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
 
                 Button(
                     onClick = {
-                        viewModel.submitCsr {
+                        viewModel.submitCsr(csrData) {
                             navController.navigate("csr_success")
                         }
                     },
@@ -271,6 +272,15 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
                         fontSize = 17.sp,
                         fontFamily = PoppinsFontFamily,
                         fontWeight = FontWeight.Bold
+                    )
+                }
+
+                if (viewModel.errorMessage.value != null) {
+                    Text(
+                        text = viewModel.errorMessage.value ?: "",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
 
@@ -296,20 +306,5 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
             }
         }
     }
-}
 
-@Preview
-@Composable
-fun PreviewCsrVerificationScreen() {
-    val navController = rememberNavController()
-    val previewData = CsrData(
-        programName = "Penghijauan Hutan Kaltim",
-        category = "Lingkungan",
-        startDate = "12 Mei",
-        endDate = "20 Mei 2025",
-        location = "Kalimantan",
-        partnerName = "PT Hijau Sejati",
-        budget = "Rp 290.887.100"
-    )
-    CsrVerificationScreen(navController = navController, csrData = previewData)
 }

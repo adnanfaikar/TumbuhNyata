@@ -8,7 +8,10 @@ import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.login.LoginScreen
 import com.example.tumbuhnyata.ui.profile.AboutScreen
+import com.example.tumbuhnyata.ui.profile.ChangePassword
+import com.example.tumbuhnyata.ui.profile.ChangePasswordSuccess
 import com.example.tumbuhnyata.ui.profile.ProfileScreen
+import com.example.tumbuhnyata.ui.profile.UpdateProfile
 import com.example.tumbuhnyata.ui.profile.VerificationOne
 import com.example.tumbuhnyata.ui.profile.VerificationSuccess
 import com.example.tumbuhnyata.ui.profile.VerificationTwo
@@ -76,6 +79,15 @@ fun AppNavigation() {
         }
         composable("verification_success") {
             VerificationSuccess(navController)
+        }
+        composable("update_profile") {
+            UpdateProfile(navController)
+        }
+        composable("change_password") {
+            ChangePassword(navController)
+        }
+        composable("change_password_success") {
+            ChangePasswordSuccess(navController)
         }
     }
 }

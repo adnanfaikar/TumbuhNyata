@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +42,6 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel = viewModel()
 ) {
-    var selectedIndex by remember { mutableStateOf(3) }
     val profileState by viewModel.profileState.collectAsState()
     
     Scaffold(
@@ -78,51 +78,73 @@ fun ProfileScreen(
             ){
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 95.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.img_profile),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape)
-                            .border(3.dp, Color(0xFF4B4B4B), CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Column(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(end = 35.dp),
-                    ) {
+                if (profileState.isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Color(0xFF27361F))
+                    }
+                } else if (profileState.error != null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = profileState.companyName,
-                            fontSize = 26.sp,
+                            text = profileState.error ?: "Terjadi kesalahan",
+                            color = Color.Red,
                             fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = profileState.companyAddress,
-                            fontSize = 14.sp,
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFF4B4B4B)
+                            fontSize = 16.sp
                         )
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.arrow_profile),
-                        contentDescription = "Arrow",
+                } else {
+                    Row(
                         modifier = Modifier
-                            .size(26.dp),
-                    )
+                            .fillMaxWidth()
+                            .padding(top = 95.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.img_profile),
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clip(CircleShape)
+                                .border(3.dp, Color(0xFF4B4B4B), CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(20.dp))
+                        Column(
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .padding(end = 35.dp),
+                        ) {
+                            Text(
+                                text = profileState.companyName,
+                                fontSize = 26.sp,
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = profileState.companyAddress,
+                                fontSize = 14.sp,
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFF4B4B4B)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.arrow_profile),
+                            contentDescription = "Arrow",
+                            modifier = Modifier
+                                .size(26.dp)
+                                .clickable {
+                                    // Tambahkan navigasi ke halaman edit profil di sini jika diperlukan
+                                },
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(60.dp))
                 ProfileOption("Verifikasi Akun", R.drawable.ic_verification_account, R.drawable.arrow_option, onClick = { navController.navigate("verification_one") })
-                ProfileOption("Ganti Password", R.drawable.ic_change_password, R.drawable.arrow_option, onClick = {})
+                ProfileOption("Ganti Password", R.drawable.ic_change_password, R.drawable.arrow_option, onClick = { 
+                    // Navigasi ke halaman ganti password atau tampilkan dialog ganti password
+                    // Contoh implementasi sederhana jika ada halaman ganti password:
+                    // navController.navigate("change_password")
+                })
                 ProfileOption("Help & Support", R.drawable.ic_help_support, R.drawable.arrow_option, onClick = {})
                 ProfileOption("Bahasa", R.drawable.ic_langauge, R.drawable.arrow_option, onClick = {})
                 ProfileOption("Tentang Aplikasi", R.drawable.ic_about, R.drawable.arrow_option, onClick = { navController.navigate("about") })

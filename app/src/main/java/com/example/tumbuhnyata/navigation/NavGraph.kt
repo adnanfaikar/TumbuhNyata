@@ -7,10 +7,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.ui.home.HomeScreen
 import com.example.tumbuhnyata.ui.login.LoginScreen
 import com.example.tumbuhnyata.ui.profile.AboutScreen
+import com.example.tumbuhnyata.ui.profile.ChangePassword
+import com.example.tumbuhnyata.ui.profile.ChangePasswordSuccess
 import com.example.tumbuhnyata.ui.profile.ProfileScreen
+import com.example.tumbuhnyata.ui.profile.UpdateProfile
 import com.example.tumbuhnyata.ui.profile.VerificationOne
 import com.example.tumbuhnyata.ui.profile.VerificationSuccess
 import com.example.tumbuhnyata.ui.profile.VerificationTwo
+import com.example.tumbuhnyata.ui.register.AkunBerhasil
+import com.example.tumbuhnyata.ui.register.OtpScreen
+import com.example.tumbuhnyata.ui.register.RegisterScreen
+import com.example.tumbuhnyata.ui.register.VerifikasiScreen
+import com.example.tumbuhnyata.ui.screens.OptionScreen
 import com.example.tumbuhnyata.ui.notifikasi.NotifikasiDetailScreen
 import com.example.tumbuhnyata.ui.notifikasi.NotifikasiScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
@@ -307,5 +315,31 @@ fun AppNavigation() {
         composable("revisi_success") {
             RevisiSuccessScreen(navController = navController)
         }
+        composable("profile") {
+            ProfileScreen(navController)
+        }
+        composable("about") {
+            AboutScreen(navController)
+        }
+        composable("verification_one") {
+            VerificationOne(navController)
+        }
+        composable("verification_two") {
+            VerificationTwo(navController)
+        }
+        composable("verification_success") {
+            VerificationSuccess(navController)
+        }
+        composable("update_profile") {
+            UpdateProfile(navController)
+        }
+        composable("change_password") {
+            ChangePassword(navController)
+        }
+        composable("change_password_success") {
+            ChangePasswordSuccess(navController)
+        }
     }
 }
+
+

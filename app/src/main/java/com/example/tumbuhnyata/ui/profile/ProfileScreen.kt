@@ -140,12 +140,9 @@ fun ProfileScreen(
                 }
                 Spacer(modifier = Modifier.height(60.dp))
                 ProfileOption("Verifikasi Akun", R.drawable.ic_verification_account, R.drawable.arrow_option, onClick = { navController.navigate("verification_one") })
-                ProfileOption("Ganti Password", R.drawable.ic_change_password, R.drawable.arrow_option, onClick = { 
-                    // Navigasi ke halaman ganti password atau tampilkan dialog ganti password
-                    // Contoh implementasi sederhana jika ada halaman ganti password:
-                    // navController.navigate("change_password")
-                })
-                ProfileOption("Help & Support", R.drawable.ic_help_support, R.drawable.arrow_option, onClick = {})
+                ProfileOption("Ganti Password", R.drawable.ic_change_password, R.drawable.arrow_option, onClick = {navController.navigate("change_password")})
+                ProfileOption("Ganti Profile", R.drawable.ic_person, R.drawable.arrow_option, onClick = {navController.navigate("update_profile")})
+                ProfileOption("Bantuan dan Dukungan", R.drawable.ic_help_support, R.drawable.arrow_option, onClick ={})
                 ProfileOption("Bahasa", R.drawable.ic_langauge, R.drawable.arrow_option, onClick = {})
                 ProfileOption("Tentang Aplikasi", R.drawable.ic_about, R.drawable.arrow_option, onClick = { navController.navigate("about") })
 
@@ -259,7 +256,3 @@ fun LogoutButton(
 fun PreviewProfileScreen() {
     ProfileScreen(navController = rememberNavController())
 }
-
-
-
-

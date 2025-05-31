@@ -57,7 +57,7 @@ fun VerificationOne(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 20.dp, top = 95.dp, end = 20.dp)
+                .padding(start = 20.dp, top = 80.dp, end = 20.dp)
         ) {
             TopBarProfile(
                 title = "Verifikasi",

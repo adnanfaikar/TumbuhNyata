@@ -37,7 +37,7 @@ fun AkunBerhasil(navController: NavController) {
     ) {
         // Background
         Image(
-            painter = painterResource(id = R.drawable.background_sc),
+            painter = painterResource(id = R.drawable.bg_sukses),
             contentDescription = "Background",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -80,7 +80,7 @@ fun AkunBerhasil(navController: NavController) {
             Spacer(modifier = Modifier.height(226.dp))
 
             Button(
-                onClick = { navController.navigate(" ") },
+                onClick = { navController.navigate("home") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

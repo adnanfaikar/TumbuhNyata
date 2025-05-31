@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
@@ -24,10 +25,11 @@ import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @Composable
-fun VerificationTwo(navController: NavController) {
-    var uploadedFileName by remember { mutableStateOf<String?>(null) }
-    val isFileUploaded = uploadedFileName != null
-
+fun VerificationTwo(
+    navController: NavController,
+    viewModel: VerificationTwoViewModel = viewModel()
+) {
+    val verificationState by viewModel.verificationState.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -82,13 +84,9 @@ fun VerificationTwo(navController: NavController) {
             Spacer(modifier = Modifier.height(30.dp))
 
             UploadBox(
-                fileName = uploadedFileName,
-                onUploadClick = {
-                    uploadedFileName = "KTP_Virna.jpg" // Simulasi file berhasil diupload
-                },
-                onCancelClick = {
-                    uploadedFileName = null
-                }
+                fileName = verificationState.picFile,
+                onUploadClick = { viewModel.uploadPicFile("KTP_Virna.jpg") },
+                onCancelClick = { viewModel.deletePicFile() }
             )
 
             Spacer(modifier = Modifier.height(256.dp))
@@ -99,9 +97,9 @@ fun VerificationTwo(navController: NavController) {
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(10.dp),
-                enabled = isFileUploaded,
+                enabled = verificationState.isFileUploaded,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isFileUploaded) Color(0xFF27361F) else Color(0xFF989898)
+                    containerColor = if (verificationState.isFileUploaded) Color(0xFF27361F) else Color(0xFF989898)
                 )
             ) {
                 Text(

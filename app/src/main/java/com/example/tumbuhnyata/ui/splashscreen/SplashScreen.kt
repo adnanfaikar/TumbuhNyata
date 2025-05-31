@@ -9,16 +9,17 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.util.TokenManager
 import kotlinx.coroutines.delay
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun SplashScreen(navController: NavController) {
     var isVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     // Animasi scale in dari kecil ke besar
     val scale by animateFloatAsState(
@@ -36,7 +37,16 @@ fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         isVisible = true
         delay(3000)
-        navController.navigate("onboarding")
+        val token = TokenManager.getToken(context)
+        if (token.isNullOrEmpty()) {
+            navController.navigate("login") {
+                popUpTo("splash") { inclusive = true }
+            }
+        } else {
+            navController.navigate("onboarding") {
+                popUpTo("splash") { inclusive = true }
+            }
+        }
     }
 
     Box(
@@ -62,10 +72,4 @@ fun SplashScreen(navController: NavController) {
             contentScale = ContentScale.Fit
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewSplashScreen() {
-    SplashScreen(navController = rememberNavController())
 }

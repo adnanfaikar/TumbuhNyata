@@ -1,6 +1,9 @@
-
 package com.example.tumbuhnyata.ui.login
 
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,13 +36,17 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.tumbuhnyata.ui.components.InputField
-
+import com.example.tumbuhnyata.data.model.LoginRequest
+import com.example.tumbuhnyata.data.model.LoginResponse
+import com.example.tumbuhnyata.data.network.RetrofitInstance
+import com.example.tumbuhnyata.util.TokenManager
+import org.json.JSONObject
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var isEmailValid by remember { mutableStateOf(true) }
+    val context = LocalContext.current
+    var nib by remember { mutableStateOf("") }
+    var isNibValid by remember { mutableStateOf(true) }
     var password by remember { mutableStateOf("") }
     var isPasswordValid by remember { mutableStateOf(true) }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -71,27 +79,27 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(66.dp))
 
-        // Email TextField
+        // NIB TextField (replacing Email TextField)
         OutlinedTextField(
-            value = email,
+            value = nib,
             onValueChange = {
-                email = it
-                isEmailValid = it.contains("@")
+                nib = it
+                isNibValid = it.isNotBlank() && it.length <= 13
             },
             label = {
                 Text(
-                    "Email Perusahaan",
+                    "NIB (Nomor Induk Berusaha)",
                     color = Color(0xFF686868),
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Normal,
                 )
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             leadingIcon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_email),
+                    painter = painterResource(id = R.drawable.ic_doc),
                     modifier = Modifier.size(20.dp),
-                    contentDescription = "Email Icon"
+                    contentDescription = "NIB Icon"
                 )
             },
             modifier = Modifier
@@ -101,10 +109,10 @@ fun LoginScreen(navController: NavController) {
             singleLine = true,
         )
 
-        // Menampilkan warning jika email tidak valid
-        if (!isEmailValid) {
+        // Menampilkan warning jika NIB tidak valid
+        if (!isNibValid) {
             Text(
-                text = "Email harus mengandung '@'",
+                text = "NIB tidak boleh kosong dan maksimal 13 karakter",
                 color = Color.Red,
                 fontSize = 14.sp,
                 fontFamily = PoppinsFontFamily,
@@ -185,13 +193,43 @@ fun LoginScreen(navController: NavController) {
 
         // Login Button
         Button(
-            onClick = { navController.navigate("profile") },
+            onClick = {
+                val loginRequest = LoginRequest(NIB = nib, password = password)
+
+                // In your LoginScreen.kt, modify the login success handler
+                RetrofitInstance.api.login(loginRequest).enqueue(object : Callback<LoginResponse> {
+                    override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                        if (response.isSuccessful) {
+                            val token = response.body()?.token
+                            Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
+                            // Navigate to home screen and clear the back stack
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                            TokenManager.saveToken(context, token ?: "")
+                        } else {
+                            val errorBody = response.errorBody()?.string()
+                            val errorMessage = try {
+                                JSONObject(errorBody).getString("message")
+                            } catch (e: Exception) {
+                                "Login gagal: ${response.code()}"
+                            }
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                        Toast.makeText(context, "Tidak dapat terhubung ke server: ${t.localizedMessage}", Toast.LENGTH_LONG).show()
+                    }
+                })
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(46.dp),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
-                if (email.isNotBlank() && password.isNotBlank()) Color.Black else Color.Gray)
+                if (nib.isNotBlank() && password.isNotBlank()) Color.Black else Color.Gray)
         ) {
             Text(
                 "Masuk",

@@ -136,16 +136,3 @@ class CsrSubmissionViewModel : ViewModel() {
     }
 }
 
-class WorkshopViewModel : ViewModel() {
-
-    private val _recommended = mutableStateOf<List<Workshop>>(emptyList())
-    val recommended: State<List<Workshop>> = _recommended
-
-    private val _recent = mutableStateOf<List<Workshop>>(emptyList())
-    val recent: State<List<Workshop>> = _recent
-
-    init {
-        _recommended.value = recommendedWorkshops.take(4)
-        _recent.value = recentWorkshops.take(4)
-    }
-}

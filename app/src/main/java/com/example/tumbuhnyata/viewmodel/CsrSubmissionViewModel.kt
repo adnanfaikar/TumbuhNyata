@@ -1,9 +1,13 @@
 // File: CsrSubmissionViewModel.kt
-package com.example.tumbuhnyata.ui.eventcsr
+package com.example.tumbuhnyata.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tumbuhnyata.data.model.Workshop
+import com.example.tumbuhnyata.data.model.recentWorkshops
+import com.example.tumbuhnyata.data.model.recommendedWorkshops
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -129,5 +133,19 @@ class CsrSubmissionViewModel : ViewModel() {
         isLoading.value = false
         isSuccess.value = false
         errorMessage.value = null
+    }
+}
+
+class WorkshopViewModel : ViewModel() {
+
+    private val _recommended = mutableStateOf<List<Workshop>>(emptyList())
+    val recommended: State<List<Workshop>> = _recommended
+
+    private val _recent = mutableStateOf<List<Workshop>>(emptyList())
+    val recent: State<List<Workshop>> = _recent
+
+    init {
+        _recommended.value = recommendedWorkshops.take(4)
+        _recent.value = recentWorkshops.take(4)
     }
 }

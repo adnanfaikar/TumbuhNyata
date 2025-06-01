@@ -1,10 +1,11 @@
 // File: CsrVerificationViewModel.kt
-package com.example.tumbuhnyata.ui.eventcsr
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tumbuhnyata.data.CsrApiService
+import com.example.tumbuhnyata.ui.eventcsr.CsrData
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

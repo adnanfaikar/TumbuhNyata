@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import com.google.gson.Gson
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tumbuhnyata.viewmodel.CsrSubmissionViewModel
 
 @Composable
 fun CsrSubmissionScreen(navController: NavController) {

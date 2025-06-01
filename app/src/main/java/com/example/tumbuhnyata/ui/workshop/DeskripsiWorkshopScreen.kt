@@ -17,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.DeskripsiWorkshop
-import com.example.tumbuhnyata.ui.viewmodel.WorkshopDetailViewModel
+import com.example.tumbuhnyata.viewmodel.WorkshopDetailViewModel
 
 @Composable
 fun DeskripsiWorkshopScreen(

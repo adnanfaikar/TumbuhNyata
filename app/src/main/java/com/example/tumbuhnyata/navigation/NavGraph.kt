@@ -55,6 +55,8 @@ import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
 import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
 import com.example.tumbuhnyata.ui.riwayat.UploadRevisiScreen
 import com.example.tumbuhnyata.ui.riwayat.RevisiSuccessScreen
+import com.example.tumbuhnyata.ui.eventcsr.CsrData
+import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 
 @Composable
 fun AppNavigation() {
@@ -179,7 +181,7 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val csrDataJson = backStackEntry.arguments?.getString("csrDataJson")
             if (csrDataJson != null) {
-                val csrData = Gson().fromJson(csrDataJson, com.example.tumbuhnyata.ui.eventcsr.CsrData::class.java)
+                val csrData = Gson().fromJson(csrDataJson, CsrData::class.java)
                 CsrVerificationScreen(navController, csrData)
             } else {
                 // Optionally show an error or navigate back

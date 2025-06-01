@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tumbuhnyata.data.model.CsrItem
-import com.example.tumbuhnyata.data.model.SubStatus
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.component.CsrCard
 import com.example.tumbuhnyata.ui.component.poppins
+import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 
 @Composable
 fun DiterimaScreen(

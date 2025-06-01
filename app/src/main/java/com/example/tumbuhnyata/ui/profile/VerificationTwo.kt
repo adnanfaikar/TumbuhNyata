@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.viewmodel.VerificationTwoViewModel
 
 @Composable
 fun VerificationTwo(

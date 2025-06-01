@@ -1,6 +1,6 @@
 package com.example.tumbuhnyata.data
 
-import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionRequest
+import com.example.tumbuhnyata.viewmodel.CsrSubmissionRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

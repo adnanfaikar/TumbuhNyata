@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.splashscreen
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

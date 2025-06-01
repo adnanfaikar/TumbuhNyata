@@ -126,16 +126,7 @@ fun ProfileScreen(
                                 color = Color(0xFF4B4B4B)
                             )
                         }
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.arrow_profile),
-                            contentDescription = "Arrow",
-                            modifier = Modifier
-                                .size(26.dp)
-                                .clickable {
-                                    // Tambahkan navigasi ke halaman edit profil di sini jika diperlukan
-                                },
-                        )
+
                     }
                 }
                 Spacer(modifier = Modifier.height(60.dp))

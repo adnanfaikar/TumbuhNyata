@@ -1,5 +1,6 @@
 package com.example.tumbuhnyata.ui.workshop
 
+import androidx.compose.foundation.background
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +35,7 @@ fun WorkshopScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .background(androidx.compose.ui.graphics.Color.White)
                 .verticalScroll(rememberScrollState())
         ) {
             SectionWithTitle(

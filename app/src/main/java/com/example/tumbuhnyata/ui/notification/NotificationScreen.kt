@@ -25,6 +25,7 @@ import com.example.tumbuhnyata.data.model.Notification
 import com.example.tumbuhnyata.viewmodel.NotificationViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +50,7 @@ fun NotificationScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Notifikasi") },
+                title = { Text("Notifikasi", fontFamily = PoppinsFontFamily) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -147,7 +148,8 @@ fun NotificationItem(
                     text = notification.title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color(0xFF263238)
+                    color = Color(0xFF263238),
+                    fontFamily = PoppinsFontFamily
                 )
                 
                 IconButton(
@@ -169,7 +171,8 @@ fun NotificationItem(
                 fontSize = 14.sp,
                 color = Color(0xFF37474F),
                 maxLines = 3,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontFamily = PoppinsFontFamily
             )
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -177,7 +180,8 @@ fun NotificationItem(
             Text(
                 text = formatDate(notification.createdAt),
                 fontSize = 12.sp,
-                color = Color(0xFF78909C)
+                color = Color(0xFF78909C),
+                fontFamily = PoppinsFontFamily
             )
         }
     }
@@ -193,7 +197,8 @@ fun EmptyNotifications(modifier: Modifier = Modifier) {
         Text(
             text = "Tidak ada notifikasi",
             fontSize = 16.sp,
-            color = Color(0xFF78909C)
+            color = Color(0xFF78909C),
+            fontFamily = PoppinsFontFamily
         )
     }
 }
@@ -210,7 +215,8 @@ fun ErrorMessage(message: String, modifier: Modifier = Modifier) {
         Text(
             text = message,
             color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            fontFamily = PoppinsFontFamily
         )
     }
 }

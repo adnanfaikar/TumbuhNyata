@@ -18,9 +18,7 @@ import com.example.tumbuhnyata.ui.register.AkunBerhasil
 import com.example.tumbuhnyata.ui.register.OtpScreen
 import com.example.tumbuhnyata.ui.register.RegisterScreen
 import com.example.tumbuhnyata.ui.register.VerifikasiScreen
-import com.example.tumbuhnyata.ui.screens.OptionScreen
-import com.example.tumbuhnyata.ui.notifikasi.NotifikasiDetailScreen
-import com.example.tumbuhnyata.ui.notifikasi.NotifikasiScreen
+import com.example.tumbuhnyata.ui.notification.NotifikasiDetailScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
@@ -32,13 +30,9 @@ import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSuccessScreen
 import com.google.gson.Gson
 import com.example.tumbuhnyata.ui.splashscreen.OptionScreen
-import com.example.tumbuhnyata.ui.register.OtpScreen
-import com.example.tumbuhnyata.ui.register.VerifikasiScreen
-import com.example.tumbuhnyata.ui.register.AkunBerhasil
 import com.example.tumbuhnyata.ui.workshop.DaftarWorkshop
 import com.example.tumbuhnyata.ui.workshop.DeskripsiWorkshopScreen
 import com.example.tumbuhnyata.ui.workshop.NewWorkshop
-import com.example.tumbuhnyata.ui.register.RegisterScreen
 import com.example.tumbuhnyata.ui.workshop.RekomWorkshop
 import com.example.tumbuhnyata.ui.workshop.WorkshopBerhasil
 import com.example.tumbuhnyata.ui.workshop.WorkshopScreen
@@ -58,7 +52,6 @@ import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
 import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
 import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
-import com.example.tumbuhnyata.viewmodel.DashboardKeuanganViewModel
 import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
 import com.example.tumbuhnyata.ui.riwayat.UploadRevisiScreen
 import com.example.tumbuhnyata.ui.riwayat.RevisiSuccessScreen
@@ -69,7 +62,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "splash" // Ganti dengan "splash" jika ingin memulai dari splash screen,
+        startDestination = "home" // Ganti dengan "splash" jika ingin memulai dari splash screen,
     ) {
         composable("splash") {
             SplashScreen(navController)

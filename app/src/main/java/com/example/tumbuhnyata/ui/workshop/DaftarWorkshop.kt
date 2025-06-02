@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,23 +35,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.Response
 import com.example.tumbuhnyata.data.repository.ProfileRepository
 import com.example.tumbuhnyata.di.NetworkModule
-import retrofit2.http.POST
-import retrofit2.http.Body
-
-interface WorkshopApiService {
-    @POST("workshops/register")
-    suspend fun registerWorkshop(@Body body: Map<String, String>): Response<Any>
-}
+import com.example.tumbuhnyata.data.api.WorkshopApiService
 
 @Composable
 fun DaftarWorkshop(navController: NavController) {
     var fileSelected by remember { mutableStateOf(false) }
     var fileName by remember { mutableStateOf("") }
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
 
     // Autofill state
     var workshopId by remember { mutableStateOf("1") }

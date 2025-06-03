@@ -298,13 +298,10 @@ fun AppNavigation() {
                 navController = navController,
                 onBack = { navController.popBackStack() },
                 onUpload = { fileName ->
-                    // Handle file upload logic here
-                    navController.navigate("revisi_success")
+                    // Handle file upload logic here without navigation
                 }
             )
         }
-
-
 
         // Sertifikasi Routes
         composable("sertifikasi") {

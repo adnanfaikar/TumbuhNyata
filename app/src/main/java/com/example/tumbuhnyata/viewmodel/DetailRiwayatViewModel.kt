@@ -48,6 +48,57 @@ class DetailRiwayatViewModel : ViewModel() {
         loadCsrDetail(csrId)
     }
 
+    fun validateFile(uri: android.net.Uri, context: android.content.Context): String? {
+        // Check file type
+        val contentResolver = context.contentResolver
+        val mimeType = contentResolver.getType(uri)
+        if (mimeType != "application/pdf") {
+            return "File harus berformat PDF"
+        }
+
+        // Check file size (max 10MB)
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            val sizeIndex = it.getColumnIndex(android.provider.OpenableColumns.SIZE)
+            it.moveToFirst()
+            val size = it.getLong(sizeIndex)
+            if (size > 10 * 1024 * 1024) { // 10MB in bytes
+                return "Ukuran file tidak boleh lebih dari 10MB"
+            }
+        }
+
+        return null
+    }
+
+    fun uploadRevision(uri: android.net.Uri, context: android.content.Context, csrId: Int) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                _error.value = null
+
+                // Validate file first
+                validateFile(uri, context)?.let { error ->
+                    _error.value = error
+                    return@launch
+                }
+
+                // TODO: Implement actual file upload to API
+                // repository.uploadRevision(uri, csrId)
+                
+            } catch (e: Exception) {
+                _error.value = when {
+                    e.message?.contains("timeout", ignoreCase = true) == true -> 
+                        "Koneksi timeout. Silakan coba lagi."
+                    e.message?.contains("connection", ignoreCase = true) == true -> 
+                        "Tidak ada koneksi internet. Periksa koneksi Anda."
+                    else -> "Gagal mengupload file: ${e.message}"
+                }
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     fun clearError() {
         _error.value = null
     }

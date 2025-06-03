@@ -44,6 +44,10 @@ fun DetailRiwayatScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    // Add error handling for file upload
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
     LaunchedEffect(csrId) {
         viewModel.loadCsrDetail(csrId)
     }
@@ -185,12 +189,31 @@ fun DetailRiwayatScreen(
                                     containerColor = Color(0xFF2C3E1F)
                                 )
                             ) {
-                                Text(
-                                    "Upload Revisi",
-                                    fontFamily = poppins,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_upload),
+                                        contentDescription = "Upload",
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        "Upload Revisi",
+                                        fontFamily = poppins,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp
+                                    )
+                                }
                             }
+                            Text(
+                                "Format file: PDF (max 10MB)",
+                                fontSize = 12.sp,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(top = 4.dp),
+                                fontFamily = poppins
+                            )
                         } else if (csr.status == "Menunggu Pembayaran") {
                             Button(
                                 onClick = onNavigateToInvoice,
@@ -211,6 +234,41 @@ fun DetailRiwayatScreen(
                 }
             }
 
+        }
+
+        // Error Dialog for file upload
+        if (showErrorDialog) {
+            AlertDialog(
+                onDismissRequest = { showErrorDialog = false },
+                title = {
+                    Text(
+                        "Gagal Upload File",
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = {
+                    Text(
+                        errorMessage,
+                        fontFamily = poppins
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = { showErrorDialog = false }
+                    ) {
+                        Text(
+                            "OK",
+                            color = Color(0xFF2C3E1F),
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                },
+                containerColor = Color.White,
+                titleContentColor = Color(0xFF2C3E1F),
+                textContentColor = Color.Black
+            )
         }
 
         // Success Dialog

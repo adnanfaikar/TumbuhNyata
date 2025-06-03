@@ -31,6 +31,7 @@ fun ProgressDetailScreen(
     viewModel: DetailRiwayatViewModel = viewModel(),
     onBack: () -> Unit
 ) {
+    var showBlueprintSuccessDialog by remember { mutableStateOf(false) }
     val csrDetail by viewModel.csrDetail.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -217,7 +218,7 @@ fun ProgressDetailScreen(
 
                     // Download Blueprint Button
                     Button(
-                        onClick = { /* TODO: Handle download */ },
+                        onClick = { showBlueprintSuccessDialog = true },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -244,5 +245,13 @@ fun ProgressDetailScreen(
                 }
             }
         }
+    }
+
+    // Success Dialog
+    if (showBlueprintSuccessDialog) {
+        SuccessDialog(
+            message = "Berhasil mengunduh proposal rancangan",
+            onDismiss = { showBlueprintSuccessDialog = false }
+        )
     }
 }

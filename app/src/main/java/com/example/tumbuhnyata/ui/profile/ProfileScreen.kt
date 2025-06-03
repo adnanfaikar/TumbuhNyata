@@ -17,9 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,9 +30,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
-import com.example.tumbuhnyata.ui.components.BottomNavBarProfile
 import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.viewmodel.ProfileViewModel
 
 @Composable
 fun ProfileScreen(

@@ -1,9 +1,7 @@
-package com.example.tumbuhnyata.ui.profile
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tumbuhnyata.data.model.Profile
-import com.example.tumbuhnyata.data.repository.ProfileRepository
 import com.example.tumbuhnyata.di.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

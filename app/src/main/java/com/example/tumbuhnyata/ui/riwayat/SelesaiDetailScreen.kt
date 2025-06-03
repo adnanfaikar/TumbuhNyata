@@ -103,13 +103,9 @@ fun SelesaiDetailScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     // CSR Card with elevation
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                    ) {
-                        CsrCard(item = csr)
-                    }
+
+                    CsrCard(item = csr)
+
 
                     Spacer(modifier = Modifier.height(16.dp))
 

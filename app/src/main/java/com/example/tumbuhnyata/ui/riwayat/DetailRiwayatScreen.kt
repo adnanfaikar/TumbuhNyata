@@ -41,6 +41,8 @@ fun DetailRiwayatScreen(
     val csrDetail by viewModel.csrDetail.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(csrId) {
         viewModel.loadCsrDetail(csrId)
@@ -77,130 +79,138 @@ fun DetailRiwayatScreen(
                     fontFamily = poppins
                 )
             }
+        },
+
+        snackbarHost = {
+            ErrorSnackbar(
+                error = error,
+                onDismiss = { viewModel.clearError() },
+                onRetry = { viewModel.refresh(csrId) }
+            )
         }
+
     ) { paddingValues ->
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (error != null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(error ?: "Unknown error occurred")
-            }
-        } else {
-            csrDetail?.let { csr ->
-                Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF7F7F7))
+                .padding(paddingValues)
+        ) {
+            if (isLoading) {
+                Box(
                     modifier = Modifier
-                        .padding(paddingValues)
                         .fillMaxSize()
-                        .background(Color(0xFFF7F7F7))
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // CSR Card with elevation
-                    CsrCard(item = csr)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Timeline Section
-                    val timelineSteps = when (csr.status) {
-                        "Menunggu Pembayaran" -> listOf(
-                            TimelineStep("Pengajuan Dikirim", "10/05/2024 - 09:41 WIB", isCompleted = true),
-                            TimelineStep("Review & Evaluasi", "10/05/2024 - 09:50 WIB", isCompleted = true),
-                            TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB", isInProgress = true),
-                            TimelineStep("Implementasi Program")
-                        )
-                        else -> listOf(
-                            TimelineStep("Pengajuan Dikirim", "10/05/2024 - 09:41 WIB", isCompleted = true),
-                            TimelineStep(
-                                title = when (csr.status) {
-                                    "Memerlukan Revisi" -> "Review & Evaluasi - Revisi Diperlukan"
-                                    else -> "Review & Evaluasi"
-                                },
-                                date = "10/05/2024 - 09:50 WIB",
-                                isInProgress = true
-                            ),
-                            TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB"),
-                            TimelineStep("Implementasi Program")
-                        )
-                    }
-
-                    VerticalTimeline(steps = timelineSteps)
-
-                    Spacer(modifier = Modifier.height(46.dp))
-
-
-
-
-                    // Download Blueprint Button
-                    Button(
-                        onClick = { showBlueprintSuccessDialog = true },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2C3E1F)
-                        )
+                    CircularProgressIndicator(color = Color(0xFF2C3E1F))
+                }
+            } else {
+                csrDetail?.let { csr ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFF7F7F7))
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_download),
-                                contentDescription = "Download",
-                                modifier = Modifier.size(20.dp)
+                        // CSR Card with elevation
+                        CsrCard(item = csr)
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Timeline Section
+                        val timelineSteps = when (csr.status) {
+                            "Menunggu Pembayaran" -> listOf(
+                                TimelineStep("Pengajuan Dikirim", "10/05/2024 - 09:41 WIB", isCompleted = true),
+                                TimelineStep("Review & Evaluasi", "10/05/2024 - 09:50 WIB", isCompleted = true),
+                                TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB", isInProgress = true),
+                                TimelineStep("Implementasi Program")
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                "Download Proposal Rancangan",
-                                fontFamily = poppins,
-                                fontWeight = FontWeight.SemiBold
+                            else -> listOf(
+                                TimelineStep("Pengajuan Dikirim", "10/05/2024 - 09:41 WIB", isCompleted = true),
+                                TimelineStep(
+                                    title = when (csr.status) {
+                                        "Memerlukan Revisi" -> "Review & Evaluasi - Revisi Diperlukan"
+                                        else -> "Review & Evaluasi"
+                                    },
+                                    date = "10/05/2024 - 09:50 WIB",
+                                    isInProgress = true
+                                ),
+                                TimelineStep("Pembayaran", "10/05/2024 - 10:00 WIB"),
+                                TimelineStep("Implementasi Program")
                             )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        VerticalTimeline(steps = timelineSteps)
 
-                    // Additional Buttons based on status
-                    if (csr.status == "Memerlukan Revisi") {
+                        Spacer(modifier = Modifier.height(46.dp))
+
+                        // Download Blueprint Button
                         Button(
-                            onClick = onNavigateToUploadRevisi,
+                            onClick = { showBlueprintSuccessDialog = true },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF2C3E1F)
                             )
                         ) {
-                            Text(
-                                "Upload Revisi",
-                                fontFamily = poppins,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_download),
+                                    contentDescription = "Download",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    "Download Proposal Rancangan",
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
-                    } else if (csr.status == "Menunggu Pembayaran") {
-                        Button(
-                            onClick = onNavigateToInvoice,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF2C3E1F)
-                            )
-                        ) {
-                            Text(
-                                "Lihat Invoice",
-                                fontFamily = poppins,
-                                fontWeight = FontWeight.SemiBold
-                            )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Additional Buttons based on status
+                        if (csr.status == "Memerlukan Revisi") {
+                            Button(
+                                onClick = onNavigateToUploadRevisi,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF2C3E1F)
+                                )
+                            ) {
+                                Text(
+                                    "Upload Revisi",
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        } else if (csr.status == "Menunggu Pembayaran") {
+                            Button(
+                                onClick = onNavigateToInvoice,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF2C3E1F)
+                                )
+                            ) {
+                                Text(
+                                    "Lihat Invoice",
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
                     }
                 }
             }
+
         }
 
         // Success Dialog

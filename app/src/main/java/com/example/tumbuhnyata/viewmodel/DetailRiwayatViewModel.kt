@@ -31,7 +31,13 @@ class DetailRiwayatViewModel : ViewModel() {
                 _csrDetail.value = detail
                 
             } catch (e: Exception) {
-                _error.value = e.message ?: "Failed to load CSR detail"
+                _error.value = when {
+                    e.message?.contains("timeout", ignoreCase = true) == true -> 
+                        "Koneksi timeout. Silakan coba lagi."
+                    e.message?.contains("connection", ignoreCase = true) == true -> 
+                        "Tidak ada koneksi internet. Periksa koneksi Anda."
+                    else -> "Gagal memuat detail CSR: ${e.message}"
+                }
             } finally {
                 _isLoading.value = false
             }
@@ -40,5 +46,9 @@ class DetailRiwayatViewModel : ViewModel() {
 
     fun refresh(csrId: Int) {
         loadCsrDetail(csrId)
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 } 

@@ -11,16 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,10 +29,12 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.data.model.CsrHistoryItem
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.component.CsrCard
+import com.example.tumbuhnyata.ui.component.ErrorSnackbar
 import com.example.tumbuhnyata.ui.component.poppins
 import com.example.tumbuhnyata.ui.components.SectionHeader
 import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RiwayatScreen(
     navController: NavController,
@@ -51,104 +45,130 @@ fun RiwayatScreen(
 ) {
     val perluTindakanList by riwayatViewModel.perluTindakanItems.collectAsState()
     val diterimaList by riwayatViewModel.diterimaItems.collectAsState()
+    val error by riwayatViewModel.error.collectAsState()
+    val isLoading by riwayatViewModel.isLoading.collectAsState()
     var searchText by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF7F7F7))
-    ) {
-        // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF2C3E1F))
-                    .clickable { navController.popBackStack() }, // Navigasi ke Home
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                "Status Riwayat CSR",
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = poppins
+    Scaffold(
+        snackbarHost = { 
+            ErrorSnackbar(
+                error = error,
+                onDismiss = { riwayatViewModel.clearError() },
+                onRetry = { riwayatViewModel.refresh() }
             )
         }
-
-        // Search Bar
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            leadingIcon = {
-                IconButton(onClick = { /* TODO: Implement filter functionality */ }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_filter),
-                        contentDescription = "Filter"
-                    )
-                }
-            },
-            trailingIcon = {
-                IconButton(onClick = { /* TODO: Implement dropdown functionality */ }) {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Dropdown")
-                }
-            },
-            placeholder = { Text("Cari Riwayat") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .background(Color.White, RoundedCornerShape(8.dp)),
-            shape = RoundedCornerShape(8.dp)
-        )
-
-        // Lazy Column
-        LazyColumn(
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 16.dp)
+                .background(Color(0xFFF7F7F7))
+                .padding(paddingValues)
         ) {
-            // Section "Perlu Tindakan"
-            item {
-                SectionHeader(
-                    title = "Perlu Tindakan",
-                    onLihatSemua = onLihatSemuaPerluTindakan
-                )
-            }
-            items(perluTindakanList.take(4)) { item ->
-                CsrCard(item = item) {
-                    onCsrCardClick(item)
+            // Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF2C3E1F))
+                        .clickable { navController.popBackStack() }, // Navigasi ke Home
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
                 }
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    "Status Riwayat CSR",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = poppins
+                )
             }
 
-            // Section "Diterima"
-            item {
-                SectionHeader(
-                    title = "Diterima",
-                    onLihatSemua = onLihatSemuaDiterima
-                )
-            }
-            items(diterimaList.take(4)) { item ->
-                CsrCard(item = item) {
-                    onCsrCardClick(item)
+            // Search Bar
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                leadingIcon = {
+                    IconButton(onClick = { /* TODO: Implement filter functionality */ }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_filter),
+                            contentDescription = "Filter"
+                        )
+                    }
+                },
+                trailingIcon = {
+                    IconButton(onClick = { /* TODO: Implement dropdown functionality */ }) {
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Dropdown")
+                    }
+                },
+                placeholder = { Text("Cari Riwayat") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .background(Color.White, RoundedCornerShape(8.dp)),
+                shape = RoundedCornerShape(8.dp)
+            )
+
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF2C3E1F))
+                }
+            } else {
+                // Lazy Column
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 16.dp)
+                ) {
+                    // Section "Perlu Tindakan"
+                    item {
+                        SectionHeader(
+                            title = "Perlu Tindakan",
+                            onLihatSemua = onLihatSemuaPerluTindakan
+                        )
+                    }
+                    items(perluTindakanList.take(4)) { item ->
+                        CsrCard(item = item) {
+                            onCsrCardClick(item)
+                        }
+                    }
+
+                    // Section "Diterima"
+                    item {
+                        SectionHeader(
+                            title = "Diterima",
+                            onLihatSemua = onLihatSemuaDiterima
+                        )
+                    }
+                    items(diterimaList.take(4)) { item ->
+                        CsrCard(item = item) {
+                            onCsrCardClick(item)
+                        }
+                    }
                 }
             }
         }
     }
 }
-//
+
 //@Preview(showBackground = true)
 //@Composable
 //fun RiwayatScreenPreview() {

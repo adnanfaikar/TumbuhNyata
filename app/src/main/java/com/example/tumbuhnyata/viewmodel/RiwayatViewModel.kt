@@ -42,7 +42,13 @@ class RiwayatViewModel : ViewModel() {
                 _diterimaItems.value = csrHistory.filter { it.agreed }
                 
             } catch (e: Exception) {
-                _error.value = e.message ?: "Failed to load CSR history"
+                _error.value = when {
+                    e.message?.contains("timeout", ignoreCase = true) == true -> 
+                        "Koneksi timeout. Silakan coba lagi."
+                    e.message?.contains("connection", ignoreCase = true) == true -> 
+                        "Tidak ada koneksi internet. Periksa koneksi Anda."
+                    else -> "Gagal memuat data: ${e.message}"
+                }
             } finally {
                 _isLoading.value = false
             }
@@ -51,6 +57,10 @@ class RiwayatViewModel : ViewModel() {
 
     fun refresh() {
         loadCsrHistory()
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 
     private fun formatDate(dateString: String): String {

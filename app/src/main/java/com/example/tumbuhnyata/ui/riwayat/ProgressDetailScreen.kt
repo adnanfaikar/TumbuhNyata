@@ -20,18 +20,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tumbuhnyata.R
-import com.example.tumbuhnyata.data.model.CsrItem
-import com.example.tumbuhnyata.ui.component.CsrCard
-import com.example.tumbuhnyata.ui.component.poppins
-import com.example.tumbuhnyata.ui.component.SuccessDialog
+import com.example.tumbuhnyata.ui.component.*
+import com.example.tumbuhnyata.viewmodel.DetailRiwayatViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgressDetailScreen(
-    csr: CsrItem,
+    csrId: Int,
+    viewModel: DetailRiwayatViewModel = viewModel(),
     onBack: () -> Unit
 ) {
-    var showBlueprintSuccessDialog by remember { mutableStateOf(false) }
+    val csrDetail by viewModel.csrDetail.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(csrId) {
+        viewModel.loadCsrDetail(csrId)
+    }
 
     Scaffold(
         topBar = {
@@ -58,7 +64,7 @@ fun ProgressDetailScreen(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    "Status Riwayat CSR",
+                    "Detail CSR Selesai",
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = poppins
@@ -66,141 +72,177 @@ fun ProgressDetailScreen(
             }
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(Color(0xFFF7F7F7))
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // CSR Card with elevation
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                CsrCard(item = csr)
+                CircularProgressIndicator()
             }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Event Info
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
+        } else if (error != null) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_event_calendar2),
-                        contentDescription = "Date",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = csr.period,
-                        fontSize = 14.sp,
-                        fontFamily = poppins
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_event_loc2),
-                        contentDescription = "Location",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = csr.location,
-                        fontSize = 14.sp,
-                        fontFamily = poppins
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_event_office),
-                        contentDescription = "Organization",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = csr.organization,
-                        fontSize = 14.sp,
-                        fontFamily = poppins
-                    )
-                }
+                Text(error ?: "Unknown error occurred")
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Blueprint Section
-            Text(
-                text = "id434. Paragon - ${csr.title} - LANGKAH NYATA.pdf",
-                fontSize = 12.sp,
-                fontFamily = poppins,
-                color = Color.Gray
-            )
-            Text(
-                text = "189 halaman - 14.3 MB - PDF",
-                fontSize = 12.sp,
-                fontFamily = poppins,
-                color = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = { showBlueprintSuccessDialog = true },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2C3E1F)
-                )
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+        } else {
+            csrDetail?.let { csr ->
+                Column(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .background(Color(0xFFF7F7F7))
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_download),
-                        contentDescription = "Download",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // CSR Card with elevation
+                    CsrCard(item = csr)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Status Section
                     Text(
-                        "Download Blueprint",
+                        text = "Status : Selesai",
+                        modifier = Modifier.padding(start = 4.dp),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = poppins
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Event Info
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_event_calendar2),
+                                contentDescription = "Date",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "${csr.startDate} - ${csr.endDate}",
+                                fontSize = 14.sp,
+                                fontFamily = poppins
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_event_loc2),
+                                contentDescription = "Location",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = csr.location,
+                                fontSize = 14.sp,
+                                fontFamily = poppins
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_event_office),
+                                contentDescription = "Organization",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = csr.partnerName,
+                                fontSize = 14.sp,
+                                fontFamily = poppins
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_event_money1),
+                                contentDescription = "budget",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Rp ${csr.budget}",
+                                fontSize = 14.sp,
+                                fontFamily = poppins
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Blueprint Section
+                    Text(
+                        text = "id${csr.id}. ${csr.partnerName} - ${csr.programName} - LANGKAH NYATA.pdf",
+                        fontSize = 12.sp,
                         fontFamily = poppins,
-                        fontWeight = FontWeight.SemiBold
+                        color = Color.Gray
                     )
+                    Text(
+                        text = "189 halaman - 14.3 MB - PDF",
+                        fontSize = 12.sp,
+                        fontFamily = poppins,
+                        color = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Download Blueprint Button
+                    Button(
+                        onClick = { /* TODO: Handle download */ },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2C3E1F)
+                        )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_download),
+                                contentDescription = "Download",
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Download Proposal Rancangan",
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
                 }
             }
-        }
-
-        // Success Dialog
-        if (showBlueprintSuccessDialog) {
-            SuccessDialog(
-                message = "Berhasil mengunduh blueprint",
-                onDismiss = { showBlueprintSuccessDialog = false }
-            )
         }
     }
-} 
+}

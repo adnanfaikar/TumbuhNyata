@@ -4,10 +4,12 @@ import com.example.tumbuhnyata.TumbuhNyataApp
 import com.example.tumbuhnyata.data.api.NotificationApi
 import com.example.tumbuhnyata.data.api.ProfileApi
 import com.example.tumbuhnyata.data.api.WorkshopApiService
+import com.example.tumbuhnyata.data.api.CsrHistoryApi
 import com.example.tumbuhnyata.data.network.AuthInterceptor
 import com.example.tumbuhnyata.data.repository.NotificationRepository
 import com.example.tumbuhnyata.data.repository.ProfileRepository
 import com.example.tumbuhnyata.data.repository.WorkshopRepository
+import com.example.tumbuhnyata.data.repository.CsrHistoryRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -60,5 +62,13 @@ object NetworkModule {
 
     val workshopRepository: WorkshopRepository by lazy {
         WorkshopRepository(workshopApi)
+    }
+
+    val csrHistoryApi: CsrHistoryApi by lazy {
+        retrofit.create(CsrHistoryApi::class.java)
+    }
+
+    val csrHistoryRepository: CsrHistoryRepository by lazy {
+        CsrHistoryRepository(csrHistoryApi)
     }
 }

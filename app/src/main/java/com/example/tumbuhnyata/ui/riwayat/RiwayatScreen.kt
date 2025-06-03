@@ -34,7 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
-import com.example.tumbuhnyata.data.model.CsrItem
+import com.example.tumbuhnyata.data.model.CsrHistoryItem
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.component.CsrCard
 import com.example.tumbuhnyata.ui.component.poppins
@@ -45,7 +45,7 @@ import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 fun RiwayatScreen(
     navController: NavController,
     riwayatViewModel: RiwayatViewModel = viewModel(),
-    onCsrCardClick: (CsrItem) -> Unit,
+    onCsrCardClick: (CsrHistoryItem) -> Unit,
     onLihatSemuaPerluTindakan: () -> Unit,
     onLihatSemuaDiterima: () -> Unit
 ) {
@@ -148,19 +148,19 @@ fun RiwayatScreen(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun RiwayatScreenPreview() {
-    val navController = rememberNavController()
-    val dummyViewModel = remember {
-        RiwayatViewModel(dummyList = dummyCsrList)
-    }
-    RiwayatScreen(
-        navController = navController,
-        riwayatViewModel = dummyViewModel,
-        onCsrCardClick = { Log.d("Preview", "Card Clicked: ${it.title}") },
-        onLihatSemuaPerluTindakan = { Log.d("Preview", "Lihat Semua Perlu Tindakan") },
-        onLihatSemuaDiterima = { Log.d("Preview", "Lihat Semua Diterima") }
-    )
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun RiwayatScreenPreview() {
+//    val navController = rememberNavController()
+//    val dummyViewModel = remember {
+//        RiwayatViewModel(dummyList = dummyCsrList)
+//    }
+//    RiwayatScreen(
+//        navController = navController,
+//        riwayatViewModel = dummyViewModel,
+//        onCsrCardClick = { Log.d("Preview", "Card Clicked: ${it.programName}") },
+//        onLihatSemuaPerluTindakan = { Log.d("Preview", "Lihat Semua Perlu Tindakan") },
+//        onLihatSemuaDiterima = { Log.d("Preview", "Lihat Semua Diterima") }
+//    )
+//}

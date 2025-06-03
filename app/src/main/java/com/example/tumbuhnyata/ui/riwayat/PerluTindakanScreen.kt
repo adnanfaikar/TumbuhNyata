@@ -23,8 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tumbuhnyata.data.model.CsrItem
-import com.example.tumbuhnyata.data.model.dummyCsrList
+import com.example.tumbuhnyata.data.model.CsrHistoryItem
 import com.example.tumbuhnyata.ui.component.CsrCard
 import com.example.tumbuhnyata.ui.component.poppins
 import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
@@ -33,7 +32,7 @@ import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 fun PerluTindakanScreen(
     riwayatViewModel: RiwayatViewModel = viewModel(),
     onBack: () -> Unit,
-    onCsrCardClick: (CsrItem) -> Unit
+    onCsrCardClick: (CsrHistoryItem) -> Unit
 ) {
     val menungguAksiList by riwayatViewModel.perluTindakanItems.collectAsState()
 
@@ -91,11 +90,8 @@ fun PerluTindakanScreen(
 @Preview(showBackground = true)
 @Composable
 fun PerluTindakanScreenPreview() {
-    val dummyViewModel = remember {
-        object : RiwayatViewModel(dummyList = dummyCsrList) {} // Anonymous object for preview
-    }
     PerluTindakanScreen(
-        riwayatViewModel = dummyViewModel,
+        riwayatViewModel = viewModel(),
         onBack = {},
         onCsrCardClick = {}
     )

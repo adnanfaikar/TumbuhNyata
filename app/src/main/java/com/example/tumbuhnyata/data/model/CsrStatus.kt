@@ -27,7 +27,7 @@ enum class SubStatus(val displayText: String, val colorHex: String) {
     MEMERLUKAN_REVISI("Memerlukan Revisi", "#FF7B7B"),
     MENDATANG("Akan Datang", "#9CDEFF"),
     PROGRESS("Sedang Berlangsung", "#FFD95D"),
-    SELESAI("Selesai", "#989898")
+    SELESAI("Program Selesai", "#989898")
 }
 
 val dummyCsrList = listOf(

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -29,24 +30,59 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+import com.example.tumbuhnyata.data.repository.ProfileRepository
 import com.example.tumbuhnyata.di.NetworkModule
-import com.example.tumbuhnyata.viewmodel.DaftarWorkshopViewModel
-import com.example.tumbuhnyata.viewmodel.DaftarWorkshopUiState
+import com.example.tumbuhnyata.data.api.WorkshopApiService
 
 @Composable
 fun DaftarWorkshop(navController: NavController) {
     var fileSelected by remember { mutableStateOf(false) }
     var fileName by remember { mutableStateOf("") }
     val uriHandler = LocalUriHandler.current
-    var workshopId by remember { mutableStateOf("1") }
 
-    val viewModel = remember {
-        DaftarWorkshopViewModel(
-            workshopRepository = NetworkModule.workshopRepository,
-            profileRepository = NetworkModule.profileRepository
-        )
+
+    // Autofill state
+    var workshopId by remember { mutableStateOf("1") }
+    var companyName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var profileLoaded by remember { mutableStateOf(false) }
+
+    // Fetch profile on first composition
+    LaunchedEffect(Unit) {
+        val repo = NetworkModule.profileRepository
+        val profile = repo.getUserProfile()
+        if (profile != null) {
+            companyName = profile.companyName
+            email = profile.email
+            profileLoaded = true
+        } else {
+            errorMessage = "Gagal mengambil data profil perusahaan."
+        }
     }
-    val uiState by viewModel.uiState.collectAsState()
+
+    suspend fun registerWorkshopToBackend() : Boolean {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:5000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val service = retrofit.create(WorkshopApiService::class.java)
+        val body = mapOf(
+            "workshop_id" to workshopId,
+            "company_name" to companyName,
+            "email" to email
+        )
+        val response = service.registerWorkshop(body)
+        return response.isSuccessful
+    }
 
     Column(
         modifier = Modifier
@@ -197,6 +233,7 @@ fun DaftarWorkshop(navController: NavController) {
             },
             style = LocalTextStyle.current.copy(
                 fontSize = 12.sp,
+                fontFamily = PoppinsFontFamily,
                 color = Color(0xFF4B4B4B)
             )
         )
@@ -206,48 +243,54 @@ fun DaftarWorkshop(navController: NavController) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        if (uiState is DaftarWorkshopUiState.Error) {
+        if (errorMessage != null) {
             Text(
-                text = (uiState as DaftarWorkshopUiState.Error).message,
+                text = errorMessage ?: "",
                 color = Color.Red,
                 fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
 
         Button(
             onClick = {
-                viewModel.registerWorkshop(workshopId)
+                isLoading = true
+                errorMessage = null
+                CoroutineScope(Dispatchers.IO).launch {
+                    val result = registerWorkshopToBackend()
+                    withContext(Dispatchers.Main) {
+                        isLoading = false
+                        if (result) {
+                            navController.navigate("workshopberhasil")
+                        } else {
+                            errorMessage = "Gagal daftar workshop"
+                        }
+                    }
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (uiState !is DaftarWorkshopUiState.Loading && uiState is DaftarWorkshopUiState.Success) 
-                    Color(0xFF27361F) else Color.Gray
+                containerColor = if (!isLoading && profileLoaded && fileSelected) Color(0xFF27361F) else Color.Gray
             ),
-            enabled = uiState !is DaftarWorkshopUiState.Loading && uiState is DaftarWorkshopUiState.Success,
+            enabled = !isLoading && profileLoaded && fileSelected,
             shape = RoundedCornerShape(10.dp)
         ) {
             Text(
-                text = if (uiState is DaftarWorkshopUiState.Loading) "Loading..." else "Daftarkan Sekarang",
+                text = if (isLoading) "Loading..." else "Daftarkan Sekarang",
                 color = Color.White,
                 fontSize = 17.sp,
+                fontFamily = PoppinsFontFamily,
                 fontWeight = FontWeight.ExtraBold
             )
         }
-
-        LaunchedEffect(uiState) {
-            if (uiState is DaftarWorkshopUiState.RegistrationSuccess) {
-                navController.navigate("workshopberhasil")
-            }
-        }
-
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
-@Preview(showBackground = true)
+@Preview (showBackground = true)
 @Composable
 fun PreviewDaftarWorkshop() {
     DaftarWorkshop(navController = rememberNavController())

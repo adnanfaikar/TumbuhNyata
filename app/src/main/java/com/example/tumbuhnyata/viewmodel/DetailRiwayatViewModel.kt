@@ -11,15 +11,19 @@ import kotlinx.coroutines.launch
 class DetailRiwayatViewModel : ViewModel() {
     private val repository = NetworkModule.csrHistoryRepository
 
+    //    state untuk detail csr
     private val _csrDetail = MutableStateFlow<CsrHistoryItem?>(null)
     val csrDetail: StateFlow<CsrHistoryItem?> = _csrDetail
 
+    //    state untuk loading
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    //    state untuk menangani eror
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    //   state untuk memuat detail
     fun loadCsrDetail(csrId: Int) {
         viewModelScope.launch {
             try {

@@ -145,9 +145,27 @@ fun RiwayatScreen(
                             onLihatSemua = onLihatSemuaPerluTindakan
                         )
                     }
-                    items(perluTindakanList.take(4)) { item ->
-                        CsrCard(item = item) {
-                            onCsrCardClick(item)
+                    
+                    if (perluTindakanList.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Tidak ada CSR yang perlu tindakan",
+                                    color = Color.Gray,
+                                    fontFamily = poppins
+                                )
+                            }
+                        }
+                    } else {
+                        items(perluTindakanList.take(4)) { item ->
+                            CsrCard(item = item) {
+                                onCsrCardClick(item)
+                            }
                         }
                     }
 
@@ -158,9 +176,27 @@ fun RiwayatScreen(
                             onLihatSemua = onLihatSemuaDiterima
                         )
                     }
-                    items(diterimaList.take(4)) { item ->
-                        CsrCard(item = item) {
-                            onCsrCardClick(item)
+                    
+                    if (diterimaList.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Tidak ada CSR yang diterima",
+                                    color = Color.Gray,
+                                    fontFamily = poppins
+                                )
+                            }
+                        }
+                    } else {
+                        items(diterimaList.take(4)) { item ->
+                            CsrCard(item = item) {
+                                onCsrCardClick(item)
+                            }
                         }
                     }
                 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -25,32 +26,61 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.viewmodel.ProfileViewModel
 
 @Composable
-fun ChangePassword(navController: NavController) {
+fun ChangePassword(
+    navController: NavController,
+    viewModel: ProfileViewModel = viewModel()
+) {
+    val profileState by viewModel.profileState.collectAsState()
+
     var newPassword by remember { mutableStateOf("") }
     var oldPassword by remember { mutableStateOf("") }
-    var isPasswordValid by remember { mutableStateOf(true) }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Tombol kembali
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-                .padding(top = 40.dp)
+    val isFormValid by remember(oldPassword, newPassword, confirmPassword) {
+        derivedStateOf {
+            oldPassword.length >= 7 &&
+                    newPassword.length >= 8 &&
+                    newPassword != oldPassword &&
+                    newPassword == confirmPassword
+        }
+    }
+
+
+    // Navigasi jika password berhasil diubah
+    LaunchedEffect(profileState.isUpdated) {
+        if (profileState.isUpdated) {
+            navController.navigate("change_password_success") {
+                popUpTo("change_password") { inclusive = true }
+            }
+            viewModel.resetUpdateState()
+        }
+    }
+
+    if (profileState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Color(0xFF27361F))
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(horizontal = 24.dp, vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopBarProfile(
                 title = "",
@@ -58,97 +88,107 @@ fun ChangePassword(navController: NavController) {
                 iconResId = R.drawable.btn_back,
                 onBackClick = { navController.popBackStack() }
             )
-        }
 
-        Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
-        // Ilustrasi
-        Image(
-            painter = painterResource(id = R.drawable.img_change_password),
-            contentDescription = "Reset Illustration",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(231.dp)
-                .width(353.dp)
-                .clip(RoundedCornerShape(20.dp))
-        )
+            Image(
+                painter = painterResource(id = R.drawable.img_change_password),
+                contentDescription = "Reset Illustration",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(231.dp)
+                    .clip(RoundedCornerShape(20.dp))
+            )
 
-        Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
-        // Judul
-        Text(
-            text = "Atur Ulang Kata Sandi",
-            fontSize = 30.sp,
-            fontFamily = PoppinsFontFamily,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF27361F)
-        )
-
-        Spacer(modifier = Modifier.height(46.dp))
-
-        PasswordTextField(
-            value = oldPassword,
-            onValueChange = {
-                oldPassword = it
-                isPasswordValid = it.length >= 8
-            },
-            label = "Kata Sandi Lama",
-            isPasswordVisible = passwordVisible,
-            onVisibilityToggle = { passwordVisible = !passwordVisible },
-            isError = !isPasswordValid
-        )
-
-        Spacer(modifier = Modifier.height(13.dp))
-
-        PasswordTextField(
-            value = newPassword,
-            onValueChange = {
-                newPassword = it
-                isPasswordValid = it.length >= 8
-            },
-            label = "Kata Sandi Baru",
-            isPasswordVisible = passwordVisible,
-            onVisibilityToggle = { passwordVisible = !passwordVisible },
-            isError = !isPasswordValid
-        )
-
-        Spacer(modifier = Modifier.height(13.dp))
-
-        PasswordTextField(
-            value = confirmPassword,
-            onValueChange = {
-                confirmPassword = it
-                isPasswordValid = it.length >= 8
-            },
-            label = "Konfirmasi Kata Sandi",
-            isPasswordVisible = passwordVisible,
-            onVisibilityToggle = { passwordVisible = !passwordVisible },
-            isError = !isPasswordValid
-        )
-
-        Spacer(modifier = Modifier.height(47.dp))
-
-        // Tombol Ubah Kata Sandi
-        Button(
-            onClick = { navController.navigate("change_password_success") },
-            enabled = oldPassword.isNotEmpty() && newPassword.isNotEmpty() && confirmPassword.isNotEmpty(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (oldPassword.isNotEmpty() && newPassword.isNotEmpty() && confirmPassword.isNotEmpty())
-                    Color(0xFF27361F) else Color(0xFF989898)
-            ),
-            shape = RoundedCornerShape(10.dp)
-        ) {
             Text(
-                text = "Ubah Kata Sandi",
-                fontSize = 17.sp,
+                text = "Atur Ulang Kata Sandi",
+                fontSize = 30.sp,
                 fontFamily = PoppinsFontFamily,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center
+                color = Color(0xFF27361F)
             )
+
+            Spacer(modifier = Modifier.height(46.dp))
+
+            // Input Fields
+            PasswordTextField(
+                value = oldPassword,
+                onValueChange = { oldPassword = it },
+                label = "Kata Sandi Lama",
+                isPasswordVisible = passwordVisible,
+                onVisibilityToggle = { passwordVisible = !passwordVisible }
+            )
+
+            Spacer(modifier = Modifier.height(13.dp))
+
+            PasswordTextField(
+                value = newPassword,
+                onValueChange = { newPassword = it },
+                label = "Kata Sandi Baru",
+                isPasswordVisible = passwordVisible,
+                onVisibilityToggle = { passwordVisible = !passwordVisible }
+            )
+
+            Spacer(modifier = Modifier.height(13.dp))
+
+            PasswordTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = "Konfirmasi Kata Sandi",
+                isPasswordVisible = passwordVisible,
+                onVisibilityToggle = { passwordVisible = !passwordVisible }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Tampilkan error jika ada
+            if (profileState.error != null) {
+                Text(
+                    text = profileState.error!!,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            // Tombol
+            Button(
+                onClick = {
+                    if (isFormValid) {
+                        viewModel.changePassword(
+                            currentPassword = oldPassword,
+                            newPassword = newPassword
+                        )
+                    } else {
+                        errorMessage = "Password tidak valid atau tidak sesuai"
+                    }
+                },
+                enabled = isFormValid && !profileState.isChangingPassword,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isFormValid) Color(0xFF27361F) else Color(0xFF989898)
+                ),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                if (profileState.isChangingPassword) {
+                    Text("Loading...", color = Color.White)
+                } else {
+                    Text(
+                        text = "Ubah Kata Sandi",
+                        fontSize = 17.sp,
+                        fontFamily = PoppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }

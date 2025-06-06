@@ -18,9 +18,6 @@ import com.example.tumbuhnyata.ui.register.AkunBerhasil
 import com.example.tumbuhnyata.ui.register.OtpScreen
 import com.example.tumbuhnyata.ui.register.RegisterScreen
 import com.example.tumbuhnyata.ui.register.VerifikasiScreen
-import com.example.tumbuhnyata.ui.screens.OptionScreen
-import com.example.tumbuhnyata.ui.notifikasi.NotifikasiDetailScreen
-import com.example.tumbuhnyata.ui.notifikasi.NotifikasiScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
@@ -32,13 +29,9 @@ import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSuccessScreen
 import com.google.gson.Gson
 import com.example.tumbuhnyata.ui.splashscreen.OptionScreen
-import com.example.tumbuhnyata.ui.register.OtpScreen
-import com.example.tumbuhnyata.ui.register.VerifikasiScreen
-import com.example.tumbuhnyata.ui.register.AkunBerhasil
 import com.example.tumbuhnyata.ui.workshop.DaftarWorkshop
 import com.example.tumbuhnyata.ui.workshop.DeskripsiWorkshopScreen
 import com.example.tumbuhnyata.ui.workshop.NewWorkshop
-import com.example.tumbuhnyata.ui.register.RegisterScreen
 import com.example.tumbuhnyata.ui.workshop.RekomWorkshop
 import com.example.tumbuhnyata.ui.workshop.WorkshopBerhasil
 import com.example.tumbuhnyata.ui.workshop.WorkshopScreen
@@ -58,10 +51,12 @@ import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
 import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
 import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
-import com.example.tumbuhnyata.viewmodel.DashboardKeuanganViewModel
 import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
 import com.example.tumbuhnyata.ui.riwayat.UploadRevisiScreen
 import com.example.tumbuhnyata.ui.riwayat.RevisiSuccessScreen
+import com.example.tumbuhnyata.ui.eventcsr.CsrData
+import com.example.tumbuhnyata.ui.notifikasi.NotifikasiDetailScreen
+import com.example.tumbuhnyata.ui.profile.LanguagePreference
 
 @Composable
 fun AppNavigation() {
@@ -101,7 +96,7 @@ fun AppNavigation() {
         composable("akunberhasil") {
             AkunBerhasil(navController)
         }
-        
+
         // Notifikasi
         composable("notifikasi") {
             com.example.tumbuhnyata.ui.notification.NotificationScreen(
@@ -112,7 +107,7 @@ fun AppNavigation() {
         composable("notifikasi_detail") {
             NotifikasiDetailScreen(navController = navController)
         }
-        
+
         // Profile
         composable("profile") {
             ProfileScreen(navController)
@@ -129,12 +124,24 @@ fun AppNavigation() {
         composable("verification_success") {
             VerificationSuccess(navController)
         }
-        
+        composable("update_profile") {
+            UpdateProfile(navController)
+        }
+        composable("change_password") {
+            ChangePassword(navController)
+        }
+        composable("change_password_success") {
+            ChangePasswordSuccess(navController)
+        }
+        composable("language_preference") {
+            LanguagePreference(navController)
+        }
+
         // Dashboard
         composable("dashboard") {
             DashboardScreen(navController = navController)
         }
-        
+
         // KPI Detail
         composable(
             route = "kpi_detail/{kpiId}",
@@ -146,7 +153,7 @@ fun AppNavigation() {
             requireNotNull(kpiId) { "kpiId parameter wasn't found. Please make sure it's set!" }
             KpiDetailScreen(navController = navController, kpiId = kpiId)
         }
-        
+
         // Upload screens
         composable("upload_data") {
             UploadDataScreen(navController = navController)
@@ -154,7 +161,7 @@ fun AppNavigation() {
         composable("upload_success") {
             UploadSuccessScreen(navController = navController)
         }
-        
+
         // Workshop screens
         composable("workshop") {
             WorkshopScreen(navController)
@@ -175,7 +182,7 @@ fun AppNavigation() {
         composable("workshopberhasil") {
             WorkshopBerhasil(navController)
         }
-        
+
         // CSR Event screens
         composable("csr_submission") {
             CsrSubmissionScreen(navController)
@@ -186,7 +193,7 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val csrDataJson = backStackEntry.arguments?.getString("csrDataJson")
             if (csrDataJson != null) {
-                val csrData = Gson().fromJson(csrDataJson, com.example.tumbuhnyata.ui.eventcsr.CsrData::class.java)
+                val csrData = Gson().fromJson(csrDataJson, CsrData::class.java)
                 CsrVerificationScreen(navController, csrData)
             } else {
                 // Optionally show an error or navigate back
@@ -196,12 +203,12 @@ fun AppNavigation() {
         composable("csr_success") {
             CsrSuccessScreen(navController)
         }
-        
+
         // Home
         composable("home") {
             HomeScreen(navController)
         }
-        
+
         // Invoice Screen
         composable("invoice") {
             InvoiceScreen(
@@ -315,31 +322,5 @@ fun AppNavigation() {
         composable("revisi_success") {
             RevisiSuccessScreen(navController = navController)
         }
-        composable("profile") {
-            ProfileScreen(navController)
-        }
-        composable("about") {
-            AboutScreen(navController)
-        }
-        composable("verification_one") {
-            VerificationOne(navController)
-        }
-        composable("verification_two") {
-            VerificationTwo(navController)
-        }
-        composable("verification_success") {
-            VerificationSuccess(navController)
-        }
-        composable("update_profile") {
-            UpdateProfile(navController)
-        }
-        composable("change_password") {
-            ChangePassword(navController)
-        }
-        composable("change_password_success") {
-            ChangePasswordSuccess(navController)
-        }
     }
 }
-
-

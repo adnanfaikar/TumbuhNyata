@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import com.example.tumbuhnyata.viewmodel.VerificationTwoViewModel
 
 @Composable
 fun VerificationTwo(
@@ -54,7 +55,7 @@ fun VerificationTwo(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 20.dp, top = 80.dp, end = 20.dp)
+                .padding(horizontal = 20.dp, vertical = 40.dp)
         ) {
             TopBarProfile(
                 title = "Verifikasi",
@@ -89,7 +90,7 @@ fun VerificationTwo(
                 onCancelClick = { viewModel.deletePicFile() }
             )
 
-            Spacer(modifier = Modifier.height(256.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {navController.navigate("verification_success")},

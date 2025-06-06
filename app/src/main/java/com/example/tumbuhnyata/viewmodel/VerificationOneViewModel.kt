@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.profile
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

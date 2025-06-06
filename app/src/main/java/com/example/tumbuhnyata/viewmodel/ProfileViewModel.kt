@@ -1,9 +1,7 @@
-package com.example.tumbuhnyata.ui.profile
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tumbuhnyata.data.model.Profile
-import com.example.tumbuhnyata.data.repository.ProfileRepository
 import com.example.tumbuhnyata.di.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +16,10 @@ data class ProfileState(
     val nib: String = "",
     val isLoggedIn: Boolean = true,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isUpdated: Boolean = false,
+    val isChangingPassword: Boolean = false,
+    val isUpdatingProfile: Boolean = false
 )
 
 class ProfileViewModel : ViewModel() {
@@ -53,7 +54,7 @@ class ProfileViewModel : ViewModel() {
             } catch (e: Exception) {
                 _profileState.value = _profileState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Terjadi kesalahan saat memuat profil"
+                    error = "Terjadi kesalahan saat memuat profil"
                 )
             }
         }
@@ -66,7 +67,7 @@ class ProfileViewModel : ViewModel() {
     fun updateProfile(companyName: String, email: String, phoneNumber: String, address: String) {
         viewModelScope.launch {
             try {
-                _profileState.value = _profileState.value.copy(isLoading = true, error = null)
+                _profileState.value = _profileState.value.copy(isLoading = true, isUpdated = false, isUpdatingProfile = true, error = null)
                 val success = repository.updateProfile(companyName, email, phoneNumber, address)
                 if (success) {
                     _profileState.value = _profileState.value.copy(
@@ -74,34 +75,57 @@ class ProfileViewModel : ViewModel() {
                         companyAddress = address,
                         email = email,
                         phoneNumber = phoneNumber,
-                        isLoading = false
+                        isLoading = false,
+                        isUpdated = true,
+                        isUpdatingProfile = false
                     )
                 } else {
                     _profileState.value = _profileState.value.copy(
                         isLoading = false,
+                        isUpdatingProfile = false,
                         error = "Gagal memperbarui profil"
                     )
                 }
             } catch (e: Exception) {
                 _profileState.value = _profileState.value.copy(
                     isLoading = false,
+                    isUpdatingProfile = false,
                     error = e.message ?: "Terjadi kesalahan saat memperbarui profil"
                 )
             }
         }
     }
 
-    fun changePassword(currentPassword: String, newPassword: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun resetUpdateState() {
+        _profileState.value = _profileState.value.copy(isUpdated = false)
+    }
+
+    fun changePassword(currentPassword: String, newPassword: String) {
         viewModelScope.launch {
+            _profileState.value = _profileState.value.copy(
+                isChangingPassword = true,
+                error = null
+            )
+
             try {
                 val success = repository.changePassword(currentPassword, newPassword)
                 if (success) {
-                    onSuccess()
+                    _profileState.value = _profileState.value.copy(
+                        isChangingPassword = false,
+                        error = null,
+                        isUpdated = true // jika ingin trigger navigasi dari LaunchedEffect
+                    )
                 } else {
-                    onError("Gagal mengubah password")
+                    _profileState.value = _profileState.value.copy(
+                        isChangingPassword = false,
+                        error = "Gagal mengubah password"
+                    )
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Terjadi kesalahan saat mengubah password")
+                _profileState.value = _profileState.value.copy(
+                    isChangingPassword = false,
+                    error = e.message ?: "Terjadi kesalahan saat mengubah password"
+                )
             }
         }
     }

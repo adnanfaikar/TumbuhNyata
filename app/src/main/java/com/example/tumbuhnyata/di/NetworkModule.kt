@@ -4,15 +4,26 @@ import com.example.tumbuhnyata.TumbuhNyataApp
 import com.example.tumbuhnyata.data.api.NotificationApi
 import com.example.tumbuhnyata.data.api.ProfileApi
 import com.example.tumbuhnyata.data.api.WorkshopApiService
+import com.example.tumbuhnyata.data.local.dao.OfflineProfileDao
+import com.example.tumbuhnyata.data.local.dao.OfflineWorkshopRegistrationDao
 import com.example.tumbuhnyata.data.network.AuthInterceptor
 import com.example.tumbuhnyata.data.repository.NotificationRepository
 import com.example.tumbuhnyata.data.repository.ProfileRepository
+import com.example.tumbuhnyata.data.repository.WorkshopRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.lazy
+import com.example.tumbuhnyata.data.local.AppDatabase
+import com.example.tumbuhnyata.data.repository.OfflineProfileRepository
+import com.example.tumbuhnyata.data.repository.OfflineWorkshopRepository
 
 object NetworkModule {
+
+    private val database by lazy {
+        AppDatabase.getInstance(TumbuhNyataApp.appContext)
+    }
 
     private val authInterceptor by lazy {
         AuthInterceptor(TumbuhNyataApp.appContext)
@@ -22,7 +33,7 @@ object NetworkModule {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
-        
+
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
@@ -31,7 +42,7 @@ object NetworkModule {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:5000/") // Menggunakan 10.0.2.2 untuk localhost pada emulator Android
+            .baseUrl("http://10.0.2.2:5000/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -44,12 +55,43 @@ object NetworkModule {
     val notificationRepository: NotificationRepository by lazy {
         NotificationRepository(notificationApi)
     }
-    
+
     val profileApi: ProfileApi by lazy {
         retrofit.create(ProfileApi::class.java)
     }
 
     val profileRepository: ProfileRepository by lazy {
-        ProfileRepository(profileApi)
+        ProfileRepository(
+            profileApi,
+            offlineProfileRepository = offlineProfileRepository
+        )
+    }
+
+    val workshopApi: WorkshopApiService by lazy {
+        retrofit.create(WorkshopApiService::class.java)
+    }
+
+    val workshopRepository: WorkshopRepository by lazy {
+        WorkshopRepository(
+            workshopApi,
+            profileApi,
+            offlineWorkshopRepository = offlineWorkshopRepository
+        )
+    }
+
+    val offlineProfileDao: OfflineProfileDao by lazy {
+        database.offlineProfileDao()
+    }
+
+    val offlineWorkshopDao: OfflineWorkshopRegistrationDao by lazy {
+        database.offlineWorkshopRegistrationDao()
+    }
+
+    val offlineProfileRepository: OfflineProfileRepository by lazy {
+        OfflineProfileRepository(offlineProfileDao)
+    }
+
+    val offlineWorkshopRepository: OfflineWorkshopRepository by lazy {
+        OfflineWorkshopRepository(offlineWorkshopDao, workshopApi)
     }
 }

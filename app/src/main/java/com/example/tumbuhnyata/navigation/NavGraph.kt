@@ -24,6 +24,7 @@ import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
 import android.util.Log
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrVerificationScreen
@@ -42,7 +43,13 @@ import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.tumbuhnyata.data.local.AppDatabase
 import com.example.tumbuhnyata.data.model.dummyCsrList
+import com.example.tumbuhnyata.data.repository.OfflineProfileRepository
+import com.example.tumbuhnyata.data.repository.OfflineWorkshopRepository
+import com.example.tumbuhnyata.data.repository.ProfileRepository
+import com.example.tumbuhnyata.data.repository.WorkshopRepository
+import com.example.tumbuhnyata.di.NetworkModule
 import com.example.tumbuhnyata.ui.riwayat.*
 import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.AjukanSertifikasiScreen
@@ -56,7 +63,11 @@ import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
 import com.example.tumbuhnyata.ui.riwayat.UploadRevisiScreen
 import com.example.tumbuhnyata.ui.riwayat.RevisiSuccessScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrData
+import com.example.tumbuhnyata.ui.notification.NotificationScreen
+import com.example.tumbuhnyata.ui.workshop.RiwayatWorkshopScreen
 import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
+import com.example.tumbuhnyata.viewmodel.WorkshopViewModel
+import com.example.tumbuhnyata.viewmodel.WorkshopViewModelFactory
 
 @Composable
 fun AppNavigation() {
@@ -96,10 +107,10 @@ fun AppNavigation() {
         composable("akunberhasil") {
             AkunBerhasil(navController)
         }
-        
+
         // Notifikasi
         composable("notifikasi") {
-            com.example.tumbuhnyata.ui.notification.NotificationScreen(
+            NotificationScreen(
                 userId = "1", // Ganti dengan ID user yang sebenarnya dari session
                 onBackClick = { navController.popBackStack() }
             )
@@ -107,7 +118,7 @@ fun AppNavigation() {
         composable("notifikasi_detail") {
             NotifikasiDetailScreen(navController = navController)
         }
-        
+
         // Profile
         composable("profile") {
             ProfileScreen(navController)
@@ -124,12 +135,12 @@ fun AppNavigation() {
         composable("verification_success") {
             VerificationSuccess(navController)
         }
-        
+
         // Dashboard
         composable("dashboard") {
             DashboardScreen(navController = navController)
         }
-        
+
         // KPI Detail
         composable(
             route = "kpi_detail/{kpiId}",
@@ -141,7 +152,7 @@ fun AppNavigation() {
             requireNotNull(kpiId) { "kpiId parameter wasn't found. Please make sure it's set!" }
             KpiDetailScreen(navController = navController, kpiId = kpiId)
         }
-        
+
         // Upload screens
         composable("upload_data") {
             UploadDataScreen(navController = navController)
@@ -149,11 +160,24 @@ fun AppNavigation() {
         composable("upload_success") {
             UploadSuccessScreen(navController = navController)
         }
-        
-        // Workshop screens
+
         composable("workshop") {
-            WorkshopScreen(navController)
+            val viewModelFactory = WorkshopViewModelFactory(
+                NetworkModule.workshopRepository,
+                NetworkModule.profileRepository,
+                NetworkModule.offlineProfileRepository,
+                NetworkModule.offlineWorkshopRepository
+            )
+
+            val viewModel: WorkshopViewModel = viewModel(factory = viewModelFactory)
+
+            WorkshopScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
         }
+
+
         composable("rekomendasiworkshop") {
             RekomWorkshop(navController)
         }
@@ -162,15 +186,51 @@ fun AppNavigation() {
         }
         composable("deskripsiworkshop/{workshopId}") { backStackEntry ->
             val workshopId = backStackEntry.arguments?.getString("workshopId") ?: ""
-            DeskripsiWorkshopScreen(navController, workshopId)
+            val viewModelFactory = WorkshopViewModelFactory(
+                NetworkModule.workshopRepository,
+                NetworkModule.profileRepository,
+                NetworkModule.offlineProfileRepository,
+                NetworkModule.offlineWorkshopRepository
+            )
+
+            val viewModel: WorkshopViewModel = viewModel(factory = viewModelFactory)
+            DeskripsiWorkshopScreen(navController, workshopId, viewModel = viewModel)
         }
-        composable("daftarworkshop") {
-            DaftarWorkshop(navController)
+        composable("daftarworkshop/{workshopId}") { backStackEntry ->
+            val workshopId = backStackEntry.arguments?.getString("workshopId")
+            val viewModelFactory = WorkshopViewModelFactory(
+                NetworkModule.workshopRepository,
+                NetworkModule.profileRepository,
+                NetworkModule.offlineProfileRepository,
+                NetworkModule.offlineWorkshopRepository
+            )
+
+            val viewModel: WorkshopViewModel = viewModel(factory = viewModelFactory)
+            DaftarWorkshop(
+                navController = navController,
+                workshopId = workshopId,
+                viewModel = viewModel
+            )
         }
         composable("workshopberhasil") {
             WorkshopBerhasil(navController)
         }
-        
+
+        composable("riwayatworkshop") {
+            val viewModelFactory = WorkshopViewModelFactory(
+                NetworkModule.workshopRepository,
+                NetworkModule.profileRepository,
+                NetworkModule.offlineProfileRepository,
+                NetworkModule.offlineWorkshopRepository
+            )
+
+            val viewModel: WorkshopViewModel = viewModel(factory = viewModelFactory)
+            RiwayatWorkshopScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
         // CSR Event screens
         composable("csr_submission") {
             CsrSubmissionScreen(navController)
@@ -191,12 +251,12 @@ fun AppNavigation() {
         composable("csr_success") {
             CsrSuccessScreen(navController)
         }
-        
+
         // Home
         composable("home") {
             HomeScreen(navController)
         }
-        
+
         // Invoice Screen
         composable("invoice") {
             InvoiceScreen(
@@ -336,5 +396,3 @@ fun AppNavigation() {
         }
     }
 }
-
-

@@ -26,7 +26,7 @@ import java.text.NumberFormat
 import java.util.*
 
 @Composable
-fun DeskripsiWorkshop(navController: NavController, workshop: Workshop) {
+fun DeskripsiWorkshop(navController: NavController, workshop: Workshop, workshopId: String,) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -173,7 +173,7 @@ fun DeskripsiWorkshop(navController: NavController, workshop: Workshop) {
             Spacer(modifier = Modifier.height(23.dp))
 
             Button(
-                onClick = { navController.navigate("daftarworkshop") },
+                onClick = { navController.navigate("daftarworkshop/$workshopId") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

@@ -1,5 +1,6 @@
 package com.example.tumbuhnyata.ui.workshop
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,18 +19,22 @@ import androidx.navigation.NavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.DeskripsiWorkshop
 import com.example.tumbuhnyata.viewmodel.WorkshopDetailViewModel
+import com.example.tumbuhnyata.viewmodel.WorkshopViewModel
 
 @Composable
 fun DeskripsiWorkshopScreen(
     navController: NavController,
     workshopId: String,
-    viewModel: WorkshopDetailViewModel = viewModel()
+    viewModelDetail: WorkshopDetailViewModel = viewModel(),
+    viewModel: WorkshopViewModel
 ) {
     LaunchedEffect(workshopId) {
-        viewModel.loadWorkshopById(workshopId)
+        viewModelDetail.loadWorkshopById(workshopId)
+        viewModel.setWorkshopId(workshopId)
+        Log.d("DeskripsiWorkshopScreen", "Workshop loaded - ID: $workshopId")
     }
 
-    val workshop by viewModel.selectedWorkshop.collectAsState()
+    val workshop by viewModelDetail.selectedWorkshop.collectAsState()
 
     if (workshop != null) {
         Column(
@@ -66,7 +71,9 @@ fun DeskripsiWorkshopScreen(
                 }
             }
 
-            DeskripsiWorkshop(navController = navController, workshop = workshop!!)
+            DeskripsiWorkshop(
+                navController = navController, workshop = workshop!!, workshopId = workshopId
+            )
         }
     }
 }

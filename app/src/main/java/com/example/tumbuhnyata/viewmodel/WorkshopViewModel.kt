@@ -309,6 +309,13 @@ class WorkshopViewModel(
         return workshopRepository.getWorkshopById(id)
     }
 
+    fun deleteRegistrationsByIds(ids: List<String>) {
+        viewModelScope.launch {
+            offlineWorkshopRepository.deleteRegistrationsByIds(ids)
+            loadWorkshopHistory() // refresh data
+        }
+    }
+
     suspend fun isDatabaseOnline(): Boolean {
         return try {
             workshopRepository.isDatabaseOnline()

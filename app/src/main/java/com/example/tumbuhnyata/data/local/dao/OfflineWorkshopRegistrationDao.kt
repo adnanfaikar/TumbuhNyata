@@ -22,4 +22,7 @@ interface OfflineWorkshopRegistrationDao {
 
     @Query("SELECT * FROM offline_workshop_registrations WHERE id = :id")
     fun getRegistrationById(id: String): OfflineWorkshopRegistration?
-} 
+
+    @Query("DELETE FROM offline_workshop_registrations WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<String>)
+}

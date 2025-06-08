@@ -96,4 +96,10 @@ class OfflineWorkshopRepository(
             }
         }
     }
+
+    suspend fun deleteRegistrationsByIds(ids: List<String>) {
+        withContext(Dispatchers.IO) {
+            offlineWorkshopRegistrationDao.deleteByIds(ids)
+        }
+    }
 }

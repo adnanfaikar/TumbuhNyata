@@ -1,7 +1,10 @@
 package com.example.tumbuhnyata.ui.workshop
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,10 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import com.example.tumbuhnyata.viewmodel.WorkshopViewModel
-import com.example.tumbuhnyata.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +38,9 @@ fun RiwayatWorkshopScreen(
     val syncMessage by viewModel.syncMessage.collectAsState()
     val workshopHistory by viewModel.workshopHistory.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    var isSelectionMode by remember { mutableStateOf(false) }
+    val selectedItems = remember { mutableStateMapOf<String, Boolean>() }
 
     Scaffold(
         topBar = {
@@ -55,11 +61,9 @@ fun RiwayatWorkshopScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
-        }
+        },
     ) { padding ->
         Box(
             modifier = modifier
@@ -104,13 +108,84 @@ fun RiwayatWorkshopScreen(
                         }
                     }
                 } else {
+                    Button(
+                        onClick = {
+                            isSelectionMode = !isSelectionMode
+                            if (!isSelectionMode) selectedItems.clear()
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF27361F)),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text(
+                            text = if (isSelectionMode) "Batal Pilih" else "Pilih Workshop",
+                            color = Color.White,
+                            fontSize = 17.sp,
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(workshopHistory) { registration ->
-                            WorkshopHistoryCard(registration = registration, viewModel = viewModel)
+                            val isChecked = selectedItems[registration.id] ?: false
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateContentSize()
+                            ) {
+                                AnimatedVisibility(visible = isSelectionMode) {
+                                    Checkbox(
+                                        checked = isChecked,
+                                        onCheckedChange = { checked ->
+                                            selectedItems[registration.id] = checked
+                                        },
+                                        modifier = Modifier.padding(end = 8.dp)
+                                    )
+                                }
+
+                                WorkshopHistoryCard(
+                                    registration = registration,
+                                    viewModel = viewModel,
+                                    isSelectionMode = isSelectionMode,
+                                    isChecked = isChecked,
+                                    onCheckedChange = {}
+                                )
+                            }
+                        }
+                    }
+
+                    if (isSelectionMode && selectedItems.any { it.value }) {
+                        Button(
+                            onClick = {
+                                val idsToDelete = selectedItems.filter { it.value }.map { it.key }
+                                viewModel.deleteRegistrationsByIds(idsToDelete)
+                                selectedItems.clear()
+                                isSelectionMode = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDF3737)),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text(
+                                "Hapus Workshop (${selectedItems.count { it.value }})",
+                                color = Color.White,
+                                fontSize = 17.sp,
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.ExtraBold
+                            )
                         }
                     }
                 }
@@ -131,7 +206,10 @@ fun RiwayatWorkshopScreen(
 @Composable
 fun WorkshopHistoryCard(
     registration: OfflineWorkshopRegistration,
-    viewModel: WorkshopViewModel
+    viewModel: WorkshopViewModel,
+    isSelectionMode: Boolean,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
 ) {
     val workshop = viewModel.getWorkshopById(registration.workshopId)
 
@@ -139,17 +217,20 @@ fun WorkshopHistoryCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(155.dp)
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp),
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE2E2E2),
+                shape = RoundedCornerShape(10.dp)
+            ),
+        shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(end = 12.dp)
+                .padding(end = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = painterResource(id = workshop?.imageRes ?: R.drawable.work1),

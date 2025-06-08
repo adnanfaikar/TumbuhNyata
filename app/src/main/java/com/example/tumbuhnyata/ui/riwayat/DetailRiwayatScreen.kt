@@ -39,13 +39,19 @@ import com.example.tumbuhnyata.ui.riwayat.SelesaiDetailScreen
 fun CsrDetailScreen(
     csr: CsrItem,
     onBack: () -> Unit,
-    onNavigateToInvoice: () -> Unit
+    onNavigateToInvoice: () -> Unit,
+    onNavigateToUploadRevisi: () -> Unit
 ) {
     when (csr.subStatus) {
         SubStatus.MENDATANG -> MendatangDetailScreen(csr = csr, onBack = onBack)
         SubStatus.PROGRESS -> ProgressDetailScreen(csr = csr, onBack = onBack)
         SubStatus.SELESAI -> SelesaiDetailScreen(csr = csr, onBack = onBack)
-        else -> ReviewDetailScreen(csr = csr, onBack = onBack, onNavigateToInvoice = onNavigateToInvoice)
+        else -> ReviewDetailScreen(
+            csr = csr,
+            onBack = onBack,
+            onNavigateToInvoice = onNavigateToInvoice,
+            onNavigateToUploadRevisi = onNavigateToUploadRevisi
+        )
     }
 }
 
@@ -54,23 +60,25 @@ fun CsrDetailScreen(
 private fun ReviewDetailScreen(
     csr: CsrItem,
     onBack: () -> Unit,
-    onNavigateToInvoice: () -> Unit
+    onNavigateToInvoice: () -> Unit,
+    onNavigateToUploadRevisi: () -> Unit
 ) {
     var showProposalSuccessDialog by remember { mutableStateOf(false) }
     var showRevisionSuccessDialog by remember { mutableStateOf(false) }
 
     Scaffold(
+
         topBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .padding(16.dp),
+                    .padding(start = 16.dp, top = 24.dp, bottom = 16.dp, end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
                         .background(Color(0xFF2C3E1F))
                         .clickable { onBack() },
@@ -91,10 +99,11 @@ private fun ReviewDetailScreen(
                 )
             }
         }
-    ) { paddingValues ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(paddingValues)
+                .padding(innerPadding)
+
                 .fillMaxSize()
                 .background(Color(0xFFF7F7F7))
                 .padding(16.dp)
@@ -160,7 +169,7 @@ private fun ReviewDetailScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Download Panduan Revisi",
+                            "Lihat Panduan Revisi",
                             fontFamily = poppins,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -225,6 +234,32 @@ private fun ReviewDetailScreen(
             VerticalTimeline(steps = timelineSteps)
         }
 
+        // Sticky Upload Revisi button at the bottom for MEMERLUKAN_REVISI
+        if (csr.subStatus == SubStatus.MEMERLUKAN_REVISI) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Button(
+                    onClick = onNavigateToUploadRevisi,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(16.dp, 16.dp, 30.dp, 16.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2C3E1F)
+                    )
+                ) {
+                    Text(
+                        "Upload Revisi",
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+
         // Success Dialogs
         if (showProposalSuccessDialog) {
             SuccessDialog(
@@ -242,8 +277,8 @@ private fun ReviewDetailScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewCsrDetailScreen() {
-    CsrDetailScreen(csr = dummyCsrList[0], onBack = {}, onNavigateToInvoice = {})
+    CsrDetailScreen(csr = dummyCsrList[0], onBack = {}, onNavigateToInvoice = {}, onNavigateToUploadRevisi = {})
 }

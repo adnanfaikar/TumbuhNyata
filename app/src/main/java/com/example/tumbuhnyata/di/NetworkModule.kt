@@ -1,13 +1,23 @@
 package com.example.tumbuhnyata.di
 
+import com.example.tumbuhnyata.TumbuhNyataApp
+import com.example.tumbuhnyata.data.api.CertificationApi
 import com.example.tumbuhnyata.data.api.NotificationApi
+import com.example.tumbuhnyata.data.api.ProfileApi
+import com.example.tumbuhnyata.data.network.AuthInterceptor
 import com.example.tumbuhnyata.data.repository.NotificationRepository
+import com.example.tumbuhnyata.data.repository.ProfileRepository
+import com.example.tumbuhnyata.data.repository.CertificationRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
+
+    private val authInterceptor by lazy {
+        AuthInterceptor(TumbuhNyataApp.appContext)
+    }
 
     private val okHttpClient by lazy {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -16,6 +26,7 @@ object NetworkModule {
         
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
             .build()
     }
 
@@ -34,4 +45,21 @@ object NetworkModule {
     val notificationRepository: NotificationRepository by lazy {
         NotificationRepository(notificationApi)
     }
-} 
+    
+    val profileApi: ProfileApi by lazy {
+        retrofit.create(ProfileApi::class.java)
+    }
+    
+    val profileRepository: ProfileRepository by lazy {
+        ProfileRepository(profileApi)
+    }
+
+    val certificationApi: CertificationApi by lazy {
+        retrofit.create(CertificationApi::class.java)
+    }
+
+    val certificationRepository: CertificationRepository by lazy {
+        CertificationRepository(certificationApi)
+    }
+
+}

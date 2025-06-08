@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.notifikasi
+package com.example.tumbuhnyata.ui.notification
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

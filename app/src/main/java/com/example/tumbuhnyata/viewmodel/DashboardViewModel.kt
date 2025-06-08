@@ -1,6 +1,7 @@
-package com.example.tumbuhnyata.ui.dashboard
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.tumbuhnyata.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +32,7 @@ class DashboardViewModel : ViewModel() {
             kpiItems = listOf(
                 KPIItemState(
                     title = "Carbon Footprint",
-                    topIcon = com.example.tumbuhnyata.R.drawable.ic_carbonfootprint,
+                    topIcon = R.drawable.ic_carbonfootprint,
                     statusText = "100% target",
                     statusPercentageValue = "5%",
                     isUp = true,
@@ -42,7 +43,7 @@ class DashboardViewModel : ViewModel() {
                 ),
                 KPIItemState(
                     title = "Konsumsi Energi",
-                    topIcon = com.example.tumbuhnyata.R.drawable.ic_konsumsienergi,
+                    topIcon = R.drawable.ic_konsumsienergi,
                     statusText = "94% target",
                     statusPercentageValue = "8%",
                     isUp = false,
@@ -53,7 +54,7 @@ class DashboardViewModel : ViewModel() {
                 ),
                 KPIItemState(
                     title = "Penggunaan Air",
-                    topIcon = com.example.tumbuhnyata.R.drawable.ic_penggunaanair,
+                    topIcon = R.drawable.ic_penggunaanair,
                     statusText = "93% target",
                     statusPercentageValue = "4%",
                     isUp = false,
@@ -64,7 +65,7 @@ class DashboardViewModel : ViewModel() {
                 ),
                 KPIItemState(
                     title = "Pohon Tertanam",
-                    topIcon = com.example.tumbuhnyata.R.drawable.ic_pohontertanam,
+                    topIcon = R.drawable.ic_pohontertanam,
                     statusText = "75% target",
                     statusPercentageValue = "25%",
                     isUp = true,
@@ -75,7 +76,7 @@ class DashboardViewModel : ViewModel() {
                 ),
                 KPIItemState(
                     title = "Pengelolaan Sampah",
-                    topIcon = com.example.tumbuhnyata.R.drawable.ic_pengelolaansampah,
+                    topIcon = R.drawable.ic_pengelolaansampah,
                     statusText = "78% target",
                     statusPercentageValue = "30%",
                     isUp = true,
@@ -86,7 +87,7 @@ class DashboardViewModel : ViewModel() {
                 ),
                 KPIItemState(
                     title = "Penerima Manfaat",
-                    topIcon = com.example.tumbuhnyata.R.drawable.ic_penerimamanfaat,
+                    topIcon = R.drawable.ic_penerimamanfaat,
                     statusText = "80% target",
                     statusPercentageValue = "12%",
                     isUp = true,

@@ -152,7 +152,7 @@ fun UploadDataScreen(navController: NavController) {
                     placeholderText = config.placeholder,
                     selectedFileName = selectedFiles[config.id],
                     onSelectClick = {
-                        selectedFiles[config.id] = "${config.label.replace(" ", "_")}_${System.currentTimeMillis()}.pdf"
+                        selectedFiles[config.id] = "${config.label.replace(" ", "_")}_${System.currentTimeMillis()}.xlsx"
                     },
                     onRemoveClick = {
                         selectedFiles[config.id] = null

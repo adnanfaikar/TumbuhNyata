@@ -48,10 +48,10 @@ fun DashboardKeuanganScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
                 .background(Color.White)
                 .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
                 .padding(16.dp)
         ) {
             // Header with back button

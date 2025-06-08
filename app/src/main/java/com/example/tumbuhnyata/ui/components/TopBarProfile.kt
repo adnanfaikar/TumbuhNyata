@@ -24,7 +24,7 @@ fun TopBarProfile(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(38.dp),
+            .height(40.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(

@@ -14,7 +14,7 @@ class CertificationRepository(private val api: CertificationApi) {
         cost: Double?,
         supportingDocuments: List<String>?
     ): Boolean {
-        val certificationData = mapOf(
+        val certificationData: Map<String, Any?> = mapOf(
             "user_id" to userId,
             "name" to name,
             "description" to description,

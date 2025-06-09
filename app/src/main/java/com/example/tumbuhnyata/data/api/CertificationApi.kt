@@ -8,6 +8,6 @@ interface CertificationApi {
 
     @POST("certifications/apply")
     suspend fun submitCertification(
-        @Body body: Map<String, Any?>
+        @Body body: Map<String, @JvmSuppressWildcards Any?>
     ): Response<Any>
 }

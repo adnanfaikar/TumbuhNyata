@@ -22,8 +22,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.data.api.CertificationApi
+import com.example.tumbuhnyata.data.model.iso26000
 import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun DokumenOne(navController: NavController) {
@@ -33,6 +41,36 @@ fun DokumenOne(navController: NavController) {
     var filePernyataan by remember { mutableStateOf<String?>(null) }
 
     val isBothFilesUploaded = fileCSR != null && fileLingkungan != null && fileImplementasi != null && filePernyataan != null
+
+    var userId by remember { mutableStateOf("1") }
+    var name by remember { mutableStateOf(iso26000.nama) }
+    var description by remember { mutableStateOf(iso26000.deskripsi) }
+    var credentialBody by remember { mutableStateOf(iso26000.lembaga) }
+    var benefits by remember { mutableStateOf(iso26000.manfaat.joinToString(", ")) }
+    var cost by remember { mutableStateOf(iso26000.biaya.toString()) }
+
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    suspend fun registerSertifikasiToBackend() : Boolean {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:5000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val service = retrofit.create(CertificationApi::class.java)
+        val body = mapOf(
+            "user_id" to userId,
+            "name" to name,
+            "description" to description,
+            "credential_body" to credentialBody,
+            "benefits" to benefits,
+            "cost" to cost,
+            "supporting_documents" to listOf<String>()
+
+        )
+        val response = service.submitCertification(body)
+        return response.isSuccessful
+    }
 
     Box(
         modifier = Modifier
@@ -111,16 +149,28 @@ fun DokumenOne(navController: NavController) {
             Spacer(modifier = Modifier.height(150.dp))
 
             Button(
-                onClick = { navController.navigate("berhasil")},
+                onClick = {
+                    isLoading = true
+                    errorMessage = null
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val result = registerSertifikasiToBackend()
+                        withContext(Dispatchers.Main) {
+                            isLoading = false
+                            if (result) {
+                                navController.navigate("berhasil")
+                            } else {
+                                errorMessage = "Gagal Mendaftarkan Sertifikasi"
+                            }
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(if (isBothFilesUploaded) Color(0xFF27361F) else Color(0xFF989898)
+                ),
+                enabled = isBothFilesUploaded,
+                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(start = 1.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    if (isBothFilesUploaded) Color(0xFF27361F) else Color(0xFF989898)
-                ),
-                enabled = isBothFilesUploaded
+                    .height(48.dp)
             ) {
                 Text(
                     text = "Selanjutnya",

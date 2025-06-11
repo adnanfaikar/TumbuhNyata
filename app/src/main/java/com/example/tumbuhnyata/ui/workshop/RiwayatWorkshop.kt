@@ -299,9 +299,9 @@ fun WorkshopHistoryCard(
                                             Color(0xFF27361F)
                                         )
                                     ),
-                                    shape = RoundedCornerShape(8.dp)
+                                    shape = RoundedCornerShape(10.dp)
                                 ),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Text(
                                 text = "Pending",

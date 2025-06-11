@@ -4,29 +4,27 @@ import com.example.tumbuhnyata.data.api.WorkshopApiService
 import com.example.tumbuhnyata.data.local.dao.OfflineWorkshopRegistrationDao
 import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
 import com.example.tumbuhnyata.data.model.RegisterWorkshop
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class OfflineWorkshopRepository(
     private val offlineWorkshopRegistrationDao: OfflineWorkshopRegistrationDao,
     private val workshopApiService: WorkshopApiService
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     suspend fun saveRegistrationOffline(
         workshopId: String,
         companyName: String,
-        email: String
+        email: String,
+        isSynced: Boolean = false
     ): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 val registration = OfflineWorkshopRegistration(
                     workshopId = workshopId,
                     companyName = companyName,
-                    email = email
+                    email = email,
+                    isSynced = isSynced
                 )
                 offlineWorkshopRegistrationDao.insert(registration)
                 true
@@ -36,13 +34,11 @@ class OfflineWorkshopRepository(
         }
     }
 
-    fun syncRegistrations(): Boolean {
-        var allSuccess = true
-        scope.launch {
+    suspend fun syncRegistrations(): Boolean {
+        return withContext(Dispatchers.IO) {
+            var allSuccess = true
             try {
-                val unsyncedRegistrations = withContext(Dispatchers.IO) {
-                    offlineWorkshopRegistrationDao.getUnsyncedRegistrations()
-                }
+                val unsyncedRegistrations = offlineWorkshopRegistrationDao.getUnsyncedRegistrations()
 
                 unsyncedRegistrations.forEach { registration ->
                     try {
@@ -55,11 +51,10 @@ class OfflineWorkshopRepository(
                         )
 
                         if (response.isSuccessful) {
-                            withContext(Dispatchers.IO) {
-                                offlineWorkshopRegistrationDao.update(
-                                    registration.copy(isSynced = true)
-                                )
-                            }
+                            // Update the registration to mark it as synced
+                            offlineWorkshopRegistrationDao.update(
+                                registration.copy(isSynced = true)
+                            )
                         } else {
                             allSuccess = false
                         }
@@ -72,8 +67,8 @@ class OfflineWorkshopRepository(
                 allSuccess = false
                 e.printStackTrace()
             }
+            allSuccess
         }
-        return allSuccess
     }
 
     suspend fun hasPendingSyncRegistrations(): Boolean {
@@ -100,6 +95,12 @@ class OfflineWorkshopRepository(
     suspend fun deleteRegistrationsByIds(ids: List<String>) {
         withContext(Dispatchers.IO) {
             offlineWorkshopRegistrationDao.deleteByIds(ids)
+        }
+    }
+
+    suspend fun getRegistrationById(id: String): OfflineWorkshopRegistration? {
+        return withContext(Dispatchers.IO) {
+            offlineWorkshopRegistrationDao.getRegistrationById(id)
         }
     }
 }

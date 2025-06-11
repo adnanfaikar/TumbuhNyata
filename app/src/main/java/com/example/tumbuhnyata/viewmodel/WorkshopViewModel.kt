@@ -100,6 +100,7 @@ class WorkshopViewModel(
                 if (success) {
                     _syncMessage.value = "Semua pendaftaran berhasil disinkronkan"
                     _hasPendingSync.value = false
+                    loadWorkshopHistory() // Refresh history after sync
                 } else {
                     _syncMessage.value = "Beberapa pendaftaran gagal disinkronkan. Akan dicoba lagi nanti."
                     _hasPendingSync.value = workshopRepository.hasPendingSyncRegistrations()
@@ -186,6 +187,7 @@ class WorkshopViewModel(
         loadUserProfile()
     }
 
+    // FIXED: Unified registration function that handles both online and offline scenarios
     fun registerWorkshop() {
         if (!_profileLoaded.value) {
             _errorMessage.value = "Data profil belum dimuat. Silakan tunggu sebentar."
@@ -207,39 +209,69 @@ class WorkshopViewModel(
             _errorMessage.value = null
 
             try {
-                val success = workshopRepository.registerWorkshopOnline(
+                // First, try to register online
+                val onlineSuccess = workshopRepository.registerWorkshopOnline(
                     workshopId = _workshopId.value,
                     companyName = _companyName.value,
                     email = _email.value
                 )
 
-                if (success) {
-                    // Simpan ke Room database dengan status tersinkronisasi
+                if (onlineSuccess) {
+                    // If online registration successful, save to Room with synced status = true
                     val saved = offlineWorkshopRepository.saveRegistrationOffline(
                         workshopId = _workshopId.value,
                         companyName = _companyName.value,
-                        email = _email.value
+                        email = _email.value,
+                        isSynced = true // Mark as synced since online registration was successful
                     )
 
                     if (saved) {
-                        // Update status sinkronisasi
-                        val registrations = offlineWorkshopRepository.getAllRegistrations()
-                        val latestRegistration = registrations.maxByOrNull { it.timestamp }
-                        if (latestRegistration != null) {
-                            offlineWorkshopRepository.updateRegistrationSyncStatus(
-                                registrationId = latestRegistration.id,
-                                isSynced = true
-                            )
-                        }
                         _registerSuccess.value = true
+                        loadWorkshopHistory() // Refresh history
+                        checkPendingSync() // Update pending sync status
                     } else {
-                        _errorMessage.value = "Gagal menyimpan riwayat pendaftaran"
+                        _errorMessage.value = "Berhasil daftar workshop tetapi gagal menyimpan riwayat"
+                        _registerSuccess.value = true // Still consider as success since online registration worked
                     }
                 } else {
-                    _errorMessage.value = "Gagal daftar workshop. Silakan coba lagi."
+                    // If online registration failed, save offline with synced status = false
+                    val saved = offlineWorkshopRepository.saveRegistrationOffline(
+                        workshopId = _workshopId.value,
+                        companyName = _companyName.value,
+                        email = _email.value,
+                        isSynced = false // Mark as not synced since online registration failed
+                    )
+
+                    if (saved) {
+                        _registerSuccess.value = true
+                        _syncMessage.value = "Pendaftaran disimpan offline. Akan disinkronkan saat online."
+                        loadWorkshopHistory() // Refresh history
+                        checkPendingSync() // Update pending sync status
+                    } else {
+                        _errorMessage.value = "Gagal menyimpan pendaftaran workshop"
+                    }
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Error: ${e.localizedMessage ?: "Terjadi kesalahan"}"
+                // If exception occurs, try to save offline
+                try {
+                    val saved = offlineWorkshopRepository.saveRegistrationOffline(
+                        workshopId = _workshopId.value,
+                        companyName = _companyName.value,
+                        email = _email.value,
+                        isSynced = false
+                    )
+
+                    if (saved) {
+                        _registerSuccess.value = true
+                        _syncMessage.value = "Pendaftaran disimpan offline karena tidak ada koneksi. Akan disinkronkan saat online."
+                        loadWorkshopHistory()
+                        checkPendingSync()
+                    } else {
+                        _errorMessage.value = "Gagal menyimpan pendaftaran workshop: ${e.localizedMessage}"
+                    }
+                } catch (offlineException: Exception) {
+                    _errorMessage.value = "Gagal menyimpan pendaftaran: ${offlineException.localizedMessage}"
+                }
             } finally {
                 _isLoading.value = false
             }
@@ -250,45 +282,7 @@ class WorkshopViewModel(
         _registerSuccess.value = false
     }
 
-    fun offlineRegisterWorkshop() {
-        if (!_profileLoaded.value) {
-            _errorMessage.value = "Data profil belum dimuat. Silakan tunggu sebentar."
-            return
-        }
-
-        if (!_fileSelected.value) {
-            _errorMessage.value = "Silakan pilih file terlebih dahulu"
-            return
-        }
-
-        if (_companyName.value.isBlank() || _email.value.isBlank()) {
-            _errorMessage.value = "Data profil tidak lengkap"
-            return
-        }
-
-        viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
-
-            try {
-                val success = offlineWorkshopRepository.saveRegistrationOffline(
-                    workshopId = _workshopId.value,
-                    companyName = _companyName.value,
-                    email = _email.value
-                )
-
-                if (success) {
-                    _registerSuccess.value = true
-                } else {
-                    _errorMessage.value = "Gagal daftar workshop. Silakan coba lagi."
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Error: ${e.localizedMessage ?: "Terjadi kesalahan"}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
+    // REMOVED: offlineRegisterWorkshop function - no longer needed
 
     private fun loadWorkshopHistory() {
         viewModelScope.launch {
@@ -311,10 +305,32 @@ class WorkshopViewModel(
 
     fun deleteRegistrationsByIds(ids: List<String>) {
         viewModelScope.launch {
-            offlineWorkshopRepository.deleteRegistrationsByIds(ids)
-            loadWorkshopHistory() // refresh data
+            _isLoading.value = true
+            val isOnline = isDatabaseOnline()
+
+            for (id in ids) {
+                val registration = offlineWorkshopRepository.getRegistrationById(id)
+                if (registration != null) {
+                    if (isOnline && registration.isSynced) {
+                        val success = workshopRepository.deleteWorkshopOnline(registration.workshopId)
+                        if (success) {
+                            offlineWorkshopRepository.deleteRegistrationsByIds(listOf(id))
+                        } else {
+                            _errorMessage.value = "Gagal menghapus dari server"
+                        }
+                    } else {
+                        offlineWorkshopRepository.deleteRegistrationsByIds(listOf(id))
+                    }
+                }
+            }
+
+            loadWorkshopHistory()
+            checkPendingSync()
+            _isLoading.value = false
         }
     }
+
+
 
     suspend fun isDatabaseOnline(): Boolean {
         return try {

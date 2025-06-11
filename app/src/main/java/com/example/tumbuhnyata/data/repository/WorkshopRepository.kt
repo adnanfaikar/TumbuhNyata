@@ -34,6 +34,7 @@ class WorkshopRepository(
         return recentWorkshops
     }
 
+    // FIXED: Removed automatic offline saving - this should be handled by the caller
     suspend fun registerWorkshopOnline(
         workshopId: String,
         companyName: String,
@@ -49,11 +50,9 @@ class WorkshopRepository(
                 val response = api.registerWorkshop(registerWorkshopData)
                 response.isSuccessful
             } catch (e: Exception) {
-                offlineWorkshopRepository.saveRegistrationOffline(
-                    workshopId = workshopId,
-                    companyName = companyName,
-                    email = email
-                )
+                // Return false instead of automatically saving offline
+                // Let the caller (ViewModel) handle offline saving
+                false
             }
         }
     }
@@ -68,6 +67,17 @@ class WorkshopRepository(
             true
         } catch (e: Exception) {
             false
+        }
+    }
+
+    suspend fun deleteWorkshopOnline(workshopId: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = api.deleteWorkshopRegistration(workshopId)
+                response.isSuccessful
+            } catch (e: Exception) {
+                false
+            }
         }
     }
 }

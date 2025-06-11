@@ -82,6 +82,11 @@ class WorkshopViewModel(
         loadUserProfile()
         checkPendingSync()
         loadWorkshopHistory()
+        viewModelScope.launch {
+            if (isDatabaseOnline()) {
+                fetchWorkshopHistoryOnline()
+            }
+        }
     }
 
     fun checkPendingSync() {
@@ -330,7 +335,18 @@ class WorkshopViewModel(
         }
     }
 
-
+    fun fetchWorkshopHistoryOnline() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val success = workshopRepository.syncWorkshopHistoryFromServer(_email.value)
+            if (success) {
+                loadWorkshopHistory()
+            } else {
+                _errorMessage.value = "Gagal mengambil riwayat workshop dari server"
+            }
+            _isLoading.value = false
+        }
+    }
 
     suspend fun isDatabaseOnline(): Boolean {
         return try {

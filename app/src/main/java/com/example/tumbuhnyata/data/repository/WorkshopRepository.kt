@@ -70,6 +70,18 @@ class WorkshopRepository(
         }
     }
 
+    suspend fun syncWorkshopHistoryFromServer(email: String): Boolean {
+        return try {
+            val response = api.getWorkshopHistory(email)
+            if (response.isSuccessful && response.body() != null) {
+                offlineWorkshopRepository.saveServerHistoryToLocal(response.body()!!)
+                true
+            } else false
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun deleteWorkshopOnline(workshopId: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {

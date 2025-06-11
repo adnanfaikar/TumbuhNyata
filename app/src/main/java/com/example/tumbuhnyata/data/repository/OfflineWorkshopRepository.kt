@@ -4,6 +4,7 @@ import com.example.tumbuhnyata.data.api.WorkshopApiService
 import com.example.tumbuhnyata.data.local.dao.OfflineWorkshopRegistrationDao
 import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
 import com.example.tumbuhnyata.data.model.RegisterWorkshop
+import com.example.tumbuhnyata.data.model.WorkshopHistoryResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -83,11 +84,18 @@ class OfflineWorkshopRepository(
         }
     }
 
-    suspend fun updateRegistrationSyncStatus(registrationId: String, isSynced: Boolean) {
+    suspend fun saveServerHistoryToLocal(data: List<WorkshopHistoryResponse>) {
         withContext(Dispatchers.IO) {
-            val registration = offlineWorkshopRegistrationDao.getRegistrationById(registrationId)
-            registration?.let {
-                offlineWorkshopRegistrationDao.update(it.copy(isSynced = isSynced))
+            data.forEach { item ->
+                val entity = OfflineWorkshopRegistration(
+                    id = item.id,
+                    workshopId = item.workshopId,
+                    companyName = item.companyName,
+                    email = item.email,
+                    isSynced = true,
+                    timestamp = item.timestamp
+                )
+                offlineWorkshopRegistrationDao.insert(entity)
             }
         }
     }

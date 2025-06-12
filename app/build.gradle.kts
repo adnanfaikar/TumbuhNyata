@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    id("kotlin-kapt")
 }
 
 android {
@@ -71,4 +72,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
     implementation ("androidx.security:security-crypto:1.1.0-alpha03")
+
+    //dependency untuk room
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 }

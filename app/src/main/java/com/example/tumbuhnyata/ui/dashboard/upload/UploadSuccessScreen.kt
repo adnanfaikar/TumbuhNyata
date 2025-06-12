@@ -75,7 +75,7 @@ fun UploadSuccessScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = "Pembaruan Data Anda\nBerhasil Diunggah",
+                        text = "Data CSV Berhasil\nDiunggah",
                         fontSize = 22.sp,
                         fontFamily = PoppinsFontFamily,
                         color = Color.White,
@@ -87,7 +87,7 @@ fun UploadSuccessScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Pembaruan data telah diterima dan sedang\ndalam proses verifikasi dan analisis oleh tim",
+                        text = "File CSV telah berhasil diunggah dan sedang\ndiproses untuk analisis emisi karbon",
                         fontSize = 14.sp,
                         fontFamily = PoppinsFontFamily,
                         color = Color.White.copy(alpha = 0.8f),
@@ -98,7 +98,7 @@ fun UploadSuccessScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Estimasi waktu proses: 2-3 hari kerja",
+                        text = "Data akan muncul di dashboard dalam beberapa saat",
                         fontSize = 12.sp,
                         fontFamily = PoppinsFontFamily,
                         fontWeight = FontWeight.Bold,
@@ -117,7 +117,7 @@ fun UploadSuccessScreen(navController: NavController) {
             ) {
 
                 Text(
-                    text = "Notifikasi Email: Perusahaan akan menerima email konfirmasi dan link untuk melacak status pembaruan",
+                    text = "Informasi: Dashboard akan diperbarui secara otomatis dengan data terbaru dari file CSV yang telah diunggah",
                     fontSize = 10.sp,
                     fontFamily = PoppinsFontFamily,
                     color = Color.White.copy(alpha = 0.7f),

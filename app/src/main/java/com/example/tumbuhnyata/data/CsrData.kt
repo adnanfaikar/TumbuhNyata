@@ -8,6 +8,5 @@ data class CsrData(
     val partnerName: String,
     val startDate: String,
     val endDate: String,
-    val budget: String,
-    val agreed: Boolean = true // Default to true for submission
+    val budget: String
 )

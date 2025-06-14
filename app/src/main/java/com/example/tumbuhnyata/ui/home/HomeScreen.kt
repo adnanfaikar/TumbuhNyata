@@ -2,7 +2,6 @@ package com.example.tumbuhnyata.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +29,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import com.example.tumbuhnyata.ui.components.BottomNavigationBar
+import com.example.tumbuhnyata.viewmodel.Activity
+import com.example.tumbuhnyata.viewmodel.HomeState
+import com.example.tumbuhnyata.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
@@ -159,12 +160,14 @@ fun CompanyHeader(
                     companyName,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    fontFamily = PoppinsFontFamily
                 )
                 Text(
                     companyAddress,
                     color = Color.White,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    fontFamily = PoppinsFontFamily
                 )
             }
         }
@@ -203,7 +206,8 @@ fun CSRStatusSection(
             Text(
                 "Status CSR",
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontFamily = PoppinsFontFamily
             )
             Row(
                 modifier = Modifier.padding(top = 4.dp),
@@ -222,12 +226,14 @@ fun StatusItem(label: String, value: String) {
     Row {
         Text(
             "$label: ",
-            color = Color.White
+            color = Color.White,
+            fontFamily = PoppinsFontFamily
         )
         Text(
             value,
             color = Color.White,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontFamily = PoppinsFontFamily
         )
     }
 }
@@ -242,7 +248,8 @@ fun CSRFundSection(
             "Riwayat Dana CSR",
             color = Color.White,
             fontWeight = FontWeight.Medium,
-            fontSize = 12.sp
+            fontSize = 12.sp,
+            fontFamily = PoppinsFontFamily
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -258,14 +265,16 @@ fun CSRFundSection(
                 amount,
                 color = Color.White,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 30.sp
+                fontSize = 30.sp,
+                fontFamily = PoppinsFontFamily
             )
         }
         Text(
             note,
             color = Color.White.copy(alpha = 0.7f),
             fontWeight = FontWeight.Normal,
-            fontSize = 10.sp
+            fontSize = 10.sp,
+            fontFamily = PoppinsFontFamily
         )
     }
 }
@@ -299,7 +308,8 @@ fun BadgesSection(
                     "Level Badge", 
                     color = Color.White, 
                     fontSize = 14.sp, 
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = PoppinsFontFamily
                 )
                 Box(
                     modifier = Modifier
@@ -322,7 +332,8 @@ fun BadgesSection(
                     levelBadge, 
                     color = Color.White, 
                     fontSize = 14.sp, 
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = PoppinsFontFamily
                 )
             }
         }
@@ -347,7 +358,8 @@ fun BadgesSection(
                     "Emisi Hilang", 
                     color = Color.White, 
                     fontSize = 14.sp, 
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = PoppinsFontFamily
                 )
                 Image(
                     painter = painterResource(id = R.drawable.ic_emission),
@@ -358,7 +370,8 @@ fun BadgesSection(
                     emissionReduction, 
                     color = Color.White, 
                     fontSize = 14.sp, 
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = PoppinsFontFamily
                 )
             }
         }
@@ -437,14 +450,16 @@ fun ActivitySection(navController: NavController, activities: List<Activity>) {
             Text(
                 "Aktivitas Terbaru",
                 fontSize = 21.sp,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.ExtraBold,
+                fontFamily = PoppinsFontFamily
             )
             TextButton(onClick = { navController.navigate("riwayat") }) {
                 Text(
                     "Lihat Semua   >",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color(0xFF4C8C4A)
+                    color = Color(0xFF4C8C4A),
+                    fontFamily = PoppinsFontFamily
                 )
             }
         }

@@ -26,7 +26,7 @@ import java.text.NumberFormat
 import java.util.*
 
 @Composable
-fun DeskripsiWorkshop(navController: NavController, workshop: Workshop) {
+fun DeskripsiWorkshop(navController: NavController, workshop: Workshop, workshopId: String,) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,7 +128,7 @@ fun DeskripsiWorkshop(navController: NavController, workshop: Workshop) {
                 Text(
                     text = "${index + 1}. $materi",
                     fontFamily = PoppinsFontFamily,
-                    fontSize = 12.sp,
+                    fontSize = 17.sp,
                     textAlign = TextAlign.Justify,
                     color = Color(0xFF4B4B4B)
                 )
@@ -173,7 +173,7 @@ fun DeskripsiWorkshop(navController: NavController, workshop: Workshop) {
             Spacer(modifier = Modifier.height(23.dp))
 
             Button(
-                onClick = { navController.navigate("daftarworkshop") },
+                onClick = { navController.navigate("daftarworkshop/$workshopId") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

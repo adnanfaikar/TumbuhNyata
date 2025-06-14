@@ -60,13 +60,13 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit = {}) {
         ) {
             Text(
                 text = item.title,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = poppins
             )
             Text(
                 text = item.organization,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 color = Color.Gray,
                 fontFamily = poppins
             )
@@ -76,7 +76,7 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit = {}) {
                     item.subStatus.name.replace("_", " ").lowercase()
                         .replaceFirstChar { it.uppercase() }
                 } ${getSubStatusEmoji(item.subStatus)}",
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = poppins
             )
@@ -98,11 +98,11 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit = {}) {
                 ) {
                     Text(
                         "Kategori",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = poppins
                     )
-                    Text(item.category, fontSize = 11.sp, fontFamily = poppins)
+                    Text(item.category, fontSize = 14.sp, fontFamily = poppins)
                 }
 
                 // 🔽 Garis vertikal pemisah antara kategori dan lokasi
@@ -121,11 +121,11 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit = {}) {
                 ) {
                     Text(
                         "Lokasi",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = poppins
                     )
-                    Text(item.location, fontSize = 11.sp, fontFamily = poppins)
+                    Text(item.location, fontSize = 14.sp, fontFamily = poppins)
                 }
 
                 // 🔽 Garis vertikal pemisah antara lokasi dan periode
@@ -144,11 +144,11 @@ fun CsrCard(item: CsrItem, onClick: () -> Unit = {}) {
                 ) {
                     Text(
                         "Periode",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = poppins
                     )
-                    Text(item.period, fontSize = 11.sp, fontFamily = poppins)
+                    Text(item.period, fontSize = 14.sp, fontFamily = poppins)
                 }
             }
 

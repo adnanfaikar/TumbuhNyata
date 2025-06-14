@@ -1,8 +1,9 @@
-package com.example.tumbuhnyata.ui.Sertifikasi
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.ui.Sertifikasi.AjukanSertifikasi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

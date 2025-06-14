@@ -1,58 +1,18 @@
 // File: CsrSubmissionViewModel.kt
-package com.example.tumbuhnyata.ui.eventcsr
+package com.example.tumbuhnyata.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tumbuhnyata.data.model.Workshop
+import com.example.tumbuhnyata.data.model.recentWorkshops
+import com.example.tumbuhnyata.data.model.recommendedWorkshops
+import com.example.tumbuhnyata.data.CsrApiService
+import com.example.tumbuhnyata.data.CsrSubmissionRequest
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.POST
-
-interface CsrApiService {
-    @POST("/csr/ajukan")
-    suspend fun submitCSR(
-        @Body request: CsrSubmissionRequest
-    ): retrofit2.Response<CsrSubmissionResponse>
-}
-
-data class CsrSubmissionRequest(
-    val user_id: Int,
-    val program_name: String,
-    val category: String,
-    val description: String,
-    val location: String,
-    val partner_name: String,
-    val start_date: String,
-    val end_date: String,
-    val budget: String,
-    val agreed: Boolean
-)
-
-data class CsrSubmissionResponse(
-    val message: String,
-    val data: CsrSubmissionData
-)
-
-data class CsrSubmissionData(
-    val id: Int,
-    val user_id: Int,
-    val program_name: String,
-    val category: String,
-    val description: String,
-    val location: String,
-    val partner_name: String,
-    val start_date: String,
-    val end_date: String,
-    val budget: String,
-    val proposal_url: String?,
-    val legality_url: String?,
-    val agreed: Boolean,
-    val status: String,
-    val created_at: String,
-    val updated_at: String
-)
 
 private val retrofit = Retrofit.Builder()
     .baseUrl("http://10.0.2.2:5000/")
@@ -131,3 +91,4 @@ class CsrSubmissionViewModel : ViewModel() {
         errorMessage.value = null
     }
 }
+

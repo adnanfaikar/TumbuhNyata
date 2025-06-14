@@ -31,6 +31,8 @@ fun VerificationTwo(
     viewModel: VerificationTwoViewModel = viewModel()
 ) {
     val verificationState by viewModel.verificationState.collectAsState()
+    var isChecked by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +57,7 @@ fun VerificationTwo(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 40.dp)
+                .padding(horizontal = 20.dp, vertical = 16.dp )
         ) {
             TopBarProfile(
                 title = "Verifikasi",
@@ -90,6 +92,32 @@ fun VerificationTwo(
                 onCancelClick = { viewModel.deletePicFile() }
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = {
+                        if (verificationState.isFileUploaded) {
+                            isChecked = it
+                        }
+                    },
+                    modifier = Modifier.offset(x = (-12).dp),
+                    enabled = verificationState.isFileUploaded // mencegah centang sebelum upload
+                )
+                Text(
+                    text = "Saya setuju mengikuti persyaratan verifikasi akun",
+                    fontSize = 12.sp,
+                    color = Color.Black,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.offset(x = (-12).dp)
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
@@ -98,10 +126,11 @@ fun VerificationTwo(
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(10.dp),
-                enabled = verificationState.isFileUploaded,
+                enabled = verificationState.isFileUploaded && isChecked,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (verificationState.isFileUploaded) Color(0xFF27361F) else Color(0xFF989898)
-                )
+                    containerColor = if (verificationState.isFileUploaded && isChecked)
+                        Color(0xFF27361F) else Color(0xFF989898)
+                ),
             ) {
                 Text(
                     text = "Selanjutnya",

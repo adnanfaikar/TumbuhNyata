@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,6 +34,48 @@ import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.components.BottomNavigationBar
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import com.example.tumbuhnyata.viewmodel.ProfileViewModel
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.widget.Toast
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.delay
+
+@Composable
+fun rememberNetworkObserver(): Boolean {
+    val context = LocalContext.current
+    var isConnected by remember { mutableStateOf(false) }
+
+    // Check initial connectivity
+    LaunchedEffect(Unit) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork
+        isConnected = activeNetwork != null
+    }
+
+    DisposableEffect(context) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                isConnected = true
+            }
+
+            override fun onLost(network: Network) {
+                isConnected = false
+            }
+        }
+
+        connectivityManager.registerDefaultNetworkCallback(callback)
+
+        onDispose {
+            connectivityManager.unregisterNetworkCallback(callback)
+        }
+    }
+
+    return isConnected
+}
 
 @Composable
 fun ProfileScreen(
@@ -40,6 +83,52 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel()
 ) {
     val profileState by viewModel.profileState.collectAsState()
+    val syncInProgress by viewModel.syncInProgress.collectAsState()
+    val syncMessage by viewModel.syncMessage.collectAsState()
+    val hasPendingSync by viewModel.hasPendingProfileSync.collectAsState()
+    val isConnected = rememberNetworkObserver()
+    val context = LocalContext.current
+
+    var wasOffline by remember { mutableStateOf(false) }
+    var hasShownInitialState by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isConnected) {
+        if (hasShownInitialState) {
+            if (!isConnected && !wasOffline) {
+                // Connection lost
+                Toast.makeText(context, "Koneksi terputus", Toast.LENGTH_LONG).show()
+            } else if (isConnected && wasOffline) {
+                // Connection restored
+                Toast.makeText(context, "Koneksi tersambung kembali", Toast.LENGTH_LONG).show()
+
+                if (hasPendingSync && !syncInProgress) {
+                    delay(1000) // Wait 1 second after connection
+                    viewModel.onAppResumed()
+                }
+            }
+        } else {
+            hasShownInitialState = true
+        }
+
+        wasOffline = !isConnected
+    }
+
+    // Handle sync message - show toast or snackbar
+    LaunchedEffect(syncMessage) {
+        syncMessage?.let { message ->
+            delay(3000)
+            viewModel.clearSyncMessage()
+        }
+    }
+
+    LaunchedEffect(navController.currentBackStackEntry) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
+        if (currentRoute == "profile") {
+            // Only refresh profile and check sync if returning from another screen
+            viewModel.refreshProfile()
+            viewModel.checkPendingProfileSync()
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -75,6 +164,11 @@ fun ProfileScreen(
             ){
                 Spacer(modifier = Modifier.height(20.dp))
 
+                syncMessage?.let { message ->
+                    SyncMessageCard(message = message)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
                 if (profileState.isLoading) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = Color(0xFF27361F))
@@ -92,7 +186,7 @@ fun ProfileScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 95.dp),
+                            .padding(top = 40.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
@@ -234,6 +328,42 @@ fun LogoutButton(
                 painter = painterResource(id = R.drawable.arrow_option),
                 contentDescription = "Icon Arrow",
                 modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun SyncMessageCard(message: String) {
+    val backgroundColor = if (message.contains("berhasil")) {
+        Color(0xFF27361F) // success
+    } else {
+        Color(0xFF989898) // error
+    }
+
+    val textColor = if (message.contains("berhasil")) {
+        Color(0xFFFFFFFF)
+    } else {
+        Color(0xFF721C24)
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = message,
+                fontSize = 14.sp,
+                fontFamily = PoppinsFontFamily,
+                color = textColor
             )
         }
     }

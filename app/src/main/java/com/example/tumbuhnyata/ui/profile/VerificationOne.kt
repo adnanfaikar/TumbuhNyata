@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +34,7 @@ fun VerificationOne(
     viewModel: VerificationOneViewModel = viewModel()
 ) {
     val verificationState by viewModel.verificationState.collectAsState()
+    var isChecked by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -58,7 +60,7 @@ fun VerificationOne(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 40.dp)
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             TopBarProfile(
                 title = "Verifikasi",
@@ -102,19 +104,46 @@ fun VerificationOne(
                 modifier = Modifier.padding(top=20.dp)
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = {
+                        if (verificationState.isBothFilesUploaded) {
+                            isChecked = it
+                        }
+                    },
+                    modifier = Modifier.offset(x = (-12).dp),
+                    enabled = verificationState.isBothFilesUploaded // mencegah centang sebelum upload
+                )
+                Text(
+                    text = "Saya setuju mengikuti persyaratan verifikasi akun",
+                    fontSize = 12.sp,
+                    color = Color.Black,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.offset(x = (-12).dp)
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { navController.navigate("verification_two")},
+                onClick = { navController.navigate("verification_two") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
                     .padding(start = 1.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
-                    if (verificationState.isBothFilesUploaded) Color(0xFF27361F) else Color(0xFF989898)
+                    containerColor = if (verificationState.isBothFilesUploaded && isChecked)
+                        Color(0xFF27361F) else Color(0xFF989898)
                 ),
-                enabled = verificationState.isBothFilesUploaded
+                enabled = verificationState.isBothFilesUploaded && isChecked
             ) {
                 Text(
                     text = "Selanjutnya",

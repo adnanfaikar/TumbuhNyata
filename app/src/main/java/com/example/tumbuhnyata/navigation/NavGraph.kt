@@ -1,5 +1,6 @@
 package com.example.tumbuhnyata.navigation
 
+import LanguagePreference
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,12 +44,7 @@ import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.tumbuhnyata.data.local.AppDatabase
 import com.example.tumbuhnyata.data.model.dummyCsrList
-import com.example.tumbuhnyata.data.repository.OfflineProfileRepository
-import com.example.tumbuhnyata.data.repository.OfflineWorkshopRepository
-import com.example.tumbuhnyata.data.repository.ProfileRepository
-import com.example.tumbuhnyata.data.repository.WorkshopRepository
 import com.example.tumbuhnyata.di.NetworkModule
 import com.example.tumbuhnyata.ui.riwayat.*
 import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiScreen
@@ -134,6 +130,18 @@ fun AppNavigation() {
         }
         composable("verification_success") {
             VerificationSuccess(navController)
+        }
+        composable("update_profile") {
+            UpdateProfile(navController)
+        }
+        composable("change_password") {
+            ChangePassword(navController)
+        }
+        composable("change_password_success") {
+            ChangePasswordSuccess(navController)
+        }
+        composable("language_preference") {
+            LanguagePreference(navController)
         }
 
         // Dashboard
@@ -362,37 +370,11 @@ fun AppNavigation() {
         composable("berhasil") {
             CertificationSuccessScreen(navController)
         }
-
         composable("dashboardkeuangan") {
             DashboardKeuanganScreen(navController)
         }
-
         composable("revisi_success") {
             RevisiSuccessScreen(navController = navController)
-        }
-        composable("profile") {
-            ProfileScreen(navController)
-        }
-        composable("about") {
-            AboutScreen(navController)
-        }
-        composable("verification_one") {
-            VerificationOne(navController)
-        }
-        composable("verification_two") {
-            VerificationTwo(navController)
-        }
-        composable("verification_success") {
-            VerificationSuccess(navController)
-        }
-        composable("update_profile") {
-            UpdateProfile(navController)
-        }
-        composable("change_password") {
-            ChangePassword(navController)
-        }
-        composable("change_password_success") {
-            ChangePasswordSuccess(navController)
         }
     }
 }

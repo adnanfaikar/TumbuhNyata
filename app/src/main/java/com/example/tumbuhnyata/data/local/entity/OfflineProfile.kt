@@ -12,5 +12,6 @@ data class OfflineProfile(
     val phoneNumber: String,
     val nib: String,
     val address: String,
+    val isSynced: Boolean = false,
     val timestamp: Long = System.currentTimeMillis()
 )

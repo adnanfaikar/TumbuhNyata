@@ -88,7 +88,7 @@ object NetworkModule {
     }
 
     val offlineProfileRepository: OfflineProfileRepository by lazy {
-        OfflineProfileRepository(offlineProfileDao)
+        OfflineProfileRepository(offlineProfileDao, profileApi)
     }
 
     val offlineWorkshopRepository: OfflineWorkshopRepository by lazy {

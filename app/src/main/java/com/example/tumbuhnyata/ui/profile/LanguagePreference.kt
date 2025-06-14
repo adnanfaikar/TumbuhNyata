@@ -1,5 +1,3 @@
-package com.example.tumbuhnyata.ui.profile
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,7 +9,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,32 +17,32 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
-import com.example.tumbuhnyata.viewmodel.ProfileViewModel
 
 @Composable
-fun LanguagePreference(
-    navController: NavController,
-    viewModel: ProfileViewModel = viewModel()
-) {
-    val profileState by viewModel.profileState.collectAsState()
-    var selectedLanguage by rememberSaveable { mutableStateOf<String?>(null) }
-
-    // Fallback ke "id" hanya jika belum ada nilai yang tersimpan
-    if (selectedLanguage == null) {
-        selectedLanguage = "id" // atau bisa dari sumber lain seperti DataStore nanti
-    }
+fun LanguagePreference(navController: NavController) {
+    val selectedLanguage = remember { mutableStateOf("id") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 20.dp, vertical = 94.dp),
+            .padding(horizontal = 20.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TopBarProfile(
+            title = "",
+            step = "",
+            iconResId = R.drawable.btn_back,
+            onBackClick = { navController.popBackStack() }
+        )
+
+        Spacer(modifier = Modifier.height(35.dp))
+
         Text(
             text = "Pilih Bahasa",
             fontSize = 30.sp,
@@ -75,8 +72,8 @@ fun LanguagePreference(
             flagEmoji = "🇮🇩",
             label = "Indonesia",
             value = "id",
-            selected = selectedLanguage == "id",
-            onSelect = { selectedLanguage = it }
+            selected = selectedLanguage.value == "id",
+            onSelect = { selectedLanguage.value = it }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -85,8 +82,8 @@ fun LanguagePreference(
             flagEmoji = "🇺🇸",
             label = "English",
             value = "en",
-            selected = selectedLanguage == "en",
-            onSelect = { selectedLanguage = it }
+            selected = selectedLanguage.value == "en",
+            onSelect = { selectedLanguage.value = it }
         )
 
         Spacer(modifier = Modifier.weight(1f))

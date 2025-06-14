@@ -2,6 +2,8 @@ package com.example.tumbuhnyata.data.repository
 
 import com.example.tumbuhnyata.data.api.ProfileApi
 import com.example.tumbuhnyata.data.model.Profile
+import com.example.tumbuhnyata.di.NetworkModule
+import com.example.tumbuhnyata.di.NetworkModule.offlineProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -13,18 +15,25 @@ class ProfileRepository(
     suspend fun getUserProfile(): Profile? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = api.getUserProfile()
-                if (response.isSuccessful) {
-                    val profile = response.body()?.data
+                val offlineProfile = getOfflineProfile()
 
-                    profile?.let {
-                        offlineProfileRepository.saveProfile(it)
+                try {
+                    val response = api.getUserProfile()
+                    if (response.isSuccessful) {
+                        val profile = response.body()?.data
+
+                        profile?.let {
+                            offlineProfileRepository.saveProfile(it)
+                            return@withContext it
+                        }
                     }
-
-                    profile
-                } else {
-                    getOfflineProfile()
+                } catch (e: Exception) {
+                    if (offlineProfile != null) {
+                        return@withContext offlineProfile
+                    }
+                    throw e
                 }
+                offlineProfile
             } catch (e: Exception) {
                 getOfflineProfile()
             }
@@ -36,40 +45,42 @@ class ProfileRepository(
         email: String,
         phoneNumber: String,
         address: String
-    ): Boolean {
+    ): Boolean  {
+
+        val updateData = mapOf(
+            "companyName" to companyName,
+            "email" to email,
+            "phoneNumber" to phoneNumber,
+            "address" to address
+        )
+
         return withContext(Dispatchers.IO) {
             try {
-                val updateData = mapOf(
-                    "companyName" to companyName,
-                    "email" to email,
-                    "phoneNumber" to phoneNumber,
-                    "address" to address
-                )
-
                 val response = api.updateProfile(updateData)
 
-                if (response.isSuccessful) {
-                    try {
-                        val currentProfile = offlineProfileRepository.getLatestProfile()
-                        currentProfile?.let { profile ->
-                            val updatedProfile = Profile(
-                                id = profile.id,
-                                companyName = companyName,
-                                email = email,
-                                phoneNumber = phoneNumber,
-                                nib = profile.nib,
-                                address = address
-                            )
-                            offlineProfileRepository.saveProfile(updatedProfile)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
 
-                response.isSuccessful
+                if (response.isSuccessful) {
+                    val currentProfile = offlineProfileRepository.getLatestProfile()
+                    // Online update successful - save with synced status
+                    currentProfile?.let { profile ->
+                        val updatedProfile = Profile(
+                            id = profile.id,
+                            companyName = companyName,
+                            email = email,
+                            phoneNumber = phoneNumber,
+                            nib = profile.nib,
+                            address = address
+                        )
+                        offlineProfileRepository.saveProfile(updatedProfile)
+                    }
+                    true
+                } else {
+                    offlineProfileRepository.updateProfile(updateData)
+                    true
+                }
             } catch (e: Exception) {
-                false
+                val updateSuccess = offlineProfileRepository.updateProfile(updateData)
+                updateSuccess
             }
         }
     }

@@ -46,6 +46,15 @@ fun UpdateProfile(
 ) {
     val profileState by viewModel.profileState.collectAsState()
 
+    LaunchedEffect(profileState.isUpdated) {
+        if (profileState.isUpdated) {
+            viewModel.checkPendingProfileSync()
+            // Navigate back or show success message
+            navController.popBackStack()
+            viewModel.resetUpdateState()
+        }
+    }
+
     var companyName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
@@ -85,19 +94,19 @@ fun UpdateProfile(
     }
 
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { profileState.isUpdated }
-            .collectLatest { isUpdated ->
-                if (isUpdated) {
-                    navController.navigate("profile") {
-                        popUpTo("updateProfile") { inclusive = true }
-                    }
-                    // Beri delay kecil agar recomposition tidak langsung terjadi
-                    kotlinx.coroutines.delay(200)
-                    viewModel.resetUpdateState()
-                }
-            }
-    }
+    // LaunchedEffect(Unit) {
+    //     snapshotFlow { profileState.isUpdated }
+    //         .collectLatest { isUpdated ->
+    //             if (isUpdated) {
+    //                 navController.navigate("profile") {
+    //                     popUpTo("updateProfile") { inclusive = true }
+    //                 }
+    //                 // Beri delay kecil agar recomposition tidak langsung terjadi
+    //                 kotlinx.coroutines.delay(200)
+    //                 viewModel.resetUpdateState()
+    //             }
+    //         }
+    // }
 
     if (profileState.isLoading) {
         Box(
@@ -111,7 +120,7 @@ fun UpdateProfile(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(horizontal = 24.dp, vertical = 40.dp)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
             TopBarProfile(
                 title = "",

@@ -79,7 +79,7 @@ fun ChangePassword(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(horizontal = 24.dp, vertical = 40.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopBarProfile(

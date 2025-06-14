@@ -14,6 +14,12 @@ interface OfflineProfileDao {
     @Delete
     fun delete(profile: OfflineProfile)
 
+    @Query("SELECT * FROM offline_profiles")
+    fun getAllProfile(): List<OfflineProfile>
+
+    @Query("SELECT * FROM offline_profiles WHERE isSynced = 0")
+    fun getUnsyncedProfile(): List<OfflineProfile>
+
     @Query("SELECT * FROM offline_profiles WHERE id = :id")
     fun getProfileById(id: Int): OfflineProfile?
 

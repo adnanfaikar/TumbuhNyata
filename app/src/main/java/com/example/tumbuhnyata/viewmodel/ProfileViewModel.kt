@@ -24,8 +24,20 @@ data class ProfileState(
 
 class ProfileViewModel : ViewModel() {
     private val repository = NetworkModule.profileRepository
+    private val offlineProfileRepository = NetworkModule.offlineProfileRepository
+
     private val _profileState = MutableStateFlow(ProfileState(isLoading = true))
     val profileState: StateFlow<ProfileState> = _profileState.asStateFlow()
+
+    // Add missing StateFlow variables for sync functionality
+    private val _syncInProgress = MutableStateFlow(false)
+    val syncInProgress: StateFlow<Boolean> = _syncInProgress.asStateFlow()
+
+    private val _syncMessage = MutableStateFlow<String?>(null)
+    val syncMessage: StateFlow<String?> = _syncMessage.asStateFlow()
+
+    private val _hasPendingProfileSync = MutableStateFlow(false)
+    val hasPendingProfileSync: StateFlow<Boolean> = _hasPendingProfileSync.asStateFlow()
 
     init {
         loadUserProfile()
@@ -64,6 +76,25 @@ class ProfileViewModel : ViewModel() {
         _profileState.value = _profileState.value.copy(isLoggedIn = false)
     }
 
+    fun refreshProfile() {
+        viewModelScope.launch {
+            try {
+                val profile = repository.getUserProfile()
+                if (profile != null) {
+                    _profileState.value = _profileState.value.copy(
+                        companyName = profile.companyName,
+                        companyAddress = profile.address,
+                        email = profile.email,
+                        phoneNumber = profile.phoneNumber,
+                        nib = profile.nib
+                    )
+                }
+            } catch (e: Exception) {
+                // Silently fail for refresh
+            }
+        }
+    }
+
     fun updateProfile(companyName: String, email: String, phoneNumber: String, address: String) {
         viewModelScope.launch {
             try {
@@ -79,6 +110,7 @@ class ProfileViewModel : ViewModel() {
                         isUpdated = true,
                         isUpdatingProfile = false
                     )
+                    checkPendingProfileSync()
                 } else {
                     _profileState.value = _profileState.value.copy(
                         isLoading = false,
@@ -98,6 +130,36 @@ class ProfileViewModel : ViewModel() {
 
     fun resetUpdateState() {
         _profileState.value = _profileState.value.copy(isUpdated = false)
+    }
+
+    fun onAppResumed() {
+        viewModelScope.launch {
+            // Check if we have pending sync and if we're online
+            if (_hasPendingProfileSync.value) {
+                try {
+                    // Try to sync automatically
+                    val success = offlineProfileRepository.syncOfflineProfiles()
+                    if (success) {
+                        _hasPendingProfileSync.value = false
+                        _syncMessage.value = "Profil berhasil disinkronkan!"
+                        refreshProfile() // Reload profile after successful sync
+                    }
+                } catch (e: Exception) {
+                    // Still offline, keep pending status
+                    _hasPendingProfileSync.value = true
+                }
+            }
+        }
+    }
+
+    fun checkPendingProfileSync() {
+        viewModelScope.launch {
+            _hasPendingProfileSync.value = offlineProfileRepository.hasPendingSyncProfile()
+        }
+    }
+
+    fun clearSyncMessage() {
+        _syncMessage.value = null
     }
 
     fun changePassword(currentPassword: String, newPassword: String) {

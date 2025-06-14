@@ -58,6 +58,7 @@ val iso26000 = Sertifikasi(
     ),
     biaya = 25000000,
     logoResId = R.drawable.iso_26000
+
 )
 
 data class CertificationResponse(

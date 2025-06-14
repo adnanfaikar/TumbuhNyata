@@ -2,7 +2,6 @@ package com.example.tumbuhnyata.ui.Sertifikasi
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -16,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,46 +24,10 @@ import com.example.tumbuhnyata.ui.components.TopBarProfile
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.tumbuhnyata.data.api.CertificationApi
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import com.example.tumbuhnyata.data.model.iso26000
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 @Composable
 fun DetailSertifikasiScreen(navController: NavController) {
-
-    var userId by remember { mutableStateOf("1") }
-    var name by remember { mutableStateOf(iso26000.nama) }
-    var description by remember { mutableStateOf(iso26000.deskripsi) }
-    var credentialBody by remember { mutableStateOf(iso26000.lembaga) }
-    var benefits by remember { mutableStateOf(iso26000.manfaat.joinToString(", ")) }
-    var cost by remember { mutableStateOf(iso26000.biaya.toString()) }
-
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-    suspend fun registerSertifikasiToBackend() : Boolean {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:5000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val service = retrofit.create(CertificationApi::class.java)
-        val body = mapOf(
-            "user_id" to userId,
-            "name" to name,
-            "description" to description,
-            "credential_body" to credentialBody,
-            "benefits" to benefits,
-            "cost" to cost
-
-        )
-        val response = service.submitCertification(body)
-        return response.isSuccessful
-    }
 
     Column(
         modifier = Modifier
@@ -182,21 +144,7 @@ fun DetailSertifikasiScreen(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = {
-                isLoading = true
-                errorMessage = null
-                CoroutineScope(Dispatchers.IO).launch {
-                    val result = registerSertifikasiToBackend()
-                    withContext(Dispatchers.Main) {
-                        isLoading = false
-                        if (result) {
-                            navController.navigate("dokumenone")
-                        } else {
-                            errorMessage = "Gagal Mendaftarkan Sertifikasi"
-                        }
-                    }
-                }
-            },
+            onClick = { navController.navigate("dokumenone") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F4019)),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier

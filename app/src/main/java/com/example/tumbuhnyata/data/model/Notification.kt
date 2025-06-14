@@ -16,10 +16,10 @@ data class Notification(
     val message: String,
     
     @SerializedName("is_read")
-    val isRead: Int,
+    val isRead: Boolean,
     
     @SerializedName("created_at")
     val createdAt: String
 ) {
-    fun isReadBool(): Boolean = isRead > 0
+    fun isReadBool(): Boolean = isRead
 } 

@@ -50,7 +50,7 @@ class NotificationViewModel(
                 if (success) {
                     // Update local state - mark notification as read
                     _notifications.value = _notifications.value.map { 
-                        if (it.id == id) it.copy(isRead = 1) else it 
+                        if (it.id == id) it.copy(isRead = true) else it 
                     }
                 }
             } catch (e: Exception) {

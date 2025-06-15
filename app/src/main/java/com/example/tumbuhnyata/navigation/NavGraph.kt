@@ -22,8 +22,6 @@ import com.example.tumbuhnyata.ui.notification.NotifikasiDetailScreen
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen1
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen2
 import com.example.tumbuhnyata.ui.splashscreen.OnboardingScreen3
-import android.util.Log
-import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tumbuhnyata.ui.splashscreen.SplashScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrSubmissionScreen
@@ -44,7 +42,6 @@ import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.tumbuhnyata.data.local.AppDatabase
-import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.data.repository.OfflineProfileRepository
 import com.example.tumbuhnyata.data.repository.OfflineWorkshopRepository
 import com.example.tumbuhnyata.data.repository.ProfileRepository
@@ -59,15 +56,14 @@ import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
 import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
 import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
-import com.example.tumbuhnyata.ui.detail.CsrDetailScreen
-import com.example.tumbuhnyata.ui.riwayat.UploadRevisiScreen
-import com.example.tumbuhnyata.ui.riwayat.RevisiSuccessScreen
 import com.example.tumbuhnyata.ui.eventcsr.CsrData
 import com.example.tumbuhnyata.ui.notification.NotificationScreen
 import com.example.tumbuhnyata.ui.workshop.RiwayatWorkshopScreen
 import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 import com.example.tumbuhnyata.viewmodel.WorkshopViewModel
 import com.example.tumbuhnyata.viewmodel.WorkshopViewModelFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tumbuhnyata.data.model.CsrHistoryItem
 
 @Composable
 fun AppNavigation() {
@@ -266,15 +262,20 @@ fun AppNavigation() {
 
         // Riwayat screens
         composable("riwayat") {
-            val riwayatViewModel = remember {
-                RiwayatViewModel(dummyList = dummyCsrList)
-            }
+            val riwayatViewModel = viewModel<RiwayatViewModel>()
             RiwayatScreen(
                 navController = navController,
                 riwayatViewModel = riwayatViewModel,
-                onCsrCardClick = { csrItem ->
-                    Log.d("NavGraph", "CSR Card clicked: ${csrItem.title}")
-                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
+                onCsrCardClick = { csrItem: CsrHistoryItem ->
+                    if (csrItem.agreed) {
+                        if(csrItem.status.lowercase() == "program selesai") {
+                            navController.navigate("SelesaiDetail/${csrItem.id}")
+                        } else {
+                            navController.navigate("ProgressDetail/${csrItem.id}")
+                        }
+                    } else {
+                        navController.navigate("detailRiwayat/${csrItem.id}")
+                    }
                 },
                 onLihatSemuaPerluTindakan = {
                     navController.navigate("perluTindakan")
@@ -285,57 +286,79 @@ fun AppNavigation() {
             )
         }
 
+        // Detail Riwayat Screen
         composable(
-            route = "detailRiwayat/{csrTitle}",
+            route = "detailRiwayat/{csrId}",
             arguments = listOf(
-                navArgument("csrTitle") { type = NavType.StringType }
+                navArgument("csrId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
-            val csrTitle = backStackEntry.arguments?.getString("csrTitle")?.replace("_", " ")
-            val csrItem = dummyCsrList.find { it.title == csrTitle }
-            if (csrItem != null) {
-                CsrDetailScreen(
-                    csr = csrItem,
-                    onBack = { navController.popBackStack() },
-                    onNavigateToInvoice = { navController.navigate("invoice") },
-                    onNavigateToUploadRevisi = { navController.navigate("upload_revisi") }
-                )
-            }
+            val csrId = backStackEntry.arguments?.getInt("csrId") ?: return@composable
+            DetailRiwayatScreen(
+                csrId = csrId,
+                onBack = { navController.popBackStack() },
+                onNavigateToInvoice = { navController.navigate("invoice") },
+                onNavigateToUploadRevisi = { navController.navigate("upload_revisi") }
+            )
+        }
+
+        // Progress Detail Screen
+        composable(
+            route = "ProgressDetail/{csrId}",
+            arguments = listOf(
+                navArgument("csrId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val csrId = backStackEntry.arguments?.getInt("csrId") ?: return@composable
+            ProgressDetailScreen(
+                csrId = csrId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Selesai Detail Screen
+        composable(
+            route = "SelesaiDetail/{csrId}",
+            arguments = listOf(
+                navArgument("csrId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val csrId = backStackEntry.arguments?.getInt("csrId") ?: return@composable
+            SelesaiDetailScreen(
+                csrId = csrId,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable("perluTindakan") {
-            val riwayatViewModel = remember {
-                RiwayatViewModel(dummyList = dummyCsrList)
-            }
+            val riwayatViewModel = viewModel<RiwayatViewModel>()
             PerluTindakanScreen(
                 riwayatViewModel = riwayatViewModel,
                 onBack = { navController.popBackStack() },
-                onCsrCardClick = { csrItem ->
-                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
+                onCsrCardClick = { csrItem: CsrHistoryItem ->
+                    navController.navigate("detailRiwayat/${csrItem.id}")
                 }
             )
         }
 
         composable("diterima") {
-            val riwayatViewModel = remember {
-                RiwayatViewModel(dummyList = dummyCsrList)
-            }
+            val riwayatViewModel = viewModel<RiwayatViewModel>()
             DiterimaScreen(
                 riwayatViewModel = riwayatViewModel,
                 onBack = { navController.popBackStack() },
-                onCsrCardClick = { csrItem ->
-                    navController.navigate("detailRiwayat/${csrItem.title.replace(" ", "_")}")
+                onCsrCardClick = { csrItem: CsrHistoryItem ->
+                    navController.navigate("detailRiwayat/${csrItem.id}")
                 }
             )
         }
 
-        // Tambahkan route untuk upload revisi
+        // Upload Revisi Screen
         composable("upload_revisi") {
             UploadRevisiScreen(
                 navController = navController,
                 onBack = { navController.popBackStack() },
                 onUpload = { fileName ->
-                    // Handle file upload logic here
+                    // Handle file upload logic here without navigation
                 }
             )
         }
@@ -367,24 +390,6 @@ fun AppNavigation() {
             DashboardKeuanganScreen(navController)
         }
 
-        composable("revisi_success") {
-            RevisiSuccessScreen(navController = navController)
-        }
-        composable("profile") {
-            ProfileScreen(navController)
-        }
-        composable("about") {
-            AboutScreen(navController)
-        }
-        composable("verification_one") {
-            VerificationOne(navController)
-        }
-        composable("verification_two") {
-            VerificationTwo(navController)
-        }
-        composable("verification_success") {
-            VerificationSuccess(navController)
-        }
         composable("update_profile") {
             UpdateProfile(navController)
         }

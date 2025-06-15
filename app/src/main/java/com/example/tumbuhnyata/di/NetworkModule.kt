@@ -62,6 +62,22 @@ object NetworkModule {
         retrofit.create(ProfileApi::class.java)
     }
 
+    val workshopApi: WorkshopApiService by lazy {
+        retrofit.create(WorkshopApiService::class.java)
+    }
+
+    // Create offline repositories
+    val offlineProfileRepository: OfflineProfileRepository by lazy {
+        OfflineProfileRepository(database.offlineProfileDao())
+    }
+
+    val offlineWorkshopRepository: OfflineWorkshopRepository by lazy {
+        OfflineWorkshopRepository(
+            offlineWorkshopRegistrationDao = database.offlineWorkshopRegistrationDao(),
+            workshopApiService = workshopApi
+        )
+    }
+
     val profileRepository: ProfileRepository by lazy {
         ProfileRepository(
             profileApi,
@@ -69,12 +85,12 @@ object NetworkModule {
         )
     }
 
-    val workshopApi: WorkshopApiService by lazy {
-        retrofit.create(WorkshopApiService::class.java)
-    }
-
     val workshopRepository: WorkshopRepository by lazy {
-        WorkshopRepository(workshopApi)
+        WorkshopRepository(
+            api = workshopApi,
+            apiProfile = profileApi,
+            offlineWorkshopRepository = offlineWorkshopRepository
+        )
     }
 
     val csrHistoryApi: CsrHistoryApi by lazy {

@@ -128,18 +128,6 @@ fun AppNavigation() {
         composable("verification_success") {
             VerificationSuccess(navController)
         }
-        composable("update_profile") {
-            UpdateProfile(navController)
-        }
-        composable("change_password") {
-            ChangePassword(navController)
-        }
-        composable("change_password_success") {
-            ChangePasswordSuccess(navController)
-        }
-        composable("language_preference") {
-            LanguagePreference(navController)
-        }
 
 
         // Dashboard
@@ -404,6 +392,19 @@ fun AppNavigation() {
 
         composable("dashboardkeuangan") {
             DashboardKeuanganScreen(navController)
+        }
+
+        composable("update_profile") {
+            UpdateProfile(navController)
+        }
+        composable("change_password") {
+            ChangePassword(navController)
+        }
+        composable("change_password_success") {
+            ChangePasswordSuccess(navController)
+        }
+        composable("language_preference") {
+            LanguagePreference(navController)
         }
 
 

@@ -6,10 +6,12 @@ import com.example.tumbuhnyata.data.api.ProfileApi
 import com.example.tumbuhnyata.data.api.WorkshopApiService
 import com.example.tumbuhnyata.data.local.dao.OfflineProfileDao
 import com.example.tumbuhnyata.data.local.dao.OfflineWorkshopRegistrationDao
+import com.example.tumbuhnyata.data.api.CsrHistoryApi
 import com.example.tumbuhnyata.data.network.AuthInterceptor
 import com.example.tumbuhnyata.data.repository.NotificationRepository
 import com.example.tumbuhnyata.data.repository.ProfileRepository
 import com.example.tumbuhnyata.data.repository.WorkshopRepository
+import com.example.tumbuhnyata.data.repository.CsrHistoryRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -60,6 +62,21 @@ object NetworkModule {
         retrofit.create(ProfileApi::class.java)
     }
 
+    val workshopApi: WorkshopApiService by lazy {
+        retrofit.create(WorkshopApiService::class.java)
+    }
+
+    val offlineProfileRepository: OfflineProfileRepository by lazy {
+        OfflineProfileRepository(database.offlineProfileDao(), profileApi)
+    }
+
+    val offlineWorkshopRepository: OfflineWorkshopRepository by lazy {
+        OfflineWorkshopRepository(
+            offlineWorkshopRegistrationDao = database.offlineWorkshopRegistrationDao(),
+            workshopApiService = workshopApi
+        )
+    }
+
     val profileRepository: ProfileRepository by lazy {
         ProfileRepository(
             profileApi,
@@ -67,31 +84,20 @@ object NetworkModule {
         )
     }
 
-    val workshopApi: WorkshopApiService by lazy {
-        retrofit.create(WorkshopApiService::class.java)
-    }
-
     val workshopRepository: WorkshopRepository by lazy {
         WorkshopRepository(
-            workshopApi,
-            profileApi,
+            api = workshopApi,
+            apiProfile = profileApi,
             offlineWorkshopRepository = offlineWorkshopRepository
         )
     }
 
-    val offlineProfileDao: OfflineProfileDao by lazy {
-        database.offlineProfileDao()
+    val csrHistoryApi: CsrHistoryApi by lazy {
+        retrofit.create(CsrHistoryApi::class.java)
     }
 
-    val offlineWorkshopDao: OfflineWorkshopRegistrationDao by lazy {
-        database.offlineWorkshopRegistrationDao()
+    val csrHistoryRepository: CsrHistoryRepository by lazy {
+        CsrHistoryRepository(csrHistoryApi)
     }
 
-    val offlineProfileRepository: OfflineProfileRepository by lazy {
-        OfflineProfileRepository(offlineProfileDao, profileApi)
-    }
-
-    val offlineWorkshopRepository: OfflineWorkshopRepository by lazy {
-        OfflineWorkshopRepository(offlineWorkshopDao, workshopApi)
-    }
 }

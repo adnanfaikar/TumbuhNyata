@@ -65,7 +65,7 @@ fun CertificationSuccessScreen(navController: NavController) {
             Text(
                 text = "Pengajuan Anda telah diterima dan sedang\n" +
                         "dalam proses verifikasi dokumen oleh tim auditor",
-                fontSize = 14.sp,
+                fontSize = 15.sp,
                 fontFamily = PoppinsFontFamily,
                 textAlign = TextAlign.Center,
                 color = Color.White
@@ -75,7 +75,7 @@ fun CertificationSuccessScreen(navController: NavController) {
 
             Text(
                 text = "Estimasi waktu proses: 10–30 hari kerja",
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 fontFamily = PoppinsFontFamily,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -86,14 +86,14 @@ fun CertificationSuccessScreen(navController: NavController) {
 
             Text(
                 text = "Notifikasi Email: ",
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 fontFamily = PoppinsFontFamily,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
             Text(
                 text = "Perusahaan akan menerima email konfirmasi dan\nlink untuk melacak status pengajuan",
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 fontFamily = PoppinsFontFamily,
                 textAlign = TextAlign.Center,
                 color = Color.White

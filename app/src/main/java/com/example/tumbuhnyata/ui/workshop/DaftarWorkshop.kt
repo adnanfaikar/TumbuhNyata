@@ -29,12 +29,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.di.NetworkModule
+import com.example.tumbuhnyata.viewmodel.DaftarWorkshopViewModel
+import com.example.tumbuhnyata.viewmodel.DaftarWorkshopUiState
 
 @Composable
 fun DaftarWorkshop(navController: NavController) {
     var fileSelected by remember { mutableStateOf(false) }
     var fileName by remember { mutableStateOf("") }
     val uriHandler = LocalUriHandler.current
+    var workshopId by remember { mutableStateOf("1") }
+
+    val viewModel = remember {
+        DaftarWorkshopViewModel(
+            workshopRepository = NetworkModule.workshopRepository,
+            profileRepository = NetworkModule.profileRepository
+        )
+    }
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -191,29 +203,48 @@ fun DaftarWorkshop(navController: NavController) {
 
         Spacer(modifier = Modifier.weight(1f))
 
+        if (uiState is DaftarWorkshopUiState.Error) {
+            Text(
+                text = (uiState as DaftarWorkshopUiState.Error).message,
+                color = Color.Red,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
         Button(
-            onClick = { navController.navigate("workshopberhasil") },
+            onClick = {
+                viewModel.registerWorkshop(workshopId)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (fileSelected) Color(0xFF27361F) else Color.Gray
+                containerColor = if (uiState !is DaftarWorkshopUiState.Loading && uiState is DaftarWorkshopUiState.Success) 
+                    Color(0xFF27361F) else Color.Gray
             ),
-            enabled = fileSelected,
+            enabled = uiState !is DaftarWorkshopUiState.Loading && uiState is DaftarWorkshopUiState.Success,
             shape = RoundedCornerShape(10.dp)
         ) {
             Text(
-                text = "Daftarkan Sekarang",
+                text = if (uiState is DaftarWorkshopUiState.Loading) "Loading..." else "Daftarkan Sekarang",
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.ExtraBold
             )
         }
+
+        LaunchedEffect(uiState) {
+            if (uiState is DaftarWorkshopUiState.RegistrationSuccess) {
+                navController.navigate("workshopberhasil")
+            }
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewDaftarWorkshop() {
     DaftarWorkshop(navController = rememberNavController())

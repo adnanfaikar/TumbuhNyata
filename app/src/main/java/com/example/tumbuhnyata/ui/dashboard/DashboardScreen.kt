@@ -7,9 +7,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,18 +25,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.dashboard.components.KPIItem
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tumbuhnyata.viewmodel.DashboardViewModel
+import com.example.tumbuhnyata.viewmodel.DashboardState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,45 +90,139 @@ fun DashboardScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Text(
-                "KPI (Key Performance Indicator)",
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                fontWeight = FontWeight(800),
-                fontSize = 18.sp,
-                color = Color(0xFF27361F)
-            )
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(uiState.kpiItems) { kpiItem ->
-                    KPIItem(
-                        title = kpiItem.title,
-                        topIcon = kpiItem.topIcon,
-                        statusText = kpiItem.statusText,
-                        statusPercentageValue = kpiItem.statusPercentageValue,
-                        isUp = kpiItem.isUp,
-                        value = kpiItem.value,
-                        unit = kpiItem.unit,
-                        targetValue = kpiItem.targetValue,
-                        onClick = { navController.navigate(kpiItem.onClickRoute) }
-                    )
+                uiState.error != null -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Oops! Terjadi Kesalahan", 
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = uiState.error ?: "Error tidak diketahui.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.loadDashboardItems() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF27361F))
+                        ) {
+                            Text("Coba Lagi")
+                        }
+                    }
+                }
+
+                !uiState.isLoading && uiState.error == null && uiState.kpiItems.isEmpty() -> {
+                     Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_carbonfootprint),
+                            contentDescription = "Tidak ada data",
+                            modifier = Modifier.size(100.dp) 
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Tidak Ada Data KPI",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+                         Text(
+                            text = "Belum ada data KPI untuk ditampilkan saat ini.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                         Spacer(modifier = Modifier.height(16.dp))
+                         Button(
+                            onClick = { viewModel.loadDashboardItems() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF27361F))
+                        ) {
+                            Text("Muat Ulang")
+                        }
+                    }
+                }
+
+                else -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            "KPI (Key Performance Indicator)",
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            fontWeight = FontWeight(800),
+                            fontSize = 18.sp,
+                            color = Color(0xFF27361F)
+                        )
+
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            contentPadding = PaddingValues(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(uiState.kpiItems) { kpiItem ->
+                                KPIItem(
+                                    title = kpiItem.title,
+                                    topIcon = kpiItem.topIcon,
+                                    statusText = kpiItem.statusText,
+                                    statusPercentageValue = kpiItem.statusPercentageValue,
+                                    isUp = kpiItem.isUp,
+                                    value = kpiItem.value,
+                                    unit = kpiItem.unit,
+                                    targetValue = kpiItem.targetValue,
+                                    onClick = { navController.navigate(kpiItem.onClickRoute) }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+//@Preview(showBackground = true, name = "Dashboard Loading")
+//@Composable
+//fun DashboardScreenPreviewLoading() {
+//    val mockViewModel = DashboardViewModel(Application())
+//    DashboardScreen(navController = rememberNavController() /*, viewModel = mockViewModel */)
+//}
+
+@Preview(showBackground = true, name = "Dashboard Error")
+@Composable
+fun DashboardScreenPreviewError() {
+    DashboardScreen(navController = rememberNavController())
+}
+
+@Preview(showBackground = true, name = "Dashboard No Data")
+@Composable
+fun DashboardScreenPreviewNoData() {
+    DashboardScreen(navController = rememberNavController())
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, name = "Dashboard Loaded Data")
 @Composable
 fun DashboardScreenPreview() {
     DashboardScreen(navController = rememberNavController())

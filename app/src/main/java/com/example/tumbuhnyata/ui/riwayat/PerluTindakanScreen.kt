@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tumbuhnyata.data.model.CsrItem
-import com.example.tumbuhnyata.data.model.SubStatus
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.component.CsrCard
 import com.example.tumbuhnyata.ui.component.poppins
+import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 
 @Composable
 fun PerluTindakanScreen(
@@ -47,12 +47,12 @@ fun PerluTindakanScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(16.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF2C3E1F)) // hijau tua
                     .clickable(onClick = onBack),

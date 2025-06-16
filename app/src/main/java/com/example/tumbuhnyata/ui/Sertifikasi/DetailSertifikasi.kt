@@ -28,7 +28,7 @@ fun DetailSertifikasiScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 20.dp, top = 95.dp, end = 20.dp)
+            .padding(start = 20.dp, top = 40.dp, end = 20.dp)
             .padding(vertical = 16.dp)
     ) {
         TopBarProfile(
@@ -140,7 +140,7 @@ fun DetailSertifikasiScreen(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = { navController.navigate("dokumen_one") },
+            onClick = { navController.navigate("dokumenone") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F4019)),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier

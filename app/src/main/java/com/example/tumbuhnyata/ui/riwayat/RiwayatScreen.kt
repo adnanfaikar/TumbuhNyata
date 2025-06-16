@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -40,6 +39,7 @@ import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.component.CsrCard
 import com.example.tumbuhnyata.ui.component.poppins
 import com.example.tumbuhnyata.ui.components.SectionHeader
+import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 
 @Composable
 fun RiwayatScreen(
@@ -63,12 +63,12 @@ fun RiwayatScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(16.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF2C3E1F))
                     .clickable { navController.popBackStack() }, // Navigasi ke Home

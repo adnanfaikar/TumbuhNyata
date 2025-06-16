@@ -17,17 +17,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.theme.PoppinsFontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tumbuhnyata.viewmodel.CsrVerificationViewModel
 
 @Composable
 fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
     val viewModel: CsrVerificationViewModel = viewModel()
-
+    Scaffold()
+    { innerPadding ->
     Column(
         modifier = Modifier
+            .padding(innerPadding)
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
     ) {
@@ -276,22 +278,23 @@ fun CsrVerificationScreen(navController: NavController, csrData: CsrData) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Button(
-                    onClick = { navController.navigate("csr_submission") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE74C3C)
-                    )
-                ) {
-                    Text(
-                        text = "Batalkan",
-                        fontSize = 17.sp,
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Button(
+                        onClick = { navController.navigate("csr_submission") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE74C3C)
+                        )
+                    ) {
+                        Text(
+                            text = "Batalkan",
+                            fontSize = 17.sp,
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

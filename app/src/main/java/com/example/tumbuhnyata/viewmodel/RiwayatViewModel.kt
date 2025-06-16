@@ -1,13 +1,10 @@
-package com.example.tumbuhnyata.ui.riwayat
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.tumbuhnyata.data.model.CsrItem
 import com.example.tumbuhnyata.data.model.SubStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 open class RiwayatViewModel(dummyList: List<CsrItem>) : ViewModel() {
     private val _perluTindakanItems = MutableStateFlow(dummyList.filter {

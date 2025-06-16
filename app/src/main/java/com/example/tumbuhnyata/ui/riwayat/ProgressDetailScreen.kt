@@ -39,12 +39,12 @@ fun ProgressDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .padding(16.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
                         .background(Color(0xFF2C3E1F))
                         .clickable { onBack() },
@@ -84,30 +84,6 @@ fun ProgressDetailScreen(
             }
             
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Status Section with Progress
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Status : Progress",
-                    modifier = Modifier.padding(start = 4.dp),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = poppins
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "75%",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = poppins,
-                    color = Color(0xFF2C3E1F)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             // Event Info
             Column(

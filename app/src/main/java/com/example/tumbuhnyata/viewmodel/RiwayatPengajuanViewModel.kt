@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.ui.Sertifikasi
+package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

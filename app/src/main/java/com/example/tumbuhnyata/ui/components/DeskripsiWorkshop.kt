@@ -128,7 +128,7 @@ fun DeskripsiWorkshop(navController: NavController, workshop: Workshop) {
                 Text(
                     text = "${index + 1}. $materi",
                     fontFamily = PoppinsFontFamily,
-                    fontSize = 12.sp,
+                    fontSize = 17.sp,
                     textAlign = TextAlign.Justify,
                     color = Color(0xFF4B4B4B)
                 )

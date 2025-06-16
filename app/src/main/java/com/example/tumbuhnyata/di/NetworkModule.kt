@@ -1,7 +1,12 @@
 package com.example.tumbuhnyata.di
 
 import com.example.tumbuhnyata.data.api.NotificationApi
+import com.example.tumbuhnyata.data.api.ProfileApi
+import com.example.tumbuhnyata.data.api.WorkshopApiService
+import com.example.tumbuhnyata.data.network.AuthInterceptor
 import com.example.tumbuhnyata.data.repository.NotificationRepository
+import com.example.tumbuhnyata.data.repository.ProfileRepository
+import com.example.tumbuhnyata.data.repository.WorkshopRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -34,4 +39,20 @@ object NetworkModule {
     val notificationRepository: NotificationRepository by lazy {
         NotificationRepository(notificationApi)
     }
-} 
+    
+    val profileApi: ProfileApi by lazy {
+        retrofit.create(ProfileApi::class.java)
+    }
+    
+    val profileRepository: ProfileRepository by lazy {
+        ProfileRepository(profileApi)
+    }
+
+    val workshopApi: WorkshopApiService by lazy {
+        retrofit.create(WorkshopApiService::class.java)
+    }
+
+    val workshopRepository: WorkshopRepository by lazy {
+        WorkshopRepository(workshopApi)
+    }
+}

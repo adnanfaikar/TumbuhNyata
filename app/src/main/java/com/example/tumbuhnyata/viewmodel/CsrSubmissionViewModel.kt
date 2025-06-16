@@ -1,18 +1,15 @@
 // File: CsrSubmissionViewModel.kt
 package com.example.tumbuhnyata.viewmodel
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tumbuhnyata.data.model.Workshop
-import com.example.tumbuhnyata.data.model.recentWorkshops
-import com.example.tumbuhnyata.data.model.recommendedWorkshops
-import com.example.tumbuhnyata.data.CsrApiService
-import com.example.tumbuhnyata.data.CsrSubmissionRequest
+import com.example.tumbuhnyata.data.api.CsrApiService
+import com.example.tumbuhnyata.data.api.CsrSubmissionRequest
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 private val retrofit = Retrofit.Builder()
     .baseUrl("http://10.0.2.2:5000/")

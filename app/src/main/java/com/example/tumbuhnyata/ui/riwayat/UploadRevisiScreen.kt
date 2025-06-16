@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.ui.component.poppins
+import com.example.tumbuhnyata.ui.component.SuccessDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +34,7 @@ fun UploadRevisiScreen(
 ) {
     var fileName by remember { mutableStateOf("") }
     var isUploading by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -81,7 +83,7 @@ fun UploadRevisiScreen(
             ) {
                 Text(
                     text = "Unggah Dokumen Rancangan",
-                    fontSize = 21.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = poppins
                 )
@@ -95,7 +97,7 @@ fun UploadRevisiScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     text = "Revisi Proposal Rancangan",
-                    fontSize = 17.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = poppins,
                     modifier = Modifier.align(Alignment.Start)
@@ -129,6 +131,7 @@ fun UploadRevisiScreen(
                             text = if (fileName.isEmpty()) "Proposal Rancangan" else fileName,
                             color = if (fileName.isEmpty()) Color.Gray else Color.Black,
                             fontFamily = poppins,
+                            fontSize = 14.sp,
                             maxLines = 1
                         )
                         if (fileName.isNotEmpty()) {
@@ -147,6 +150,13 @@ fun UploadRevisiScreen(
                         }
                     }
                 }
+                Text(
+                    "Format file: PDF (max 10MB)",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp),
+                    fontFamily = poppins
+                )
             }
             // Tombol Upload Revisi sticky di bawah
             Box(
@@ -159,7 +169,7 @@ fun UploadRevisiScreen(
                     onClick = {
                         isUploading = true
                         onUpload(fileName)
-                        navController.navigate("revisi_success")
+                        showSuccessDialog = true
                     },
                     enabled = fileName.isNotEmpty() && !isUploading,
                     modifier = Modifier.fillMaxWidth(),
@@ -168,15 +178,36 @@ fun UploadRevisiScreen(
                         containerColor = Color(0xFF2C3E1F)
                     )
                 ) {
-                    Text(
-                        "Upload Revisi",
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontFamily = poppins
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_upload),
+                            contentDescription = "Upload",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Upload Revisi",
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }
+    }
+
+    if (showSuccessDialog) {
+        SuccessDialog(
+            message = "Berhasil mengunggah revisi",
+            onDismiss = { 
+                showSuccessDialog = false
+                onBack()
+            }
+        )
     }
 }
 

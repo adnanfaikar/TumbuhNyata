@@ -33,6 +33,7 @@ import java.util.*
 import com.google.gson.Gson
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tumbuhnyata.viewmodel.CsrSubmissionViewModel
+import com.example.tumbuhnyata.data.model.CsrData
 
 @Composable
 fun CsrSubmissionScreen(navController: NavController) {
@@ -95,7 +96,8 @@ fun CsrSubmissionScreen(navController: NavController) {
                         onProgramNameChange = { viewModel.programName.value = it },
                         onCategoryChange = { viewModel.category.value = it },
                         onDescriptionChange = { viewModel.description.value = it },
-                        onNext = { step++ }
+                        onNext = { step++ },
+                        navController = navController
                     )
 
                     2 -> StepTwo(
@@ -127,7 +129,8 @@ fun CsrSubmissionScreen(navController: NavController) {
         onProgramNameChange: (String) -> Unit,
         onCategoryChange: (String) -> Unit,
         onDescriptionChange: (String) -> Unit,
-        onNext: () -> Unit
+        onNext: () -> Unit,
+        navController: NavController
     ) {
         var showCategoryDropdown by remember { mutableStateOf(false) }
 
@@ -268,6 +271,28 @@ fun CsrSubmissionScreen(navController: NavController) {
             ) {
                 Text(
                     text = "Selanjutnya",
+                    fontSize = 17.sp,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp)) // Add a small spacer
+
+            // View Drafts Button
+            Button(
+                onClick = { navController.navigate("draft_list") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Lihat Draft",
                     fontSize = 17.sp,
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold

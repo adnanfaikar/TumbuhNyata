@@ -18,12 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tumbuhnyata.data.model.CsrItem
+import com.example.tumbuhnyata.R
+import com.example.tumbuhnyata.data.model.CsrHistoryItem
 import com.example.tumbuhnyata.data.model.dummyCsrList
 import com.example.tumbuhnyata.ui.component.CsrCard
 import com.example.tumbuhnyata.ui.component.poppins
@@ -33,10 +35,9 @@ import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 fun DiterimaScreen(
     riwayatViewModel: RiwayatViewModel = viewModel(),
     onBack: () -> Unit,
-    onCsrCardClick: (CsrItem) -> Unit
+    onCsrCardClick: (CsrHistoryItem) -> Unit
 ) {
     val diterimaList by riwayatViewModel.diterimaItems.collectAsState()
-
 
     Column(
         modifier = Modifier
@@ -74,14 +75,35 @@ fun DiterimaScreen(
         }
 
         // List Riwayat History
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 16.dp)
-        ) {
-            items(diterimaList) { item ->
-                CsrCard(item = item) {
-                    onCsrCardClick(item)
+        if (diterimaList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Belum ada CSR yang diterima",
+                        color = Color.Gray,
+                        fontFamily = poppins,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 16.dp)
+            ) {
+                items(diterimaList) { item ->
+                    CsrCard(item = item) {
+                        onCsrCardClick(item)
+                    }
                 }
             }
         }
@@ -91,11 +113,8 @@ fun DiterimaScreen(
 @Preview(showBackground = true)
 @Composable
 fun DiterimaScreenPreview() {
-    val dummyViewModel = remember {
-        object : RiwayatViewModel(dummyList = dummyCsrList) {} // Anonymous object for preview
-    }
     DiterimaScreen(
-        riwayatViewModel = dummyViewModel,
+        riwayatViewModel = viewModel(),
         onBack = {},
         onCsrCardClick = {}
     )

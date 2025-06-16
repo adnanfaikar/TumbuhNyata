@@ -66,6 +66,7 @@ object NetworkModule {
         retrofit.create(WorkshopApiService::class.java)
     }
 
+    // Create offline repositories
     val offlineProfileRepository: OfflineProfileRepository by lazy {
         OfflineProfileRepository(database.offlineProfileDao(), profileApi)
     }

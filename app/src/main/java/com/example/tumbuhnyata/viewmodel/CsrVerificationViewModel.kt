@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tumbuhnyata.data.CsrApiService
-import com.example.tumbuhnyata.data.CsrSubmissionRequest
-import com.example.tumbuhnyata.ui.eventcsr.CsrData
+import com.example.tumbuhnyata.data.api.CsrApiService
+import com.example.tumbuhnyata.data.api.CsrSubmissionRequest
+import com.example.tumbuhnyata.data.model.CsrData
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -1,4 +1,4 @@
-package com.example.tumbuhnyata.data
+package com.example.tumbuhnyata.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body

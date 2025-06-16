@@ -1,12 +1,12 @@
-package com.example.tumbuhnyata.ui.eventcsr
+package com.example.tumbuhnyata.data.model
 
 data class CsrData(
     val programName: String,
     val category: String,
     val description: String,
-    val startDate: String,
-    val endDate: String,
     val location: String,
     val partnerName: String,
+    val startDate: String,
+    val endDate: String,
     val budget: String
-) 
+)

@@ -4,22 +4,27 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.tumbuhnyata.data.local.dao.CsrDraftDao
 import com.example.tumbuhnyata.data.local.dao.OfflineProfileDao
 import com.example.tumbuhnyata.data.local.dao.OfflineWorkshopRegistrationDao
+import com.example.tumbuhnyata.data.local.entity.CsrDraftEntity
 import com.example.tumbuhnyata.data.local.entity.OfflineProfile
 import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
 
 @Database(
     entities = [
         OfflineWorkshopRegistration::class,
-        OfflineProfile::class
+        OfflineProfile::class,
+        CsrDraftEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun offlineWorkshopRegistrationDao(): OfflineWorkshopRegistrationDao
     abstract fun offlineProfileDao(): OfflineProfileDao
+    abstract fun csrDraftDao(): CsrDraftDao
+
 
     companion object {
         @Volatile
@@ -31,7 +36,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "tumbuh_nyata_db"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                .build()
                 INSTANCE = instance
                 instance
             }

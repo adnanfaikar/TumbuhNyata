@@ -41,11 +41,6 @@ import com.example.tumbuhnyata.ui.dashboard.upload.UploadDataScreen
 import com.example.tumbuhnyata.ui.dashboard.upload.UploadSuccessScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.tumbuhnyata.data.local.AppDatabase
-import com.example.tumbuhnyata.data.repository.OfflineProfileRepository
-import com.example.tumbuhnyata.data.repository.OfflineWorkshopRepository
-import com.example.tumbuhnyata.data.repository.ProfileRepository
-import com.example.tumbuhnyata.data.repository.WorkshopRepository
 import com.example.tumbuhnyata.di.NetworkModule
 import com.example.tumbuhnyata.ui.riwayat.*
 import com.example.tumbuhnyata.ui.Sertifikasi.SertifikasiScreen
@@ -56,14 +51,15 @@ import com.example.tumbuhnyata.ui.Sertifikasi.DetailSertifikasiScreen
 import com.example.tumbuhnyata.ui.Sertifikasi.DokumenOne
 import com.example.tumbuhnyata.ui.Sertifikasi.CertificationSuccessScreen
 import com.example.tumbuhnyata.ui.dashboardkeuangan.DashboardKeuanganScreen
-import com.example.tumbuhnyata.ui.eventcsr.CsrData
+import com.example.tumbuhnyata.data.model.CsrData
 import com.example.tumbuhnyata.ui.notification.NotificationScreen
 import com.example.tumbuhnyata.ui.workshop.RiwayatWorkshopScreen
 import com.example.tumbuhnyata.viewmodel.RiwayatViewModel
 import com.example.tumbuhnyata.viewmodel.WorkshopViewModel
 import com.example.tumbuhnyata.viewmodel.WorkshopViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tumbuhnyata.data.model.CsrHistoryItem
+import com.example.tumbuhnyata.ui.eventcsr.DraftListScreen
+import com.example.tumbuhnyata.ui.eventcsr.DraftSuccessScreen
 
 @Composable
 fun AppNavigation() {
@@ -246,6 +242,12 @@ fun AppNavigation() {
         }
         composable("csr_success") {
             CsrSuccessScreen(navController)
+        }
+        composable("draft_list") {
+            DraftListScreen(navController)
+        }
+        composable("draft_success") {
+            DraftSuccessScreen(navController)
         }
 
         // Home

@@ -60,136 +60,350 @@ private fun parseDateString(dateString: String?): Date? {
 }
 
 // Mapper dari data /dashboard endpoint (DashboardData) ke List UI State Model (KPIItemState)
+// Updated: Menggunakan carbon_value sebagai value general untuk semua KPI berdasarkan document_type
 fun DashboardData.toKpiItemStateList(): List<KPIItemState> {
     val kpiList = mutableListOf<KPIItemState>()
     val decimalFormat = DecimalFormat("#,###.##")
 
-    // DEBUG: Log data yang diterima dari backend
-    println("DataMapper DEBUG - Dashboard data received:")
-    println("  summary.currentYearTotal: ${this.summary?.currentYearTotal}")
-    println("  analytics.totalStats.totalCarbon: ${this.analytics?.totalStats?.totalCarbon}")
-    println("  analytics.year: ${this.analytics?.year}")
-    println("  summary.submissionCount: ${this.summary?.submissionCount}")
-
-    // UTAMA: 1 KPI Card untuk Carbon Emission berdasarkan data summary atau analytics
-    val carbonValue = this.summary?.currentYearTotal ?: this.analytics?.totalStats?.totalCarbon ?: 0f
-    val year = this.analytics?.year ?: java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-    val submissionCount = this.summary?.submissionCount ?: this.analytics?.totalStats?.totalSubmissions ?: 0
+    // Ambil data dari recent submissions dan group berdasarkan document_type
+    val recentSubmissions = this.recentSubmissions ?: emptyList()
+    val dataByType = recentSubmissions.groupBy { it.documentType }
     
-    println("DataMapper DEBUG - Calculated values:")
-    println("  carbonValue: $carbonValue")
-    println("  year: $year")
-    println("  submissionCount: $submissionCount")
-    
-    // Hitung persentase berdasarkan target (misal target tahunan 10,000 kg CO₂e)
-    val targetValue = 10000f // Target tahunan dalam kg CO₂e
-    val achievementPercentage = if (targetValue > 0f) (carbonValue / targetValue) * 100f else 0f
-    val isUp = carbonValue > (targetValue * 0.5f) // Up jika > 50% target
+    // 1. Carbon Footprint (data_emisi)
+    val carbonData = dataByType["data_emisi"] ?: emptyList()
+    val totalCarbon = carbonData.mapNotNull { it.carbonValue }.sum()
+    val carbonTarget = 10000f
+    val carbonPercentage = if (carbonTarget > 0f) (totalCarbon / carbonTarget) * 100f else 0f
     
     kpiList.add(
         KPIItemState(
-            title = "Carbon Emission",
+            title = "Carbon Footprint",
             topIcon = R.drawable.ic_carbonfootprint,
-            statusText = "${achievementPercentage.toInt()}% dari target",
-            statusPercentageValue = if (achievementPercentage > 0) "${achievementPercentage.toInt()}%" else "",
-            isUp = isUp,
-            value = decimalFormat.format(carbonValue),
+            statusText = "${carbonPercentage.toInt()}% target",
+            statusPercentageValue = "5%",
+            isUp = true,
+            value = decimalFormat.format(totalCarbon),
             unit = "kg CO₂e",
-            targetValue = "Target: ${decimalFormat.format(targetValue)} kg CO₂e",
+            targetValue = "Target: ${decimalFormat.format(carbonTarget)} kg CO₂e",
             onClickRoute = "kpi_detail/carbon_footprint"
         )
     )
 
-    // Fallback jika tidak ada data
-    if (kpiList.isEmpty() || carbonValue == 0f) {
-        kpiList.clear()
-        kpiList.add(
-            KPIItemState(
-                title = "Carbon Emission",
-                topIcon = R.drawable.ic_carbonfootprint,
-                statusText = "Belum ada data",
-                statusPercentageValue = "",
-                isUp = false,
-                value = "0",
-                unit = "kg CO₂e",
-                targetValue = "Target: ${decimalFormat.format(targetValue)} kg CO₂e",
-                onClickRoute = "kpi_detail/carbon_footprint"
-            )
+    // 2. Konsumsi Energi (data_energi) - UPDATED: default to 0
+    val energyData = dataByType["data_energi"] ?: emptyList()
+    val totalEnergy = energyData.mapNotNull { it.carbonValue }.sum()
+    val energyTarget = 9000f
+    val energyPercentage = if (energyTarget > 0f) (totalEnergy / energyTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Konsumsi Energi",
+            topIcon = R.drawable.ic_konsumsienergi,
+            statusText = if (totalEnergy > 0) "${energyPercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalEnergy > 0) "${energyPercentage.toInt()}%" else "0%",
+            isUp = false,
+            value = decimalFormat.format(totalEnergy), // Akan jadi "0" jika tidak ada data
+            unit = "kWh",
+            targetValue = "Target: ${decimalFormat.format(energyTarget)} kWh",
+            onClickRoute = "kpi_detail/energy_consumption"
         )
-    }
+    )
+
+    // 3. Penggunaan Air (data_air) - UPDATED: default to 0
+    val waterData = dataByType["data_air"] ?: emptyList()
+    val totalWater = waterData.mapNotNull { it.carbonValue }.sum()
+    val waterTarget = 60000f
+    val waterPercentage = if (waterTarget > 0f) (totalWater / waterTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Penggunaan Air",
+            topIcon = R.drawable.ic_penggunaanair,
+            statusText = if (totalWater > 0) "${waterPercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalWater > 0) "${waterPercentage.toInt()}%" else "0%",
+            isUp = false,
+            value = decimalFormat.format(totalWater), // Akan jadi "0" jika tidak ada data
+            unit = "L",
+            targetValue = "Target: ${decimalFormat.format(waterTarget)} L",
+            onClickRoute = "kpi_detail/water_usage"
+        )
+    )
+
+    // 4. Pohon Tertanam (data_pohon) - UPDATED: default to 0
+    val treeData = dataByType["data_pohon"] ?: emptyList()
+    val totalTrees = treeData.mapNotNull { it.carbonValue }.sum()
+    val treeTarget = 6000f
+    val treePercentage = if (treeTarget > 0f) (totalTrees / treeTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Pohon Tertanam",
+            topIcon = R.drawable.ic_pohontertanam,
+            statusText = if (totalTrees > 0) "${treePercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalTrees > 0) "${treePercentage.toInt()}%" else "0%",
+            isUp = totalTrees > 0,
+            value = decimalFormat.format(totalTrees), // Akan jadi "0" jika tidak ada data
+            unit = "Pohon",
+            targetValue = "Target: ${decimalFormat.format(treeTarget)} Pohon",
+            onClickRoute = "kpi_detail/tree_planting"
+        )
+    )
+
+    // 5. Pengelolaan Sampah (data_sampah) - UPDATED: default to 0
+    val wasteData = dataByType["data_sampah"] ?: emptyList()
+    val totalWaste = wasteData.mapNotNull { it.carbonValue }.sum()
+    val wasteTarget = 10000f
+    val wastePercentage = if (wasteTarget > 0f) (totalWaste / wasteTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Pengelolaan Sampah",
+            topIcon = R.drawable.ic_pengelolaansampah,
+            statusText = if (totalWaste > 0) "${wastePercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalWaste > 0) "${wastePercentage.toInt()}%" else "0%",
+            isUp = totalWaste > 0,
+            value = decimalFormat.format(totalWaste), // Akan jadi "0" jika tidak ada data
+            unit = "kg",
+            targetValue = "Target: ${decimalFormat.format(wasteTarget)} kg",
+            onClickRoute = "kpi_detail/waste_management"
+        )
+    )
+
+    // 6. Penerima Manfaat (data_manfaat) - UPDATED: default to 0
+    val beneficiaryData = dataByType["data_manfaat"] ?: emptyList()
+    val totalBeneficiaries = beneficiaryData.mapNotNull { it.carbonValue }.sum()
+    val beneficiaryTarget = 15000f
+    val beneficiaryPercentage = if (beneficiaryTarget > 0f) (totalBeneficiaries / beneficiaryTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Penerima Manfaat",
+            topIcon = R.drawable.ic_penerimamanfaat,
+            statusText = if (totalBeneficiaries > 0) "${beneficiaryPercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalBeneficiaries > 0) "${beneficiaryPercentage.toInt()}%" else "0%",
+            isUp = totalBeneficiaries > 0,
+            value = decimalFormat.format(totalBeneficiaries), // Akan jadi "0" jika tidak ada data
+            unit = "Orang",
+            targetValue = "Target: ${decimalFormat.format(beneficiaryTarget)} Orang",
+            onClickRoute = "kpi_detail/benefit_received"
+        )
+    )
 
     return kpiList
 }
 
 // Mapper dari List Entity Room (CsrReportEntity) ke List UI State Model (KPIItemState) untuk OFFLINE
-// FIXED: Agregasi semua data menjadi satu KPI Carbon Emission seperti mode online
+// Updated: Agregasi berdasarkan document_type menggunakan carbon_value sebagai value general
 fun List<CsrReportEntity>.toKpiItemStateListForOffline(filterYear: Int? = null): List<KPIItemState> {
     if (this.isEmpty()) {
-        return emptyList()
+        return createDefaultKpiItems()
     }
     val kpiList = mutableListOf<KPIItemState>()
     val decimalFormat = DecimalFormat("#,###.##")
 
-    // AGREGASI: Filter by specified year (consistent with backend logic)
-    // Smart Year Detection: Use latest year with data if no year specified (same as backend)
+    // Smart Year Detection: Use latest year with data if no year specified
     val targetYear = filterYear ?: run {
         val availableYears = this.map { it.year }.distinct().sortedDescending()
         availableYears.firstOrNull() ?: java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
     }
     val filteredData = this.filter { it.year == targetYear }
-    val totalCarbonValue = filteredData.mapNotNull { it.carbonValue }.sum()
-    val submissionCount = filteredData.size
     
-    // Hitung persentase berdasarkan target (sama seperti mode online)
-    val targetValue = 10000f // Target tahunan dalam kg CO₂e
-    val achievementPercentage = if (targetValue > 0f) (totalCarbonValue / targetValue) * 100f else 0f
-    val isUp = totalCarbonValue > (targetValue * 0.5f) // Up jika > 50% target
+    // Group dan agregasi berdasarkan document_type
+    val dataByType = filteredData.groupBy { it.documentType }
     
-    println("DataMapper DEBUG - Offline Aggregation:")
-    println("  filterYear param: $filterYear")
-    println("  availableYears: ${this.map { it.year }.distinct().sortedDescending()}")
-    println("  targetYear: $targetYear (smart detection)")
-    println("  allDataCount: ${this.size}")
-    println("  filteredDataCount: ${filteredData.size}")
-    println("  filteredData: ${filteredData.map { "${it.year}/${it.month}: ${it.carbonValue}" }}")
-    println("  totalCarbonValue: $totalCarbonValue")
-    println("  submissionCount: $submissionCount")
-    println("  achievementPercentage: $achievementPercentage")
-
-    // Buat SATU KPI Card untuk Carbon Emission (sama seperti mode online)
+    // 1. Carbon Footprint (data_emisi)
+    val carbonData = dataByType["data_emisi"] ?: emptyList()
+    val totalCarbon = carbonData.mapNotNull { it.carbonValue }.sum()
+    val carbonTarget = 10000f
+    val carbonPercentage = if (carbonTarget > 0f) (totalCarbon / carbonTarget) * 100f else 0f
+    
     kpiList.add(
         KPIItemState(
-            title = "Carbon Emission",
+            title = "Carbon Footprint",
             topIcon = R.drawable.ic_carbonfootprint,
-            statusText = "${achievementPercentage.toInt()}% dari target",
-            statusPercentageValue = if (achievementPercentage > 0) "${achievementPercentage.toInt()}%" else "",
-            isUp = isUp,
-            value = decimalFormat.format(totalCarbonValue),
+            statusText = "${carbonPercentage.toInt()}% target",
+            statusPercentageValue = "5%",
+            isUp = true,
+            value = decimalFormat.format(totalCarbon),
             unit = "kg CO₂e",
-            targetValue = "Target: ${decimalFormat.format(targetValue)} kg CO₂e",
-            onClickRoute = "kpi_detail/carbon_footprint" // Sama seperti online
+            targetValue = "Target: ${decimalFormat.format(carbonTarget)} kg CO₂e",
+            onClickRoute = "kpi_detail/carbon_footprint"
         )
     )
+
+    // 2. Konsumsi Energi (data_energi) - UPDATED: default to 0
+    val energyData = dataByType["data_energi"] ?: emptyList()
+    val totalEnergy = energyData.mapNotNull { it.carbonValue }.sum()
+    val energyTarget = 9000f
+    val energyPercentage = if (energyTarget > 0f) (totalEnergy / energyTarget) * 100f else 0f
     
-    // Fallback jika tidak ada data atau total = 0
-    if (kpiList.isEmpty() || totalCarbonValue == 0f) {
-        kpiList.clear()
-        kpiList.add(
-            KPIItemState(
-                title = "Carbon Emission",
-                topIcon = R.drawable.ic_carbonfootprint, 
-                statusText = "Belum ada data",
-                statusPercentageValue = "",
-                isUp = false, 
-                value = "0",
-                unit = "kg CO₂e",
-                targetValue = "Target: ${decimalFormat.format(targetValue)} kg CO₂e",
-                onClickRoute = "kpi_detail/carbon_footprint"
-            )
+    kpiList.add(
+        KPIItemState(
+            title = "Konsumsi Energi",
+            topIcon = R.drawable.ic_konsumsienergi,
+            statusText = if (totalEnergy > 0) "${energyPercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalEnergy > 0) "${energyPercentage.toInt()}%" else "0%",
+            isUp = false,
+            value = decimalFormat.format(totalEnergy), // Akan jadi "0" jika tidak ada data
+            unit = "kWh",
+            targetValue = "Target: ${decimalFormat.format(energyTarget)} kWh",
+            onClickRoute = "kpi_detail/energy_consumption"
         )
-    }
+    )
+
+    // 3. Penggunaan Air (data_air) - UPDATED: default to 0
+    val waterData = dataByType["data_air"] ?: emptyList()
+    val totalWater = waterData.mapNotNull { it.carbonValue }.sum()
+    val waterTarget = 60000f
+    val waterPercentage = if (waterTarget > 0f) (totalWater / waterTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Penggunaan Air",
+            topIcon = R.drawable.ic_penggunaanair,
+            statusText = if (totalWater > 0) "${waterPercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalWater > 0) "${waterPercentage.toInt()}%" else "0%",
+            isUp = false,
+            value = decimalFormat.format(totalWater), // Akan jadi "0" jika tidak ada data
+            unit = "L",
+            targetValue = "Target: ${decimalFormat.format(waterTarget)} L",
+            onClickRoute = "kpi_detail/water_usage"
+        )
+    )
+
+    // 4. Pohon Tertanam (data_pohon) - UPDATED: default to 0
+    val treeData = dataByType["data_pohon"] ?: emptyList()
+    val totalTrees = treeData.mapNotNull { it.carbonValue }.sum()
+    val treeTarget = 6000f
+    val treePercentage = if (treeTarget > 0f) (totalTrees / treeTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Pohon Tertanam",
+            topIcon = R.drawable.ic_pohontertanam,
+            statusText = if (totalTrees > 0) "${treePercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalTrees > 0) "${treePercentage.toInt()}%" else "0%",
+            isUp = totalTrees > 0,
+            value = decimalFormat.format(totalTrees), // Akan jadi "0" jika tidak ada data
+            unit = "Pohon",
+            targetValue = "Target: ${decimalFormat.format(treeTarget)} Pohon",
+            onClickRoute = "kpi_detail/tree_planting"
+        )
+    )
+
+    // 5. Pengelolaan Sampah (data_sampah) - UPDATED: default to 0
+    val wasteData = dataByType["data_sampah"] ?: emptyList()
+    val totalWaste = wasteData.mapNotNull { it.carbonValue }.sum()
+    val wasteTarget = 10000f
+    val wastePercentage = if (wasteTarget > 0f) (totalWaste / wasteTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Pengelolaan Sampah",
+            topIcon = R.drawable.ic_pengelolaansampah,
+            statusText = if (totalWaste > 0) "${wastePercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalWaste > 0) "${wastePercentage.toInt()}%" else "0%",
+            isUp = totalWaste > 0,
+            value = decimalFormat.format(totalWaste), // Akan jadi "0" jika tidak ada data
+            unit = "kg",
+            targetValue = "Target: ${decimalFormat.format(wasteTarget)} kg",
+            onClickRoute = "kpi_detail/waste_management"
+        )
+    )
+
+    // 6. Penerima Manfaat (data_manfaat) - UPDATED: default to 0
+    val beneficiaryData = dataByType["data_manfaat"] ?: emptyList()
+    val totalBeneficiaries = beneficiaryData.mapNotNull { it.carbonValue }.sum()
+    val beneficiaryTarget = 15000f
+    val beneficiaryPercentage = if (beneficiaryTarget > 0f) (totalBeneficiaries / beneficiaryTarget) * 100f else 0f
+    
+    kpiList.add(
+        KPIItemState(
+            title = "Penerima Manfaat",
+            topIcon = R.drawable.ic_penerimamanfaat,
+            statusText = if (totalBeneficiaries > 0) "${beneficiaryPercentage.toInt()}% target" else "0% target",
+            statusPercentageValue = if (totalBeneficiaries > 0) "${beneficiaryPercentage.toInt()}%" else "0%",
+            isUp = totalBeneficiaries > 0,
+            value = decimalFormat.format(totalBeneficiaries), // Akan jadi "0" jika tidak ada data
+            unit = "Orang",
+            targetValue = "Target: ${decimalFormat.format(beneficiaryTarget)} Orang",
+            onClickRoute = "kpi_detail/benefit_received"
+        )
+    )
 
     return kpiList
+}
+
+// Helper function untuk default KPI items ketika tidak ada data - UPDATED: all values to 0
+private fun createDefaultKpiItems(): List<KPIItemState> {
+    return listOf(
+        KPIItemState(
+            title = "Carbon Footprint",
+            topIcon = R.drawable.ic_carbonfootprint,
+            statusText = "0% target",
+            statusPercentageValue = "0%",
+            isUp = false,
+            value = "0",
+            unit = "kg CO₂e",
+            targetValue = "Target: 10.000 kg CO₂e",
+            onClickRoute = "kpi_detail/carbon_footprint"
+        ),
+        KPIItemState(
+            title = "Konsumsi Energi",
+            topIcon = R.drawable.ic_konsumsienergi,
+            statusText = "0% target",
+            statusPercentageValue = "0%",
+            isUp = false,
+            value = "0",
+            unit = "kWh",
+            targetValue = "Target: 9.000 kWh",
+            onClickRoute = "kpi_detail/energy_consumption"
+        ),
+        KPIItemState(
+            title = "Penggunaan Air",
+            topIcon = R.drawable.ic_penggunaanair,
+            statusText = "0% target",
+            statusPercentageValue = "0%",
+            isUp = false,
+            value = "0",
+            unit = "L",
+            targetValue = "Target: 60.000 L",
+            onClickRoute = "kpi_detail/water_usage"
+        ),
+        KPIItemState(
+            title = "Pohon Tertanam",
+            topIcon = R.drawable.ic_pohontertanam,
+            statusText = "0% target",
+            statusPercentageValue = "0%",
+            isUp = false,
+            value = "0",
+            unit = "Pohon",
+            targetValue = "Target: 6.000 Pohon",
+            onClickRoute = "kpi_detail/tree_planting"
+        ),
+        KPIItemState(
+            title = "Pengelolaan Sampah",
+            topIcon = R.drawable.ic_pengelolaansampah,
+            statusText = "0% target",
+            statusPercentageValue = "0%",
+            isUp = false,
+            value = "0",
+            unit = "kg",
+            targetValue = "Target: 10.000 kg",
+            onClickRoute = "kpi_detail/waste_management"
+        ),
+        KPIItemState(
+            title = "Penerima Manfaat",
+            topIcon = R.drawable.ic_penerimamanfaat,
+            statusText = "0% target",
+            statusPercentageValue = "0%",
+            isUp = false,
+            value = "0",
+            unit = "Orang",
+            targetValue = "Target: 15.000 Orang",
+            onClickRoute = "kpi_detail/benefit_received"
+        )
+    )
 }
 
 // Mapper tunggal dari Entity ke KPIItemState jika dibutuhkan (mungkin kurang umum untuk dashboard agregat)

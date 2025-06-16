@@ -498,12 +498,29 @@ class DashboardRepository(
 
     /**
      * Creates KPI details from Room database entities
+     * FIXED: Now filters by document_type based on kpiType to show correct data per KPI
      */
     private fun createKpiDetailsFromRoom(kpiType: String, entities: List<CsrReportEntity>): KpiDetails {
         val decimalFormat = DecimalFormat("#,###.##")
         
+        // Map kpiType to document_type
+        val documentType = when(kpiType) {
+            "carbon_footprint" -> "data_emisi"
+            "energy_consumption" -> "data_energi"
+            "water_usage" -> "data_air"
+            "tree_planting" -> "data_pohon"
+            "trees_planted" -> "data_pohon" // Alias for tree_planting
+            "waste_management" -> "data_sampah"
+            "benefit_received" -> "data_manfaat"
+            "beneficiary_received" -> "data_manfaat" // Alias for benefit_received
+            else -> "data_emisi" // fallback
+        }
+        
+        // Filter entities by the specific document_type for this KPI
+        val filteredEntities = entities.filter { it.documentType == documentType }
+        
         // Group by month for yearly data (last 12 months)
-        val monthlyData = entities
+        val monthlyData = filteredEntities
             .filter { it.carbonValue != null && it.month != null }
             .groupBy { it.month }
             .mapValues { (_, reports) -> 
@@ -516,7 +533,7 @@ class DashboardRepository(
         }
         
         // Group by year for multi-year data (last 5 years)
-        val yearlyData = entities
+        val yearlyData = filteredEntities
             .filter { it.carbonValue != null }
             .groupBy { it.year }
             .mapValues { (_, reports) -> 
@@ -530,7 +547,7 @@ class DashboardRepository(
         }
         
         // Calculate statistics
-        val allValues = entities.mapNotNull { it.carbonValue }
+        val allValues = filteredEntities.mapNotNull { it.carbonValue }
         val averageValue = if (allValues.isNotEmpty()) {
             decimalFormat.format(allValues.average())
         } else "0"
@@ -539,18 +556,26 @@ class DashboardRepository(
             decimalFormat.format(allValues.minOrNull() ?: 0f)
         } else "0"
         
+        // Set appropriate title and unit based on KPI type
+        val (title, unit) = when(kpiType) {
+            "carbon_footprint" -> "Carbon Footprint" to "kg CO₂e"
+            "energy_consumption" -> "Konsumsi Energi" to "kWh"
+            "water_usage" -> "Penggunaan Air" to "L"
+            "tree_planting", "trees_planted" -> "Pohon Tertanam" to "Pohon"
+            "waste_management" -> "Pengelolaan Sampah" to "kg"
+            "benefit_received", "beneficiary_received" -> "Penerima Manfaat" to "Orang"
+            else -> "KPI Detail" to "Unit"
+        }
+        
         return KpiDetails(
             id = kpiType,
-            title = when(kpiType) {
-                "carbon_footprint" -> "Carbon Footprint"
-                else -> "KPI Detail"
-            },
-            unit = "kg CO₂e",
+            title = title,
+            unit = unit,
             yearlyChartData = yearlyChartData,
             fiveYearChartData = fiveYearChartData,
             averageValue = averageValue,
             minValue = minValue,
-            analysis = "Data diambil dari laporan tersimpan lokal. Total ${entities.size} laporan ditemukan."
+            analysis = "Data diambil dari laporan tersimpan lokal untuk $title. Total ${filteredEntities.size} laporan ditemukan."
         )
     }
 

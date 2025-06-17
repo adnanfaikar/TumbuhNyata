@@ -432,7 +432,7 @@ fun CsrReportEntity.toKpiItemState(): KPIItemState {
 /**
  * Mapper dari KpiDetailData (API response) ke KpiDetails (UI state)
  */
-fun KpiDetailData.toKpiDetails(): KpiDetails {
+fun KpiDetailData.toKpiDetails(year: Int): KpiDetails {
     val decimalFormat = DecimalFormat("#,###.##")
     
     // DEBUG: Log data yang diterima untuk KPI detail
@@ -471,6 +471,7 @@ fun KpiDetailData.toKpiDetails(): KpiDetails {
         id = this.kpiType ?: "unknown",
         title = this.title ?: "KPI Detail",
         unit = this.unit ?: "unit",
+        year = year,
         yearlyChartData = yearlyChartData,
         fiveYearChartData = fiveYearChartData,
         averageValue = averageValue,
@@ -484,11 +485,13 @@ fun KpiDetailData.toKpiDetails(): KpiDetails {
  * Ini akan digunakan jika API belum ready atau sebagai fallback
  */
 fun createDummyKpiDetails(kpiId: String): KpiDetails {
+    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
     return when (kpiId) {
         "carbon_footprint" -> KpiDetails(
             id = kpiId,
             title = "Carbon Footprint",
             unit = "kg CO₂e",
+            year = currentYear,
             yearlyChartData = listOf(65f, 75f, 85f, 72f, 93f, 80f, 100f, 110f, 105f, 115f, 110f, 130f),
             fiveYearChartData = listOf(850f, 920f, 1050f, 980f, 1230f),
             averageValue = "95.8",
@@ -499,6 +502,7 @@ fun createDummyKpiDetails(kpiId: String): KpiDetails {
             id = kpiId,
             title = "KPI Detail",
             unit = "unit",
+            year = currentYear,
             yearlyChartData = List(12) { 50f + (it * 5f) },
             fiveYearChartData = List(5) { 500f + (it * 100f) },
             averageValue = "100",

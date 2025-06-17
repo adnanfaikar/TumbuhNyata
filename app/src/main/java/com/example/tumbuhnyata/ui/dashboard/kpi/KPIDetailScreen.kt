@@ -50,6 +50,7 @@ data class KpiDetails(
     val id: String,
     val title: String,
     val unit: String,
+    val year: Int,
     val yearlyChartData: List<Float>,
     val fiveYearChartData: List<Float>,
     val averageValue: String,
@@ -65,7 +66,7 @@ fun KpiDetailScreen(
     viewModel: KPIDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var selectedYear by remember { mutableStateOf(2024) } // Start with 2024 since that's where our data is
+    var selectedYear by remember { mutableStateOf(2025) } // Start with 2024 since that's where our data is
 
     // Initial load and reload when kpiId or selectedYear changes
     LaunchedEffect(kpiId, selectedYear) {

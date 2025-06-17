@@ -403,164 +403,93 @@ class DashboardRepository(
      * FIXED: Now follows same pattern as getDashboardKpiItems - Room first, API as background refresh
      */
     fun getKpiDetail(kpiType: String, companyId: Int?, year: Int?): Flow<Resource<KpiDetails>> = flow {
-        emit(Resource.Loading()) // Emit loading state
+        emit(Resource.Loading())
 
-        // First, try to get data from Room cache (consistent with dashboard pattern)
-        val localDataFlow = dashboardDao.getAllReports().map { entities ->
-            // Filter by year if specified
-            val filteredEntities = if (year != null) {
-                entities.filter { it.year == year }
-            } else entities
-            
-            // Convert to KPI details from Room data
-            if (filteredEntities.isNotEmpty()) {
-                createKpiDetailsFromRoom(kpiType, filteredEntities)
-            } else null
-        }
-        
-        val currentLocalData = localDataFlow.firstOrNull()
-
+        // --- NETWORK-FIRST STRATEGY WHEN ONLINE ---
         if (NetworkConnectivityUtil.isOnline(context)) {
             try {
-                // If we have local data, emit it first for instant UI
-                if (currentLocalData != null) {
-                    println("DashboardRepository: Using cached KPI data while refreshing from API")
-                    emit(Resource.Success(currentLocalData))
-                }
-                
-                // Then try to refresh from API
-                val actualYear = year ?: java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+                val allLocalReportsForYearCheck = dashboardDao.getAllReports().firstOrNull() ?: emptyList()
+                val kpiSpecificEntitiesForYearCheck = allLocalReportsForYearCheck.filter { it.documentType == getDocumentTypeForKpi(kpiType) }
+                val targetYear = year ?: kpiSpecificEntitiesForYearCheck.maxOfOrNull { it.year ?: 0 }?.takeIf { it > 0 } ?: java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+
+                println("DashboardRepository: Calling KPI detail endpoint (Network-First) for $kpiType, year $targetYear")
                 val companyIdString = companyId?.toString()
-                
-                // FIXED: Backend only supports 'carbon_footprint', map all KPI types to it
-                val backendKpiType = "carbon_footprint" // Backend limitation - only supports this type
-                
-                println("DashboardRepository: Calling KPI detail endpoint: carbon-submissions/kpi/$backendKpiType")
-                println("DashboardRepository: Parameters - companyId: $companyIdString, year: $actualYear")
-                println("DashboardRepository: Frontend KPI type: $kpiType -> Backend KPI type: $backendKpiType")
-                
-                val response = dashboardApiService.getKpiDetail(
-                    kpiType = backendKpiType, // Always use carbon_footprint for API
-                    companyId = companyIdString,
-                    year = actualYear
-                )
-                println("DashboardRepository: KPI Detail Response code: ${response.code()}")
-                
+                val response = dashboardApiService.getKpiDetail(kpiType = kpiType, companyId = companyIdString, year = targetYear)
+
                 if (response.isSuccessful && response.body()?.success == true) {
                     val kpiDetailData = response.body()?.data
                     if (kpiDetailData != null) {
-                        println("DashboardRepository: Success! Fresh KPI detail data received for $kpiType")
-                        val kpiDetails = kpiDetailData.toKpiDetails()
-                        emit(Resource.Success(kpiDetails)) // Emit fresh data from API
+                        println("DashboardRepository: Success! Fresh KPI detail data received.")
+                        val kpiDetails = kpiDetailData.toKpiDetails(targetYear)
+                        emit(Resource.Success(kpiDetails))
                         
-                        // Background: Refresh submissions cache to keep Room data current
+                        // Refresh cache in background
                         try {
-                            refreshSubmissionsCache(companyId, year)
-                        } catch (e: Exception) {
-                            println("DashboardRepository: Failed to refresh submissions cache after KPI detail: ${e.message}")
+                            refreshSubmissionsCache(companyId, null) 
+                        } catch(e: Exception) {
+                            println("DashboardRepository: Background cache refresh failed: ${e.message}")
                         }
-                        return@flow
+                        return@flow 
                     }
                 }
-                
-                // API failed - if we had local data, that's already emitted; otherwise emit error
-                if (currentLocalData == null) {
-                    val errorBody = response.errorBody()?.string()
-                    val errorMsg = "API KPI detail gagal dan tidak ada data lokal. Code: ${response.code()}" +
-                            if (errorBody != null) ", Error: $errorBody" else ""
-                    println("DashboardRepository: $errorMsg")
-                    emit(Resource.Error(errorMsg))
-                }
-                
-            } catch (e: IOException) {
-                // Network error - if we had local data, that's already emitted; otherwise emit error
-                if (currentLocalData == null) {
-                    val errorMsg = "Kesalahan jaringan untuk KPI detail: ${e.message}"
-                    println("DashboardRepository: $errorMsg")
-                    emit(Resource.Error(errorMsg))
-                }
+                println("DashboardRepository: API call for KPI detail did not return valid data. Code: ${response.code()}. Falling back to local cache.")
             } catch (e: Exception) {
-                // Other errors - if we had local data, that's already emitted; otherwise emit error
-                if (currentLocalData == null) {
-                    val errorMsg = "Kesalahan KPI detail: ${e.message}"
-                    println("DashboardRepository: $errorMsg")
-                    emit(Resource.Error(errorMsg))
-                }
+                println("DashboardRepository: API call for KPI detail failed: ${e.message}. Falling back to local cache.")
             }
-        } else { 
-            // Offline - use local data if available
-            if (currentLocalData != null) {
-                println("DashboardRepository: Using cached KPI data (offline mode)")
-                emit(Resource.Success(currentLocalData))
-            } else {
-                val errorMsg = "Device offline dan tidak ada data KPI tersimpan"
-                println("DashboardRepository: $errorMsg")
-                emit(Resource.Error(errorMsg))
-            }
+        }
+
+        // --- CACHE FALLBACK LOGIC (or OFFLINE) ---
+        println("DashboardRepository: Using local cache for KPI Details.")
+        val allLocalReports = dashboardDao.getAllReports().firstOrNull() ?: emptyList()
+        val kpiSpecificEntities = allLocalReports.filter { it.documentType == getDocumentTypeForKpi(kpiType) }
+        val targetYear = year ?: kpiSpecificEntities.maxOfOrNull { it.year ?: 0 }?.takeIf { it > 0 } ?: java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+        
+        val entitiesForYear = kpiSpecificEntities.filter { it.year == targetYear }
+
+        if (entitiesForYear.isNotEmpty()) {
+            println("DashboardRepository: Found ${entitiesForYear.size} records in cache for $kpiType, year $targetYear.")
+            val localData = createKpiDetailsFromRoom(kpiType, entitiesForYear, targetYear, allLocalReports)
+            emit(Resource.Success(localData))
+        } else {
+            val errorMsg = "Tidak ada data untuk KPI '$kpiType' pada tahun $targetYear."
+            println("DashboardRepository: $errorMsg")
+            emit(Resource.Error(errorMsg))
         }
     }
 
-    /**
-     * Creates KPI details from Room database entities
-     * FIXED: Now filters by document_type based on kpiType to show correct data per KPI
-     */
-    private fun createKpiDetailsFromRoom(kpiType: String, entities: List<CsrReportEntity>): KpiDetails {
-        val decimalFormat = DecimalFormat("#,###.##")
-        
-        // Map kpiType to document_type
-        val documentType = when(kpiType) {
+    private fun getDocumentTypeForKpi(kpiType: String): String {
+        return when(kpiType) {
             "carbon_footprint" -> "data_emisi"
             "energy_consumption" -> "data_energi"
             "water_usage" -> "data_air"
-            "tree_planting" -> "data_pohon"
-            "trees_planted" -> "data_pohon" // Alias for tree_planting
+            "tree_planting", "trees_planted" -> "data_pohon"
             "waste_management" -> "data_sampah"
-            "benefit_received" -> "data_manfaat"
-            "beneficiary_received" -> "data_manfaat" // Alias for benefit_received
+            "benefit_received", "beneficiary_received" -> "data_manfaat"
             else -> "data_emisi" // fallback
         }
+    }
+
+    private fun createKpiDetailsFromRoom(kpiType: String, entitiesForYear: List<CsrReportEntity>, year: Int, allEntities: List<CsrReportEntity>): KpiDetails {
+        val decimalFormat = DecimalFormat("#,###.##")
         
-        // Filter entities by the specific document_type for this KPI
-        val filteredEntities = entities.filter { it.documentType == documentType }
-        
-        // Group by month for yearly data (last 12 months)
-        val monthlyData = filteredEntities
+        val monthlyData = entitiesForYear
             .filter { it.carbonValue != null && it.month != null }
             .groupBy { it.month }
-            .mapValues { (_, reports) -> 
-                reports.sumOf { it.carbonValue?.toDouble() ?: 0.0 }.toFloat()
-            }
+            .mapValues { (_, reports) -> reports.sumOf { it.carbonValue?.toDouble() ?: 0.0 }.toFloat() }
         
-        // Create 12-month chart data (Jan-Dec)
-        val yearlyChartData = (1..12).map { month ->
-            monthlyData[month] ?: 0f
-        }
+        val yearlyChartData = (1..12).map { month -> monthlyData[month] ?: 0f }
         
-        // Group by year for multi-year data (last 5 years)
-        val yearlyData = filteredEntities
-            .filter { it.carbonValue != null }
+        val yearlyData = allEntities
+            .filter { it.documentType == getDocumentTypeForKpi(kpiType) && it.carbonValue != null }
             .groupBy { it.year }
-            .mapValues { (_, reports) -> 
-                reports.sumOf { it.carbonValue?.toDouble() ?: 0.0 }.toFloat()
-            }
+            .mapValues { (_, reports) -> reports.sumOf { it.carbonValue?.toDouble() ?: 0.0 }.toFloat() }
         
-        // Create 5-year chart data
-        val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-        val fiveYearChartData = (currentYear - 4..currentYear).map { year ->
-            yearlyData[year] ?: 0f
-        }
+        val fiveYearChartData = (year - 4..year).map { chartYear -> yearlyData[chartYear] ?: 0f }
         
-        // Calculate statistics
-        val allValues = filteredEntities.mapNotNull { it.carbonValue }
-        val averageValue = if (allValues.isNotEmpty()) {
-            decimalFormat.format(allValues.average())
-        } else "0"
+        val allValues = entitiesForYear.mapNotNull { it.carbonValue }
+        val averageValue = if (allValues.isNotEmpty()) decimalFormat.format(allValues.average()) else "0"
+        val minValue = if (allValues.isNotEmpty()) decimalFormat.format(allValues.minOrNull() ?: 0f) else "0"
         
-        val minValue = if (allValues.isNotEmpty()) {
-            decimalFormat.format(allValues.minOrNull() ?: 0f)
-        } else "0"
-        
-        // Set appropriate title and unit based on KPI type
         val (title, unit) = when(kpiType) {
             "carbon_footprint" -> "Carbon Footprint" to "kg CO₂e"
             "energy_consumption" -> "Konsumsi Energi" to "kWh"
@@ -575,11 +504,12 @@ class DashboardRepository(
             id = kpiType,
             title = title,
             unit = unit,
+            year = year,
             yearlyChartData = yearlyChartData,
             fiveYearChartData = fiveYearChartData,
             averageValue = averageValue,
             minValue = minValue,
-            analysis = "Data diambil dari laporan tersimpan lokal untuk $title. Total ${filteredEntities.size} laporan ditemukan."
+            analysis = "Data diambil dari laporan tersimpan lokal untuk $title. Total ${entitiesForYear.size} laporan ditemukan untuk tahun $year."
         )
     }
 
@@ -625,7 +555,7 @@ class DashboardRepository(
             val companyIdString = companyId?.toString()
             val response = dashboardApiService.getAllSubmissions(
                 companyId = companyIdString, 
-                year = year,
+                year = null, // FIXED: Always fetch all years to prevent data culling
                 limit = 1000 // FIXED: Set high limit to get ALL data, not just recent 10
             )
             println("DashboardRepository: Cache refresh API call completed with code: ${response.code()}")

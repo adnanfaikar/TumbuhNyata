@@ -10,20 +10,28 @@ import com.example.tumbuhnyata.data.local.dao.OfflineWorkshopRegistrationDao
 import com.example.tumbuhnyata.data.local.entity.CsrDraftEntity
 import com.example.tumbuhnyata.data.local.entity.OfflineProfile
 import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
+import com.example.tumbuhnyata.data.local.dao.DashboardDao // DAO yang sudah kita buat
+import com.example.tumbuhnyata.data.local.dao.CertificationDao // DAO untuk certification
+import com.example.tumbuhnyata.data.local.entity.CsrReportEntity // Entity yang sudah kita buat
+import com.example.tumbuhnyata.data.local.entity.CertificationEntity // Entity untuk certification
 
 @Database(
     entities = [
         OfflineWorkshopRegistration::class,
         OfflineProfile::class,
-        CsrDraftEntity::class
+        CsrDraftEntity::class,
+        CsrReportEntity::class,
+        CertificationEntity::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun offlineWorkshopRegistrationDao(): OfflineWorkshopRegistrationDao
     abstract fun offlineProfileDao(): OfflineProfileDao
     abstract fun csrDraftDao(): CsrDraftDao
+    abstract fun dashboardDao(): DashboardDao // Expose DashboardDao
+    abstract fun certificationDao(): CertificationDao
 
 
     companion object {

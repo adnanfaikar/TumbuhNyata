@@ -201,13 +201,20 @@ fun LoginScreen(navController: NavController) {
                     override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                         if (response.isSuccessful) {
                             val token = response.body()?.token
-                            Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
-                            // Navigate to home screen and clear the back stack
-                            navController.navigate("home") {
-                                popUpTo("login") { inclusive = true }
-                                launchSingleTop = true
+                            if (token != null) {
+                                // Save token FIRST before navigating
+                                TokenManager.saveToken(context, token)
+                                println("LoginScreen: Token saved successfully: ${token.take(20)}...")
+                                
+                                Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
+                                // Navigate to home screen and clear the back stack
+                                navController.navigate("home") {
+                                    popUpTo("login") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            } else {
+                                Toast.makeText(context, "Token tidak ditemukan dalam response", Toast.LENGTH_LONG).show()
                             }
-                            TokenManager.saveToken(context, token ?: "")
                         } else {
                             val errorBody = response.errorBody()?.string()
                             val errorMessage = try {

@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+codebase_extractor.py
+TumbuhNyata_codebase.txt

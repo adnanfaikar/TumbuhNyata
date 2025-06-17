@@ -9,7 +9,7 @@ import com.example.tumbuhnyata.data.model.RegisterRequest
 import com.example.tumbuhnyata.data.model.RegisterResponse
 
 interface AuthApi {
-    @POST("auth/login") // Remove the leading slash
+    @POST("auth/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
     
     @POST("auth/register")

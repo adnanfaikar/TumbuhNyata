@@ -41,6 +41,7 @@ fun NotificationScreen(
     // Menggunakan collectAsState untuk mengamati StateFlow dari ViewModel
     val notifications by viewModel.notifications.collectAsState()
     val errorMessage by viewModel.error.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     
     // Effect untuk mengambil notifikasi saat tampilan dibuat
     LaunchedEffect(key1 = userId) {
@@ -67,27 +68,68 @@ fun NotificationScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (notifications.isEmpty()) {
-                EmptyNotifications(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            } else {
-                NotificationList(
-                    notifications = notifications,
-                    onNotificationClick = { notificationId ->
-                        viewModel.markAsRead(notificationId)
-                    },
-                    onDeleteClick = { notificationId ->
-                        viewModel.deleteNotification(notificationId)
-                    }
-                )
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                notifications.isEmpty() && !isLoading -> {
+                    EmptyNotifications(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                else -> {
+                    NotificationList(
+                        notifications = notifications,
+                        onNotificationClick = { notificationId ->
+                            viewModel.markAsRead(notificationId)
+                        },
+                        onDeleteClick = { notificationId ->
+                            viewModel.deleteNotification(notificationId)
+                        }
+                    )
+                }
             }
             
-            errorMessage?.let {
-                ErrorMessage(
-                    message = it,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+            // Tampilkan error message sebagai snackbar di bawah
+            errorMessage?.let { message ->
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = message,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontFamily = PoppinsFontFamily,
+                            modifier = Modifier.weight(1f)
+                        )
+                        
+                        TextButton(
+                            onClick = { viewModel.clearError() }
+                        ) {
+                            Text(
+                                "Tutup",
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                fontFamily = PoppinsFontFamily
+                            )
+                        }
+                    }
+                }
             }
         }
     }

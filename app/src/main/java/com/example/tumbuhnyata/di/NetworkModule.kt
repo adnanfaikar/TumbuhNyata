@@ -56,7 +56,7 @@ object NetworkModule {
     }
 
     val notificationRepository: NotificationRepository by lazy {
-        NotificationRepository(notificationApi)
+        NotificationRepository(notificationApi, database.notificationDao())
     }
 
     val profileApi: ProfileApi by lazy {

@@ -49,14 +49,15 @@ fun DiterimaScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF2C3E1F)) // hijau tua
-                    .clickable(onClick = onBack),
+                    .background(Color(0xFF2C3E1F))
+                    .clickable { onBack() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -67,7 +68,7 @@ fun DiterimaScreen(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                "Diterima",
+                "CSR Diterima",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = poppins
@@ -101,9 +102,13 @@ fun DiterimaScreen(
                     .padding(bottom = 16.dp)
             ) {
                 items(diterimaList) { item ->
-                    CsrCard(item = item) {
-                        onCsrCardClick(item)
-                    }
+                    CsrCard(
+                        item = item,
+                        onClick = { onCsrCardClick(item) },
+                        onDelete = { csrItem ->
+                            riwayatViewModel.deleteCsrHistory(csrItem)
+                        }
+                    )
                 }
             }
         }

@@ -3,6 +3,8 @@ package com.example.tumbuhnyata.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tumbuhnyata.di.NetworkModule
+import com.example.tumbuhnyata.util.UserSessionManager
+import com.example.tumbuhnyata.TumbuhNyataApp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,6 +51,9 @@ class ProfileViewModel : ViewModel() {
                 _profileState.value = _profileState.value.copy(isLoading = true, error = null)
                 val profile = repository.getUserProfile()
                 if (profile != null) {
+                    // Simpan user ID ke UserSessionManager
+                    UserSessionManager.saveUserId(TumbuhNyataApp.appContext, profile.id)
+                    
                     _profileState.value = _profileState.value.copy(
                         companyName = profile.companyName,
                         companyAddress = profile.address,
@@ -73,6 +78,8 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun logout() {
+        // Clear user ID saat logout
+        UserSessionManager.clearUserId(TumbuhNyataApp.appContext)
         _profileState.value = _profileState.value.copy(isLoggedIn = false)
     }
 
@@ -81,6 +88,9 @@ class ProfileViewModel : ViewModel() {
             try {
                 val profile = repository.getUserProfile()
                 if (profile != null) {
+                    // Update user ID jika ada perubahan
+                    UserSessionManager.saveUserId(TumbuhNyataApp.appContext, profile.id)
+                    
                     _profileState.value = _profileState.value.copy(
                         companyName = profile.companyName,
                         companyAddress = profile.address,

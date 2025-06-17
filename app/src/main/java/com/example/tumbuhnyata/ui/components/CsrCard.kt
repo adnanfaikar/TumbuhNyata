@@ -1,23 +1,30 @@
 package com.example.tumbuhnyata.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tumbuhnyata.R
 import com.example.tumbuhnyata.data.model.CsrHistoryItem
 import com.example.tumbuhnyata.data.model.SubStatus
 import com.example.tumbuhnyata.data.model.getSubStatusEmoji
+import com.example.tumbuhnyata.data.model.statusToSubStatus
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -29,23 +36,14 @@ val poppins = FontFamily(
 )
 
 @Composable
-fun CsrCard(item: CsrHistoryItem, onClick: () -> Unit = {}) {
-    val subStatus = when {
-        !item.agreed -> when (item.status.lowercase()) {
-            "pending" -> SubStatus.PROSES_REVIEW
-            "proses review" -> SubStatus.PROSES_REVIEW
-            "memerlukan revisi" -> SubStatus.MEMERLUKAN_REVISI
-            "menunggu pembayaran" -> SubStatus.MENUNGGU_PEMBAYARAN
-            else -> SubStatus.PROSES_REVIEW
-        }
-        else -> when (item.status.lowercase()) {
-            "pending" -> SubStatus.MENDATANG
-            "akan datang" -> SubStatus.MENDATANG
-            "sedang berlangsung" -> SubStatus.PROGRESS
-            "program selesai" -> SubStatus.SELESAI
-            else -> SubStatus.MENDATANG
-        }
-    }
+fun CsrCard(
+    item: CsrHistoryItem, 
+    onClick: () -> Unit = {},
+    onDelete: ((CsrHistoryItem) -> Unit)? = null
+) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    
+    val subStatus = statusToSubStatus(item.status)
 
     Row(
         modifier = Modifier
@@ -64,101 +62,170 @@ fun CsrCard(item: CsrHistoryItem, onClick: () -> Unit = {}) {
         )
 
         // Konten utama kartu
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
                     color = Color.White,
                     shape = RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
                 )
-                .padding(16.dp)
         ) {
-            Text(
-                text = item.programName,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = poppins
-            )
-            Text(
-                text = item.partnerName,
-                fontSize = 14.sp,
-                color = Color.Gray,
-                fontFamily = poppins
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Status : ${formatStatus(subStatus)} ${getSubStatusEmoji(subStatus)}",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = poppins
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Divider(color = Color.LightGray, thickness = 0.5.dp)
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                // Kategori
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        "Kategori",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = poppins
-                    )
-                    Text(item.category, fontSize = 14.sp, fontFamily = poppins)
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(0.5.dp)
-                        .background(Color.LightGray)
+                Text(
+                    text = item.programName,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = poppins
+                )
+                Text(
+                    text = item.partnerName,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    fontFamily = poppins
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Status : ${formatStatus(subStatus)} ${getSubStatusEmoji(subStatus)}",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppins
                 )
 
-                // Lokasi
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(
-                    modifier = Modifier.weight(1f)
+                Spacer(modifier = Modifier.height(8.dp))
+                Divider(color = Color.LightGray, thickness = 0.5.dp)
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        "Lokasi",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = poppins
+                    // Kategori
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            "Kategori",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = poppins
+                        )
+                        Text(item.category, fontSize = 14.sp, fontFamily = poppins)
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(0.5.dp)
+                            .background(Color.LightGray)
                     )
-                    Text(item.location, fontSize = 14.sp, fontFamily = poppins)
+
+                    // Lokasi
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            "Lokasi",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = poppins
+                        )
+                        Text(item.location, fontSize = 14.sp, fontFamily = poppins)
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(0.5.dp)
+                            .background(Color.LightGray)
+                    )
+
+                    // Periode
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            "Periode",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = poppins
+                        )
+                        Text(formatPeriod(item.startDate, item.endDate), fontSize = 14.sp, fontFamily = poppins)
+                    }
                 }
-
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
+            }
+            
+            // Delete icon di pojok kanan atas
+            if (onDelete != null) {
+                IconButton(
+                    onClick = { showDeleteDialog = true },
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .width(0.5.dp)
-                        .background(Color.LightGray)
-                )
-
-                // Periode
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(
-                    modifier = Modifier.weight(1f)
+                        .align(Alignment.TopEnd)
+                        .size(40.dp)
                 ) {
-                    Text(
-                        "Periode",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = poppins
+                    Icon(
+                        imageVector = Icons.Default.DeleteOutline,
+                        contentDescription = "Hapus CSR",
+                        tint = Color(0xFFE74C3C),
+                        modifier = Modifier.size(24.dp)
                     )
-                    Text(formatPeriod(item.startDate, item.endDate), fontSize = 14.sp, fontFamily = poppins)
                 }
             }
         }
+    }
+    
+    // Confirmation Dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text(
+                    text = "Konfirmasi Hapus",
+                    fontFamily = poppins,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Apakah Anda yakin ingin menghapus CSR \"${item.programName}\"? Tindakan ini tidak dapat dibatalkan.",
+                    fontFamily = poppins,
+                    textAlign = TextAlign.Justify
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete?.invoke(item)
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text(
+                        "Hapus",
+                        color = Color(0xFFE74C3C),
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteDialog = false }
+                ) {
+                    Text(
+                        "Batal",
+                        color = Color.Gray,
+                        fontFamily = poppins
+                    )
+                }
+            }
+        )
     }
 }
 

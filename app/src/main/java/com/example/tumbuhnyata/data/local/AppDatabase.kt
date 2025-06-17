@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.tumbuhnyata.data.local.dao.CsrDraftDao
+import com.example.tumbuhnyata.data.local.dao.CsrHistoryDao
 import com.example.tumbuhnyata.data.local.dao.OfflineProfileDao
 import com.example.tumbuhnyata.data.local.dao.OfflineWorkshopRegistrationDao
 import com.example.tumbuhnyata.data.local.entity.CsrDraftEntity
+import com.example.tumbuhnyata.data.local.entity.CsrHistoryEntity
 import com.example.tumbuhnyata.data.local.entity.OfflineProfile
 import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
 import com.example.tumbuhnyata.data.local.dao.DashboardDao // DAO yang sudah kita buat
@@ -20,16 +22,20 @@ import com.example.tumbuhnyata.data.local.entity.CertificationEntity // Entity u
         OfflineWorkshopRegistration::class,
         OfflineProfile::class,
         CsrDraftEntity::class,
+        CsrHistoryEntity::class
+
         CsrReportEntity::class,
         CertificationEntity::class
     ],
-    version = 5,
+    version = 6,
+
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun offlineWorkshopRegistrationDao(): OfflineWorkshopRegistrationDao
     abstract fun offlineProfileDao(): OfflineProfileDao
     abstract fun csrDraftDao(): CsrDraftDao
+    abstract fun csrHistoryDao(): CsrHistoryDao
     abstract fun dashboardDao(): DashboardDao // Expose DashboardDao
     abstract fun certificationDao(): CertificationDao
 

@@ -61,7 +61,7 @@ val dummyCsrList = listOf(
     CsrItem(
         title = "Penghijauan Hutan Kaltim",
         organization = "PT Hijau Sejati",
-        status = "Mendatang",
+        status = "Akan Datang",
         subStatus = SubStatus.MENDATANG,
         category = "Lingkungan",
         location = "Kalimantan",
@@ -70,7 +70,7 @@ val dummyCsrList = listOf(
     CsrItem(
         title = "Beasiswa Yatim Jabar",
         organization = "Pemerintah Prov. Jabar",
-        status = "Progress",
+        status = "Sedang Berlangsung",
         subStatus = SubStatus.PROGRESS,
         category = "Sosial",
         location = "Jawa Barat",
@@ -79,7 +79,7 @@ val dummyCsrList = listOf(
     CsrItem(
         title = "Donor Darah Paragon 2025",
         organization = "RS Bunda Mulia",
-        status = "Progress",
+        status = "Sedang Berlangsung",
         subStatus = SubStatus.PROGRESS,
         category = "Sosial",
         location = "Jakarta Raya",
@@ -96,6 +96,84 @@ val dummyCsrList = listOf(
     ),
 )
 
+/**
+ * Helper functions untuk kategori status CSR
+ */
+fun isPerluTindakanStatus(status: String): Boolean {
+    return status in listOf("Proses Review", "Memerlukan Revisi", "Menunggu Pembayaran")
+}
+
+fun isDiterimaStatus(status: String): Boolean {
+    return status in listOf("Akan Datang", "Sedang Berlangsung", "Program Selesai")
+}
+
+/**
+ * Status constants untuk konsistensi
+ */
+object CsrStatusConstants {
+    // Perlu Tindakan statuses
+    const val PROSES_REVIEW = "Proses Review"
+    const val MEMERLUKAN_REVISI = "Memerlukan Revisi" 
+    const val MENUNGGU_PEMBAYARAN = "Menunggu Pembayaran"
+    
+    // Diterima statuses
+    const val AKAN_DATANG = "Akan Datang"
+    const val SEDANG_BERLANGSUNG = "Sedang Berlangsung"
+    const val PROGRAM_SELESAI = "Program Selesai"
+    
+    val PERLU_TINDAKAN_STATUSES = listOf(PROSES_REVIEW, MEMERLUKAN_REVISI, MENUNGGU_PEMBAYARAN)
+    val DITERIMA_STATUSES = listOf(AKAN_DATANG, SEDANG_BERLANGSUNG, PROGRAM_SELESAI)
+    val ALL_STATUSES = PERLU_TINDAKAN_STATUSES + DITERIMA_STATUSES
+}
+
+/**
+ * Normalisasi status input - jika tidak sesuai dengan 6 status valid, default ke "Proses Review"
+ */
+fun normalizeStatus(inputStatus: String): String {
+    val normalizedInput = inputStatus.trim()
+    
+    // Cek apakah status sudah valid (case-insensitive)
+    val validStatus = CsrStatusConstants.ALL_STATUSES.find { 
+        it.equals(normalizedInput, ignoreCase = true) 
+    }
+    
+    return if (validStatus != null) {
+        validStatus // Return proper case version
+    } else {
+        // Log status yang tidak dikenal untuk debugging
+        android.util.Log.w("CsrStatus", "Unknown status '$inputStatus' normalized to '${CsrStatusConstants.PROSES_REVIEW}'")
+        CsrStatusConstants.PROSES_REVIEW
+    }
+}
+
+/**
+ * Convert status ke SubStatus enum dengan fallback
+ */
+fun statusToSubStatus(status: String): SubStatus {
+    val normalizedStatus = normalizeStatus(status)
+    
+    return when (normalizedStatus.lowercase().trim()) {
+        "proses review" -> SubStatus.PROSES_REVIEW
+        "memerlukan revisi" -> SubStatus.MEMERLUKAN_REVISI
+        "menunggu pembayaran" -> SubStatus.MENUNGGU_PEMBAYARAN
+        "akan datang" -> SubStatus.MENDATANG
+        "sedang berlangsung" -> SubStatus.PROGRESS
+        "program selesai" -> SubStatus.SELESAI
+        else -> SubStatus.PROSES_REVIEW
+    }
+}
+
+/**
+ * Test examples untuk status normalization:
+ * 
+ * Input: "proses review" → Output: "Proses Review"
+ * Input: "AKAN DATANG" → Output: "Akan Datang"
+ * Input: "invalid status" → Output: "Proses Review"
+ * Input: "  sedang berlangsung  " → Output: "Sedang Berlangsung"
+ * Input: "review" → Output: "Proses Review"
+ * Input: "" → Output: "Proses Review"
+ */
+
 fun getDummyTimelineData(status: String): List<TimelineItem> {
     return listOf(
         TimelineItem(
@@ -106,17 +184,17 @@ fun getDummyTimelineData(status: String): List<TimelineItem> {
         TimelineItem(
             title = "Review & Evaluasi",
             timestamp = "10/05/2024 - 09:50 WIB",
-            isCompleted = status.lowercase() == "progress" || status.lowercase() == "diterima",
-            isInProgress = status.lowercase() == "progress"
+            isCompleted = isDiterimaStatus(status),
+            isInProgress = isPerluTindakanStatus(status)
         ),
         TimelineItem(
             title = "Pembayaran",
             timestamp = "10/05/2024 - 10:00 WIB",
-            isCompleted = status.lowercase() == "diterima"
+            isCompleted = status in listOf("Sedang Berlangsung", "Program Selesai")
         ),
         TimelineItem(
             title = "Implementasi Program",
-            isCompleted = status.lowercase() == "diterima"
+            isCompleted = status == "Program Selesai"
         )
     )
 }

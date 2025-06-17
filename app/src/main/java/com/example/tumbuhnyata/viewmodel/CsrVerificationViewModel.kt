@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.tumbuhnyata.data.api.CsrApiService
 import com.example.tumbuhnyata.data.api.CsrSubmissionRequest
 import com.example.tumbuhnyata.data.model.CsrData
+import com.example.tumbuhnyata.util.UserSessionManager
+import com.example.tumbuhnyata.TumbuhNyataApp
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,7 +20,7 @@ class CsrVerificationViewModel : ViewModel() {
     var errorMessage = mutableStateOf<String?>(null)
 
     private val apiService: CsrApiService = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:5000/")
+                        .baseUrl("http://10.0.2.2:5000/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(CsrApiService::class.java)
@@ -42,8 +44,11 @@ class CsrVerificationViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
+                // Gunakan user ID yang sesungguhnya dari UserSessionManager
+                val userId = UserSessionManager.getUserId(TumbuhNyataApp.appContext)
+                
                 val request = CsrSubmissionRequest(
-                    user_id = 1,
+                    user_id = userId,
                     program_name = csrData.programName,
                     category = csrData.category,
                     description = csrData.description,

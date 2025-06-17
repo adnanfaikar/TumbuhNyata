@@ -61,6 +61,8 @@ import com.example.tumbuhnyata.viewmodel.WorkshopViewModelFactory
 import com.example.tumbuhnyata.data.model.CsrHistoryItem
 import com.example.tumbuhnyata.ui.eventcsr.DraftListScreen
 import com.example.tumbuhnyata.ui.eventcsr.DraftSuccessScreen
+import com.example.tumbuhnyata.util.UserSessionManager
+import com.example.tumbuhnyata.TumbuhNyataApp
 
 @Composable
 fun AppNavigation() {
@@ -103,8 +105,9 @@ fun AppNavigation() {
 
         // Notifikasi
         composable("notifikasi") {
+            val userId = UserSessionManager.getUserId(TumbuhNyataApp.appContext).toString()
             NotificationScreen(
-                userId = "1", // Ganti dengan ID user yang sebenarnya dari session
+                userId = userId,
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -288,6 +291,11 @@ fun AppNavigation() {
                     navController.navigate("diterima")
                 }
             )
+        }
+
+        // Tambah Riwayat Screen
+        composable("tambah_riwayat") {
+            TambahRiwayatScreen(navController)
         }
 
         // Detail Riwayat Screen

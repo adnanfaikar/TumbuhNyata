@@ -12,6 +12,7 @@ import com.example.tumbuhnyata.data.repository.NotificationRepository
 import com.example.tumbuhnyata.data.repository.ProfileRepository
 import com.example.tumbuhnyata.data.repository.WorkshopRepository
 import com.example.tumbuhnyata.data.repository.CsrHistoryRepository
+import com.example.tumbuhnyata.data.repository.CsrHistoryRepositoryOffline
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -44,7 +45,7 @@ object NetworkModule {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:5000/")
+                            .baseUrl("http://10.0.2.2:5000/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -99,6 +100,14 @@ object NetworkModule {
 
     val csrHistoryRepository: CsrHistoryRepository by lazy {
         CsrHistoryRepository(csrHistoryApi)
+    }
+
+    val csrHistoryRepositoryOffline: CsrHistoryRepositoryOffline by lazy {
+        CsrHistoryRepositoryOffline(
+            api = csrHistoryApi,
+            dao = database.csrHistoryDao(),
+            context = TumbuhNyataApp.appContext
+        )
     }
 
 }

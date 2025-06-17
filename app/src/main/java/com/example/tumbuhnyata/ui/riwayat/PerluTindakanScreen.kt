@@ -36,7 +36,7 @@ fun PerluTindakanScreen(
     onBack: () -> Unit,
     onCsrCardClick: (CsrHistoryItem) -> Unit
 ) {
-    val menungguAksiList by riwayatViewModel.perluTindakanItems.collectAsState()
+    val perluTindakanList by riwayatViewModel.perluTindakanItems.collectAsState()
 
     Column(
         modifier = Modifier
@@ -55,8 +55,8 @@ fun PerluTindakanScreen(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF2C3E1F)) // hijau tua
-                    .clickable(onClick = onBack),
+                    .background(Color(0xFF2C3E1F))
+                    .clickable { onBack() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -67,15 +67,15 @@ fun PerluTindakanScreen(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                "Perlu Tindakan",
+                "CSR Perlu Tindakan",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = poppins
             )
         }
 
-        // List Perlu Tindakan
-        if (menungguAksiList.isEmpty()) {
+        // List Riwayat History
+        if (perluTindakanList.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -100,10 +100,14 @@ fun PerluTindakanScreen(
                     .fillMaxSize()
                     .padding(bottom = 16.dp)
             ) {
-                items(menungguAksiList) { item ->
-                    CsrCard(item = item) {
-                        onCsrCardClick(item)
-                    }
+                items(perluTindakanList) { item ->
+                    CsrCard(
+                        item = item,
+                        onClick = { onCsrCardClick(item) },
+                        onDelete = { csrItem ->
+                            riwayatViewModel.deleteCsrHistory(csrItem)
+                        }
+                    )
                 }
             }
         }

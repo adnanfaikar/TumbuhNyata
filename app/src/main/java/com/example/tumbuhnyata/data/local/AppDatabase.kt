@@ -22,13 +22,11 @@ import com.example.tumbuhnyata.data.local.entity.CertificationEntity // Entity u
         OfflineWorkshopRegistration::class,
         OfflineProfile::class,
         CsrDraftEntity::class,
-        CsrHistoryEntity::class
-
+        CsrHistoryEntity::class,
         CsrReportEntity::class,
         CertificationEntity::class
     ],
     version = 6,
-
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

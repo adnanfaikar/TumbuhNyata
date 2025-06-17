@@ -10,10 +10,26 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         val requestBuilder = chain.request().newBuilder()
         val token = TokenManager.getToken(context)
         
+        println("AuthInterceptor: === TOKEN DEBUG ===")
+        println("AuthInterceptor: Token retrieved: ${if (token != null) "Present (${token.take(20)}...)" else "NULL"}")
+        
         token?.let {
+            println("AuthInterceptor: Adding Authorization header: Bearer ${it.take(20)}...")
             requestBuilder.addHeader("Authorization", "Bearer $it")
+        } ?: run {
+            println("AuthInterceptor: ⚠️ NO TOKEN FOUND - Request will be sent without authorization")
         }
         
-        return chain.proceed(requestBuilder.build())
+        val request = requestBuilder.build()
+        println("AuthInterceptor: Request headers:")
+        request.headers.forEach { (name, value) ->
+            if (name.equals("Authorization", ignoreCase = true)) {
+                println("AuthInterceptor:   $name: ${value.take(30)}...")
+            } else {
+                println("AuthInterceptor:   $name: $value")
+            }
+        }
+        
+        return chain.proceed(request)
     }
 } 

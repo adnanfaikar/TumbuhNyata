@@ -391,8 +391,33 @@ fun AppNavigation() {
         composable("detailsertifikasi") {
             DetailSertifikasiScreen(navController)
         }
-        composable("dokumenone") {
-            DokumenOne(navController)
+        composable(
+            route = "dokumenone/{certificationId}/{certificationName}/{certificationDescription}/{certificationCredentialBody}/{certificationBenefits}/{certificationCost}",
+            arguments = listOf(
+                navArgument("certificationId") { type = NavType.StringType },
+                navArgument("certificationName") { type = NavType.StringType },
+                navArgument("certificationDescription") { type = NavType.StringType },
+                navArgument("certificationCredentialBody") { type = NavType.StringType },
+                navArgument("certificationBenefits") { type = NavType.StringType },
+                navArgument("certificationCost") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val certificationId = backStackEntry.arguments?.getString("certificationId")
+            val certificationName = backStackEntry.arguments?.getString("certificationName")
+            val certificationDescription = backStackEntry.arguments?.getString("certificationDescription")
+            val certificationCredentialBody = backStackEntry.arguments?.getString("certificationCredentialBody")
+            val certificationBenefits = backStackEntry.arguments?.getString("certificationBenefits")
+            val certificationCost = backStackEntry.arguments?.getString("certificationCost")
+            
+            DokumenOne(
+                navController = navController,
+                certificationId = certificationId,
+                certificationName = certificationName,
+                certificationDescription = certificationDescription,
+                certificationCredentialBody = certificationCredentialBody,
+                certificationBenefits = certificationBenefits,
+                certificationCost = certificationCost
+            )
         }
         composable("berhasil") {
             CertificationSuccessScreen(navController)

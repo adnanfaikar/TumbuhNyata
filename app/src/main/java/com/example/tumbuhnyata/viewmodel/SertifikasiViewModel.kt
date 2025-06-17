@@ -2,8 +2,9 @@ package com.example.tumbuhnyata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tumbuhnyata.R
-import com.example.tumbuhnyata.ui.Sertifikasi.Sertifikasi
+import com.example.tumbuhnyata.data.local.entity.CertificationEntity
+import com.example.tumbuhnyata.data.repository.CertificationRepository
+import com.example.tumbuhnyata.data.repository.CertificationResource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,43 +13,46 @@ import kotlinx.coroutines.launch
 data class SertifikasiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val sertifikasiList: List<Sertifikasi> = emptyList()
+    val certificationList: List<CertificationEntity> = emptyList(),
+    val syncStatus: String? = null
 )
 
-class SertifikasiViewModel : ViewModel() {
+class SertifikasiViewModel(
+    private val certificationRepository: CertificationRepository
+) : ViewModel() {
     private val _state = MutableStateFlow(SertifikasiState())
     val state: StateFlow<SertifikasiState> = _state.asStateFlow()
 
     init {
-        loadSertifikasi()
+        loadCertifications()
+        startPeriodicSync()
     }
 
-    private fun loadSertifikasi() {
+    private fun loadCertifications() {
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true)
-                // TODO: Implement API call to fetch certifications
-                // For now using dummy data
-                val dummyData = listOf(
-                    Sertifikasi(
-                        title = "Environmental Management System",
-                        code = "ISO 14001",
-                        issued = "Issued Jun 2024 - Expires Jun 2027",
-                        credentialId = "Credential ID ABC123XYZ",
-                        imageRes = R.drawable.iso_14001
-                    ),
-                    Sertifikasi(
-                        title = "Social Responsibility",
-                        code = "ISO 26000",
-                        issued = "Issued Feb 2023 - Expires Feb 2026",
-                        credentialId = "Credential ID DEF456LMN",
-                        imageRes = R.drawable.iso_26000
-                    )
-                )
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    sertifikasiList = dummyData
-                )
+                
+                certificationRepository.getAllCertifications().collect { resource ->
+                    when (resource) {
+                        is CertificationResource.Success -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = null,
+                                certificationList = resource.data ?: emptyList()
+                            )
+                        }
+                        is CertificationResource.Error -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = resource.message
+                            )
+                        }
+                        is CertificationResource.Loading -> {
+                            _state.value = _state.value.copy(isLoading = true)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,
@@ -58,7 +62,67 @@ class SertifikasiViewModel : ViewModel() {
         }
     }
 
-    fun refreshSertifikasi() {
-        loadSertifikasi()
+    fun refreshCertifications() {
+        viewModelScope.launch {
+            try {
+                _state.value = _state.value.copy(syncStatus = "Syncing...")
+                certificationRepository.refreshCertificationsCache()
+                _state.value = _state.value.copy(syncStatus = "Sync complete")
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(syncStatus = "Sync failed: ${e.message}")
+            }
+        }
+    }
+
+    fun getCertificationsByStatus(status: String) {
+        viewModelScope.launch {
+            try {
+                _state.value = _state.value.copy(isLoading = true)
+                
+                certificationRepository.getCertificationsByStatus(status).collect { resource ->
+                    when (resource) {
+                        is CertificationResource.Success -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = null,
+                                certificationList = resource.data ?: emptyList()
+                            )
+                        }
+                        is CertificationResource.Error -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = resource.message
+                            )
+                        }
+                        is CertificationResource.Loading -> {
+                            _state.value = _state.value.copy(isLoading = true)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "An error occurred"
+                )
+            }
+        }
+    }
+
+    private fun startPeriodicSync() {
+        viewModelScope.launch {
+            try {
+                certificationRepository.startPeriodicSync()
+            } catch (e: Exception) {
+                println("SertifikasiViewModel: Error starting periodic sync: ${e.message}")
+            }
+        }
+    }
+
+    fun clearError() {
+        _state.value = _state.value.copy(error = null)
+    }
+    
+    fun clearSyncStatus() {
+        _state.value = _state.value.copy(syncStatus = null)
     }
 }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class ProfileState(
+    val companyId: Int? = null, // Added company ID
     val companyName: String = "",
     val companyAddress: String = "",
     val email: String = "",
@@ -55,6 +56,7 @@ class ProfileViewModel : ViewModel() {
                     UserSessionManager.saveUserId(TumbuhNyataApp.appContext, profile.id)
                     
                     _profileState.value = _profileState.value.copy(
+                        companyId = profile.id, // Store company ID
                         companyName = profile.companyName,
                         companyAddress = profile.address,
                         email = profile.email,

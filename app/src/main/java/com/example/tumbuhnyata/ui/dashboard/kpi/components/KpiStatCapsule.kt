@@ -36,16 +36,17 @@ fun KpiStatCapsule(
     containerColor: Color = Color.White,
     contentColor: Color = Color(0xFF27361F),
     iconBackgroundColor: Color = Color(0xFF27361F),
-    iconColor: Color = Color.White
+    iconColor: Color = Color.White,
+    isDisabled: Boolean = false
 ) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-            contentColor = contentColor
+            containerColor = if (isDisabled) Color(0xFFF5F5F5) else containerColor,
+            contentColor = if (isDisabled) Color.Gray else contentColor
         ),
-        border = BorderStroke(1.dp, Color(0xFFE2E2E2)),
+        border = BorderStroke(1.dp, if (isDisabled) Color(0xFFE8E8E8) else Color(0xFFE2E2E2)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
@@ -53,8 +54,7 @@ fun KpiStatCapsule(
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -64,7 +64,7 @@ fun KpiStatCapsule(
                     modifier = Modifier
                         .size(24.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(iconBackgroundColor)
+                        .background(if (isDisabled) Color(0xFFCCCCCC) else iconBackgroundColor)
                         .padding(4.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -73,7 +73,7 @@ fun KpiStatCapsule(
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                         contentScale = ContentScale.Fit,
-                        colorFilter = ColorFilter.tint(iconColor)
+                        colorFilter = ColorFilter.tint(if (isDisabled) Color.Gray else iconColor)
                     )
                 }
                 Row(verticalAlignment = Alignment.Bottom) {

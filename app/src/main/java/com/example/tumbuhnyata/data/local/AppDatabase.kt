@@ -12,6 +12,10 @@ import com.example.tumbuhnyata.data.local.entity.CsrDraftEntity
 import com.example.tumbuhnyata.data.local.entity.CsrHistoryEntity
 import com.example.tumbuhnyata.data.local.entity.OfflineProfile
 import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
+import com.example.tumbuhnyata.data.local.dao.DashboardDao // DAO yang sudah kita buat
+import com.example.tumbuhnyata.data.local.dao.CertificationDao // DAO untuk certification
+import com.example.tumbuhnyata.data.local.entity.CsrReportEntity // Entity yang sudah kita buat
+import com.example.tumbuhnyata.data.local.entity.CertificationEntity // Entity untuk certification
 
 @Database(
     entities = [
@@ -19,8 +23,12 @@ import com.example.tumbuhnyata.data.local.entity.OfflineWorkshopRegistration
         OfflineProfile::class,
         CsrDraftEntity::class,
         CsrHistoryEntity::class
+
+        CsrReportEntity::class,
+        CertificationEntity::class
     ],
-    version = 3,
+    version = 6,
+
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -28,6 +36,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun offlineProfileDao(): OfflineProfileDao
     abstract fun csrDraftDao(): CsrDraftDao
     abstract fun csrHistoryDao(): CsrHistoryDao
+    abstract fun dashboardDao(): DashboardDao // Expose DashboardDao
+    abstract fun certificationDao(): CertificationDao
 
 
     companion object {
@@ -40,7 +50,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "tumbuh_nyata_db"
-                ).fallbackToDestructiveMigration()
+                )
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance

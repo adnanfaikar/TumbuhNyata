@@ -10,6 +10,7 @@ import com.example.tumbuhnyata.data.local.AppDatabase
 import com.example.tumbuhnyata.data.repository.DashboardRepository
 import com.example.tumbuhnyata.data.repository.Resource
 import com.example.tumbuhnyata.data.network.RetrofitInstance
+import com.example.tumbuhnyata.di.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,7 +46,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val uiState: StateFlow<DashboardState> = _uiState.asStateFlow()
 
     private val dashboardRepository: DashboardRepository
+    private val profileRepository = NetworkModule.profileRepository
     private val isPeriodicSyncRunning = AtomicBoolean(false)
+    private var currentCompanyId: Int? = null
 
     init {
         // Inisialisasi manual repository (sementara)
@@ -53,14 +56,48 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val dashboardDao = AppDatabase.getDatabase(application).dashboardDao() // Mengambil DAO
         dashboardRepository = DashboardRepository(dashboardApi, dashboardDao, application.applicationContext)
         
-        loadDashboardItems()
+        // Load company ID first, then load dashboard
+        loadCompanyIdAndDashboard()
         startPeriodicAutoSync() // RE-ENABLING: Endpoints are fixed, safe to re-enable
+    }
+
+    private fun loadCompanyIdAndDashboard() {
+        viewModelScope.launch {
+            try {
+                // Get company ID from profile
+                val profile = profileRepository.getUserProfile()
+                currentCompanyId = profile?.id ?: 1 // Default to 1 if no profile
+                println("DashboardViewModel: Using companyId = $currentCompanyId")
+                
+                // Load dashboard with company ID
+                loadDashboardItems(currentCompanyId)
+            } catch (e: Exception) {
+                println("DashboardViewModel: Failed to load profile, using default companyId = 1")
+                currentCompanyId = 1
+                loadDashboardItems(currentCompanyId)
+            }
+        }
     }
 
     fun loadDashboardItems(companyId: Int? = null, year: Int? = null) { // Tambahkan parameter jika perlu
         viewModelScope.launch {
+            // FIXED: Ensure company ID is loaded before API call (same as KPIDetailViewModel)
+            val actualCompanyId = companyId ?: run {
+                // If currentCompanyId is null, load it synchronously
+                if (currentCompanyId == null) {
+                    try {
+                        val profile = profileRepository.getUserProfile()
+                        currentCompanyId = profile?.id ?: 1
+                        println("DashboardViewModel: Loaded companyId synchronously = $currentCompanyId")
+                    } catch (e: Exception) {
+                        println("DashboardViewModel: Failed to load profile synchronously, using default companyId = 1")
+                        currentCompanyId = 1
+                    }
+                }
+                currentCompanyId ?: 1
+            }
             
-            dashboardRepository.getDashboardKpiItems(companyId = companyId, year = year)
+            dashboardRepository.getDashboardKpiItems(companyId = actualCompanyId, year = year)
                 .collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {

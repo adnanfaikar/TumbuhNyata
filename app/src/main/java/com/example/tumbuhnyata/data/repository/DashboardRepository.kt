@@ -432,11 +432,15 @@ class DashboardRepository(
                 val actualYear = year ?: java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
                 val companyIdString = companyId?.toString()
                 
-                println("DashboardRepository: Calling KPI detail endpoint: carbon-submissions/kpi/$kpiType")
+                // FIXED: Backend only supports 'carbon_footprint', map all KPI types to it
+                val backendKpiType = "carbon_footprint" // Backend limitation - only supports this type
+                
+                println("DashboardRepository: Calling KPI detail endpoint: carbon-submissions/kpi/$backendKpiType")
                 println("DashboardRepository: Parameters - companyId: $companyIdString, year: $actualYear")
+                println("DashboardRepository: Frontend KPI type: $kpiType -> Backend KPI type: $backendKpiType")
                 
                 val response = dashboardApiService.getKpiDetail(
-                    kpiType = kpiType,
+                    kpiType = backendKpiType, // Always use carbon_footprint for API
                     companyId = companyIdString,
                     year = actualYear
                 )

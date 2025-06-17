@@ -70,7 +70,7 @@ fun KpiDetailScreen(
     // Initial load and reload when kpiId or selectedYear changes
     LaunchedEffect(kpiId, selectedYear) {
         println("KpiDetailScreen: Loading data for kpiId=$kpiId, year=$selectedYear")
-        viewModel.loadKPIDetails(kpiId, companyId = null, year = selectedYear)
+        viewModel.loadKPIDetails(kpiId, year = selectedYear) // Let ViewModel handle companyId
     }
 
     Scaffold(
@@ -124,72 +124,13 @@ fun KpiDetailScreen(
                 }
 
                 uiState.error != null -> {
-                    // Show error state - no more dummy data fallback
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Error icon
-                        Icon(
-                            Icons.Default.Warning,
-                            contentDescription = "Error",
-                            modifier = Modifier.size(64.dp),
-                            tint = Color(0xFFFF9800) // Orange warning color
-                        )
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Text(
-                            text = "Data KPI Tidak Tersedia",
-                            style = MaterialTheme.typography.titleMedium,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Text(
-                            text = "Terjadi masalah pada server saat mengambil data KPI.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            color = Color.Gray
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Text(
-                            text = uiState.error ?: "Error tidak diketahui",
-                            style = MaterialTheme.typography.bodySmall,
-                            textAlign = TextAlign.Center,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                        
-                        Spacer(modifier = Modifier.height(24.dp))
-                        
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            OutlinedButton(
-                                onClick = { navController.navigateUp() },
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = Color(0xFF27361F)
-                                )
-                            ) {
-                                Text("Kembali")
-                            }
-                            
-                            Button(
-                                onClick = { viewModel.retryLoadKPIDetails(kpiId, companyId = null, year = selectedYear) },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF27361F))
-                            ) {
-                                Text("Coba Lagi")
-                            }
-                        }
-                    }
+                    // Show no data state with upload option
+                    NoDataStateContent(
+                        navController = navController,
+                        kpiId = kpiId,
+                        selectedYear = selectedYear,
+                        onRetry = { viewModel.retryLoadKPIDetails(kpiId, year = selectedYear) }
+                    )
                 }
 
                 uiState.kpiDetails != null -> {
@@ -381,6 +322,203 @@ private fun KpiDetailContent(
         Text(
             text = kpiDetails.analysis,
             style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+    }
+}
+
+@Composable
+private fun NoDataStateContent(
+    navController: NavController,
+    kpiId: String,
+    selectedYear: Int,
+    onRetry: () -> Unit
+) {
+    var selectedFilter by remember { mutableStateOf("Tahunan") }
+    val filterOptions = listOf("Tahunan", "5 Tahun")
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Keep the filter switch (disabled state)
+        KpiFilterSwitch(
+            options = filterOptions,
+            selectedOption = selectedFilter,
+            onOptionSelected = { /* Disabled */ },
+            selectedBackgroundColor = Color(0xFF989898), // Disabled color
+            unselectedContentColor = Color(0xFF989898),
+            unselectedBackgroundColor = Color(0xFFe9ebe9)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Keep year selector (disabled state)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconButton(onClick = { /* Disabled */ }, enabled = false) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous Year")
+            }
+            Text(
+                text = if (selectedFilter == "Tahunan") selectedYear.toString() else "5 Tahun Terakhir",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Gray, // Disabled color
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            IconButton(onClick = { /* Disabled */ }, enabled = false) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next Year")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Tren KPI Tahunan",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Gray, // Disabled color
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Replace chart with no data message
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(
+                    Color(0xFFF5F5F5),
+                    RoundedCornerShape(12.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_carbonfootprint),
+                    contentDescription = "No Data",
+                    modifier = Modifier.size(48.dp),
+                    colorFilter = ColorFilter.tint(Color.Gray)
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                Text(
+                    text = "Anda Belum Memiliki Data",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+                
+                Text(
+                    text = "Upload data untuk melihat grafik KPI",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Keep the upload button (main CTA)
+        Button(
+            onClick = { navController.navigate("upload_data") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF27361F),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_tambahdata),
+                contentDescription = "Add Data",
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+                tint = Color.Unspecified
+            )
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text(
+                text = "Tambah Data",
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Secondary actions
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(
+                onClick = { navController.navigateUp() },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color(0xFF27361F)
+                )
+            ) {
+                Text("Kembali")
+            }
+            
+            OutlinedButton(
+                onClick = onRetry,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color(0xFF27361F)
+                )
+            ) {
+                Text("Refresh")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Disabled stats section to maintain layout
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            KpiStatCapsule(
+                modifier = Modifier.weight(1f),
+                icon = painterResource(id = R.drawable.ic_tachometer_average),
+                value = "0",
+                unit = "Unit",
+                label = "Rata-rata",
+                isDisabled = true
+            )
+            KpiStatCapsule(
+                modifier = Modifier.weight(1f),
+                icon = painterResource(id = R.drawable.angle_double_small_down),
+                value = "0",
+                unit = "Unit",
+                label = "Terkecil",
+                isDisabled = true
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Analisis",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Gray,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            text = "Belum ada data untuk dianalisis. Silakan upload data terlebih dahulu untuk melihat analisis KPI.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
             modifier = Modifier.padding(bottom = 16.dp)
         )
     }

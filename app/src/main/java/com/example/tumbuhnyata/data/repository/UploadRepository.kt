@@ -6,6 +6,7 @@ import com.example.tumbuhnyata.data.api.DashboardApiService
 import com.example.tumbuhnyata.data.model.UploadResponse
 import com.example.tumbuhnyata.data.util.Resource
 import com.example.tumbuhnyata.util.NetworkConnectivityUtil
+import com.example.tumbuhnyata.di.NetworkModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -24,6 +25,8 @@ class UploadRepository(
     private val context: Context,
     private val dashboardRepository: DashboardRepository? = null // Optional for dashboard refresh
 ) {
+    private val profileRepository = NetworkModule.profileRepository
+    private var currentCompanyId: Int? = null
 
     /**
      * Uploads a CSV file to the backend OR stores offline if no connection
@@ -300,6 +303,10 @@ class UploadRepository(
                 var skippedLines = 0
                 var errorLines = 0
                 
+                // Load company ID once at the beginning
+                val companyId = getCurrentCompanyId()
+                println("UploadRepository: Using company ID: $companyId for all entries")
+                
                 // Process each line (skip header)
                 allLines.forEachIndexed { index, line ->
                     val lineNumber = index + 1
@@ -320,7 +327,7 @@ class UploadRepository(
                     println("UploadRepository: Processing data line $lineNumber: '${trimmedLine.take(150)}${if (trimmedLine.length > 150) "..." else ""}'")
                     
                     try {
-                        val csvEntry = parseCsvLine(trimmedLine, file.name, lineNumber)
+                        val csvEntry = parseCsvLine(trimmedLine, file.name, lineNumber, companyId)
                         if (csvEntry != null) {
                             entries.add(csvEntry)
                             processedDataLines++
@@ -359,7 +366,7 @@ class UploadRepository(
      * Parses a single CSV line into CsrReportEntity
      * FIXED: Better CSV splitting and validation with comprehensive debugging
      */
-    private fun parseCsvLine(line: String, fileName: String, lineNumber: Int): com.example.tumbuhnyata.data.local.entity.CsrReportEntity? {
+    private fun parseCsvLine(line: String, fileName: String, lineNumber: Int, companyId: Int): com.example.tumbuhnyata.data.local.entity.CsrReportEntity? {
         try {
             // Handle different CSV formats (quoted and unquoted)
             val columns = if (line.contains("\"")) {
@@ -372,20 +379,19 @@ class UploadRepository(
             
             println("UploadRepository: Line $lineNumber -> Parsed ${columns.size} columns: $columns")
             
-            // Validate minimum required columns
-            if (columns.size < 4) {
-                println("UploadRepository: ✗ Line $lineNumber has insufficient columns (need at least 4: company_id,year,month,carbon_value, got ${columns.size})")
+            // Validate minimum required columns (no longer need company_id column)
+            if (columns.size < 3) {
+                println("UploadRepository: ✗ Line $lineNumber has insufficient columns (need at least 3: year,month,carbon_value, got ${columns.size})")
                 return null
             }
             
-            // Parse each field with comprehensive error handling
-            val companyId = parseIntField(columns.getOrNull(0), "company_id", lineNumber) ?: 1
-            val year = parseIntField(columns.getOrNull(1), "year", lineNumber) ?: Calendar.getInstance().get(Calendar.YEAR)
-            val month = parseIntField(columns.getOrNull(2), "month", lineNumber)
-            val carbonValue = parseFloatField(columns.getOrNull(3), "carbon_value", lineNumber) ?: 0f
-            val documentType = parseStringField(columns.getOrNull(4), "document_type", lineNumber) ?: "data_emisi"
-            val documentName = parseStringField(columns.getOrNull(5), "document_name", lineNumber) ?: "$fileName-line$lineNumber"
-            val analysis = parseStringField(columns.getOrNull(6), "analysis", lineNumber)
+            // Use company ID passed from parent function
+            val year = parseIntField(columns.getOrNull(0), "year", lineNumber) ?: Calendar.getInstance().get(Calendar.YEAR)
+            val month = parseIntField(columns.getOrNull(1), "month", lineNumber)
+            val carbonValue = parseFloatField(columns.getOrNull(2), "carbon_value", lineNumber) ?: 0f
+            val documentType = parseStringField(columns.getOrNull(3), "document_type", lineNumber) ?: "data_emisi"
+            val documentName = parseStringField(columns.getOrNull(4), "document_name", lineNumber) ?: "$fileName-line$lineNumber"
+            val analysis = parseStringField(columns.getOrNull(5), "analysis", lineNumber)
             
             // Validate parsed values
             if (carbonValue <= 0) {
@@ -499,6 +505,24 @@ class UploadRepository(
         val parsed = value?.trim()?.takeIf { it.isNotBlank() }
         println("UploadRepository: Line $lineNumber -> $fieldName: '$value' -> '$parsed'")
         return parsed
+    }
+
+    /**
+     * Gets current company ID from profile/session
+     * FIXED: Company ID now comes from logged-in user, not from CSV file
+     */
+    private suspend fun getCurrentCompanyId(): Int {
+        if (currentCompanyId == null) {
+            try {
+                val profile = profileRepository.getUserProfile()
+                currentCompanyId = profile?.id ?: 1 // Default to 1 if no profile
+                println("UploadRepository: Loaded company ID from profile: $currentCompanyId")
+            } catch (e: Exception) {
+                println("UploadRepository: Failed to load profile, using default company ID = 1: ${e.message}")
+                currentCompanyId = 1
+            }
+        }
+        return currentCompanyId!!
     }
 
     /**

@@ -167,13 +167,21 @@ fun UploadDataScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "* Upload file CSV berisi data emisi karbon (maksimal 10MB)",
-                fontFamily = PoppinsFontFamily,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+                                Text(
+                        text = "* Upload file CSV berisi data emisi karbon (maksimal 10MB)",
+                        fontFamily = PoppinsFontFamily,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    
+                    Text(
+                        text = "* Company ID akan otomatis diambil dari akun yang login",
+                        fontFamily = PoppinsFontFamily,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF27361F),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
 
             // CSV Format Guide
             Card(
@@ -197,8 +205,8 @@ fun UploadDataScreen(
                     )
                     
                     val csvColumns = listOf(
-                        "id_perusahaan", "year", "month", "carbon_value",
-                        "document_type", "document_name", "document_path", "analysis"
+                        "year", "month", "carbon_value",
+                        "document_type", "document_name", "analysis"
                     )
                     
                     csvColumns.forEach { column ->

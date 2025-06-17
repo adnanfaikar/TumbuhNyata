@@ -19,14 +19,28 @@ class NotificationViewModel(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+    
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     fun getNotifications(userId: String) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            
             try {
                 val result = repository.getNotifications(userId)
                 _notifications.value = result
+                
+                // Jika berhasil dan ada data, clear error
+                if (result.isNotEmpty()) {
+                    _error.value = null
+                }
             } catch (e: Exception) {
-                _error.value = "Gagal mengambil notifikasi: ${e.message}"
+                _error.value = "Gagal mengambil notifikasi. Menampilkan data lokal jika tersedia."
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
@@ -37,8 +51,10 @@ class NotificationViewModel(
                 repository.createNotification(notification)
                 // Refresh notifications after creating new one
                 getNotifications(notification.userId)
+                _error.value = null
             } catch (e: Exception) {
                 _error.value = "Gagal membuat notifikasi: ${e.message}"
+                e.printStackTrace()
             }
         }
     }
@@ -46,15 +62,17 @@ class NotificationViewModel(
     fun markAsRead(id: Int) {
         viewModelScope.launch {
             try {
-                val success = repository.markAsRead(id)
-                if (success) {
-                    // Update local state - mark notification as read
-                    _notifications.value = _notifications.value.map { 
-                        if (it.id == id) it.copy(isRead = 1) else it 
-                    }
+                repository.markAsRead(id)
+                
+                // Update local state - mark notification as read
+                _notifications.value = _notifications.value.map { 
+                    if (it.id == id) it.copy(isRead = 1) else it 
                 }
+                
+                _error.value = null
             } catch (e: Exception) {
-                _error.value = "Gagal menandai notifikasi: ${e.message}"
+                _error.value = "Gagal menandai notifikasi sebagai dibaca"
+                e.printStackTrace()
             }
         }
     }
@@ -62,15 +80,21 @@ class NotificationViewModel(
     fun deleteNotification(id: Int) {
         viewModelScope.launch {
             try {
-                val success = repository.deleteNotification(id)
-                if (success) {
-                    // Remove notification from local state
-                    _notifications.value = _notifications.value.filter { it.id != id }
-                }
+                repository.deleteNotification(id)
+                
+                // Remove notification from local state
+                _notifications.value = _notifications.value.filter { it.id != id }
+                
+                _error.value = null
             } catch (e: Exception) {
-                _error.value = "Gagal menghapus notifikasi: ${e.message}"
+                _error.value = "Gagal menghapus notifikasi"
+                e.printStackTrace()
             }
         }
+    }
+    
+    fun clearError() {
+        _error.value = null
     }
     
     // Factory pattern untuk membuat ViewModel

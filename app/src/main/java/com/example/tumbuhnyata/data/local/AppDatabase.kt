@@ -16,6 +16,8 @@ import com.example.tumbuhnyata.data.local.dao.DashboardDao // DAO yang sudah kit
 import com.example.tumbuhnyata.data.local.dao.CertificationDao // DAO untuk certification
 import com.example.tumbuhnyata.data.local.entity.CsrReportEntity // Entity yang sudah kita buat
 import com.example.tumbuhnyata.data.local.entity.CertificationEntity // Entity untuk certification
+import com.example.tumbuhnyata.data.database.NotificationDao
+import com.example.tumbuhnyata.data.database.NotificationEntity
 
 @Database(
     entities = [
@@ -24,9 +26,10 @@ import com.example.tumbuhnyata.data.local.entity.CertificationEntity // Entity u
         CsrDraftEntity::class,
         CsrHistoryEntity::class,
         CsrReportEntity::class,
-        CertificationEntity::class
+        CertificationEntity::class,
+        NotificationEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -36,6 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun csrHistoryDao(): CsrHistoryDao
     abstract fun dashboardDao(): DashboardDao // Expose DashboardDao
     abstract fun certificationDao(): CertificationDao
+    abstract fun notificationDao(): NotificationDao
 
 
     companion object {

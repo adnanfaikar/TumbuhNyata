@@ -1,18 +1,17 @@
-package com.example.tumbuhnyata.ui.dashboard.kpi
+package com.example.tumbuhnyata.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tumbuhnyata.data.api.DashboardApiService
 import com.example.tumbuhnyata.data.local.AppDatabase
 import com.example.tumbuhnyata.data.repository.DashboardRepository
 import com.example.tumbuhnyata.data.repository.Resource
 import com.example.tumbuhnyata.data.network.RetrofitInstance
 import com.example.tumbuhnyata.di.NetworkModule
+import com.example.tumbuhnyata.ui.dashboard.kpi.KpiDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 // Data class sesuai struktur KpiDetails di KpiDetailScreen
